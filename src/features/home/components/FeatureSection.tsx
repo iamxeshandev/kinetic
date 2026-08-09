@@ -2,6 +2,8 @@ import { Box, Grid, Stack, Typography } from '@mui/material';
 import { motion } from 'motion/react';
 import { MdCheckCircle } from 'react-icons/md';
 
+import featuresImg from '../../../assets/features.svg';
+
 export function FeatureSection() {
   return (
     <Grid container spacing={4} sx={{ py: 4, alignItems: 'center' }}>
@@ -14,7 +16,7 @@ export function FeatureSection() {
         size={{ xs: 12, md: 6 }}
         sx={{ display: { xs: 'none', md: 'block' } }}
       >
-        <Box component={'img'} src='src\assets\features.svg' alt='Features' />
+        <Box component={'img'} src={featuresImg} alt='Features' />
       </Grid>
       <Grid
         component={motion.div}

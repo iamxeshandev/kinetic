@@ -1,10 +1,11 @@
 import { Box, type BoxProps } from '@mui/material';
+import logoImg from '../../assets/logo.svg';
 
 export function Logo(props: BoxProps) {
   return (
     <Box
       component={'img'}
-      src='\src\assets\logo.svg'
+      src={logoImg}
       alt='App logo'
       {...props}
       sx={{ width: 50, ...props.sx }}

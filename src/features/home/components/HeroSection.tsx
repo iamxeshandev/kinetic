@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { NavLink } from 'react-router';
 import { paths } from '../../../routes/paths';
 
+import heroImg from '../../../assets/hero.svg';
+
 export function HeroSection() {
   return (
     <Grid
@@ -65,7 +67,7 @@ export function HeroSection() {
         size={{ xs: 12, md: 6 }}
         sx={{ display: { xs: 'block', md: 'block' } }}
       >
-        <Box component={'img'} src='src\assets\hero.svg' alt='Home' />
+        <Box component={'img'} src={heroImg} alt='Home' />
       </Grid>
     </Grid>
   );
