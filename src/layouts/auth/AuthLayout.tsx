@@ -6,7 +6,7 @@ export function AuthLayout() {
     <>
       <Container
         component={'main'}
-        sx={{ justifyContent: 'center', alignItems: 'center' }}
+        sx={{ justifyContent: 'center', alignItems: 'center', p: 3 }}
       >
         <Outlet />
       </Container>

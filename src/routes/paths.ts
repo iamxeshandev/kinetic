@@ -15,4 +15,11 @@ export const paths = {
     signUp: '/auth/sign-up',
     resetPassword: '/auth/reset-password',
   },
+  dashboard: {
+    root: '/dashboard',
+    projects: '/dashboard/projects',
+    calendar: '/dashboard/calendar',
+    teams: '/dashboard/teams',
+    settings: '/dashboard/settings',
+  },
 };

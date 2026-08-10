@@ -4,7 +4,7 @@ import { ResetPasswordView } from '../features/auth';
 export function Component() {
   return (
     <>
-      <title>{`Forgot Password | ${config.appName}`}</title>
+      <title>{`Reset Password | ${config.appName}`}</title>
       <ResetPasswordView />
     </>
   );

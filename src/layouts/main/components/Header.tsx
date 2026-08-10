@@ -3,12 +3,11 @@ import { Link, NavLink } from 'react-router';
 import { Logo } from '../../../components/ui/Logo';
 import { ThemeToggle } from '../../../components/ui/ThemeToggle';
 import { paths } from '../../../routes/paths';
-import { theme } from '../../../theme/theme';
 import { NavHorizontal, type NavHorizontalProps } from './NavHorizontal';
 import { NavMobile, type NavMobileProps } from './NavMobile';
 
 export function Header() {
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   return (
     <Box

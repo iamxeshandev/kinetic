@@ -42,8 +42,9 @@ export function ResetPasswordView() {
       </Card>
 
       <Link
-        component={motion(NavLink)}
+        component={motion.create(NavLink)}
         to={paths.auth.signIn}
+        replace
         initial='rest'
         whileHover='hover'
         sx={{ mt: 2, display: 'inline-flex', alignItems: 'center', gap: 1 }}

@@ -36,7 +36,7 @@ export function SignUpView() {
 
         <Typography variant='subtitle1'>
           Already have an account?{' '}
-          <Link component={NavLink} to={paths.auth.signIn}>
+          <Link component={NavLink} to={paths.auth.signIn} replace>
             Sign in
           </Link>
         </Typography>

@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { ContactView } from '../features/contact';
+import { ContactView } from '../features/landing';
 
 export function Component() {
   return (

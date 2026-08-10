@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { HomeView } from '../features/home';
+import { HomeView } from '../features/landing';
 
 export function Component() {
   return (

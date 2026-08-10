@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import { motion } from 'motion/react';
 import { NavLink } from 'react-router';
-import { paths } from '../../../routes/paths';
+import { paths } from '../../../../routes/paths';
 
 export function AdvertisementSection() {
   return (

@@ -1,6 +1,6 @@
 import { createHashRouter } from 'react-router';
 import { SplashScreen } from '../components/ui/SplashScreen';
-import { AuthLayout, MainLayout } from '../layouts';
+import { AuthLayout, DashboardLayout, MainLayout } from '../layouts';
 
 export const router = createHashRouter([
   {
@@ -24,6 +24,18 @@ export const router = createHashRouter([
         path: 'reset-password',
         lazy: () => import('../pages/ResetPasswordPage'),
       },
+    ],
+  },
+  {
+    path: '/dashboard',
+    Component: DashboardLayout,
+    HydrateFallback: SplashScreen,
+    children: [
+      { index: true, lazy: () => import('../pages/DashboardPage') },
+      { path: 'projects' },
+      { path: 'calendar' },
+      { path: 'teams' },
+      { path: 'settings' },
     ],
   },
 ]);
