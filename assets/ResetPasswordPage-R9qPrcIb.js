@@ -1,1 +1,0 @@
-import{n as e,r as t,t as n}from"./config-CzaLLJ-n.js";import{r}from"./auth-Bsg4MUDR.js";var i=t(),a=e();function o(){let e=(0,i.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(`title`,{children:`Forgot Password | ${n.appName}`}),(0,a.jsx)(r,{})]}),e[0]=t):t=e[0],t}export{o as Component};
