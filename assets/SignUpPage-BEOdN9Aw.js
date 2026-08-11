@@ -1,1 +1,0 @@
-import{n as e,t}from"./jsx-runtime-CTQSNLil.js";import{t as n}from"./config-BlfSvvhg.js";import{t as r}from"./auth-CtN-VaHN.js";var i=e(),a=t();function o(){let e=(0,i.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(`title`,{children:`Sign Up | ${n.appName}`}),(0,a.jsx)(r,{})]}),e[0]=t):t=e[0],t}export{o as Component};
