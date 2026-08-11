@@ -1,3 +1,11 @@
+import { config } from '../config';
+import { DashboardView } from '../features/dashboard';
+
 export function Component() {
-  return <>Dashboard</>;
+  return (
+    <>
+      <title>{`Dashboard | ${config.appName}`}</title>
+      <DashboardView />
+    </>
+  );
 }

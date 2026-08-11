@@ -1,4 +1,4 @@
-// All paths must start with a slash
+// * All paths must start with a slash
 
 export const paths = {
   home: {
@@ -20,6 +20,5 @@ export const paths = {
     projects: '/dashboard/projects',
     calendar: '/dashboard/calendar',
     teams: '/dashboard/teams',
-    settings: '/dashboard/settings',
   },
 };

@@ -2,6 +2,16 @@ import { createHashRouter } from 'react-router';
 import { SplashScreen } from '../components/ui/SplashScreen';
 import { AuthLayout, DashboardLayout, MainLayout } from '../layouts';
 
+import { redirect, type MiddlewareFunction } from 'react-router';
+import { paths } from './paths';
+
+const requireAuth: MiddlewareFunction = async (_, next) => {
+  if (!localStorage.getItem('token')) {
+    throw redirect(paths.auth.signIn);
+  }
+  return await next();
+};
+
 export const router = createHashRouter([
   {
     path: '/',
@@ -28,14 +38,14 @@ export const router = createHashRouter([
   },
   {
     path: '/dashboard',
+    middleware: [requireAuth],
     Component: DashboardLayout,
     HydrateFallback: SplashScreen,
     children: [
       { index: true, lazy: () => import('../pages/DashboardPage') },
-      { path: 'projects' },
-      { path: 'calendar' },
-      { path: 'teams' },
-      { path: 'settings' },
+      { path: 'projects', lazy: () => import('../pages/ProjectsPage') },
+      { path: 'calendar', lazy: () => import('../pages/CalendarPage') },
+      { path: 'teams', lazy: () => import('../pages/TeamsPage') },
     ],
   },
 ]);

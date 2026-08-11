@@ -17,11 +17,13 @@ import { NavLink, useNavigate } from 'react-router';
 import { Logo } from '../../../components/ui/Logo';
 import { config } from '../../../config';
 import { paths } from '../../../routes/paths';
+import { signIn } from '../api/signIn';
 
 export function SignInView() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
+    signIn();
     navigate(paths.dashboard.root, { replace: true });
   };
 

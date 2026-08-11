@@ -42,6 +42,7 @@ export function Navbar({ navLinks }: NavbarProps) {
             const isActive = location.pathname === path;
             return (
               <Box
+                key={path}
                 sx={{
                   bgcolor: (theme) =>
                     isActive
