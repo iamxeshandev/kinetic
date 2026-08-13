@@ -57,12 +57,8 @@ export function SignInView() {
         <CardHeader
           title={
             <>
-              <NavLink to={paths.home.root}>
-                <Logo />
-              </NavLink>
-              <Typography variant='inherit'>
-                Sign in to {config.appName}
-              </Typography>
+              <Logo />
+              <div>Sign in to {config.appName}</div>
             </>
           }
           subheader='Welcome back. Please enter your details.'
@@ -131,7 +127,7 @@ export function SignInView() {
           </Button>
 
           <Divider>
-            <Typography variant='caption'>Or continue with</Typography>
+            <Typography variant='subtitle2'>Or continue with</Typography>
           </Divider>
 
           <Box
@@ -149,7 +145,7 @@ export function SignInView() {
             </IconButton>
           </Box>
 
-          <Typography variant='subtitle1'>
+          <Typography variant='subtitle2'>
             Don't have an account?{' '}
             <Link component={NavLink} to={paths.auth.signUp} replace>
               Sign up

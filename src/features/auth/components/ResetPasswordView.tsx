@@ -26,9 +26,7 @@ export function ResetPasswordView() {
         <CardHeader
           title={
             <>
-              <NavLink to={paths.home.root}>
-                <Logo />
-              </NavLink>
+              <Logo />
               <Typography variant='inherit'>Reset Password</Typography>
             </>
           }

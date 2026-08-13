@@ -18,10 +18,8 @@ export function SignUpView() {
       <CardHeader
         title={
           <>
-            <NavLink to={paths.home.root}>
-              <Logo />
-            </NavLink>
-            <Typography variant='inherit'>Create an account</Typography>
+            <Logo />
+            <div>Create an account</div>
           </>
         }
         subheader='Start managing your tasks efficiently today.'
@@ -34,7 +32,7 @@ export function SignUpView() {
 
         <Button size='large'>Create Account</Button>
 
-        <Typography variant='subtitle1'>
+        <Typography variant='subtitle2'>
           Already have an account?{' '}
           <Link component={NavLink} to={paths.auth.signIn} replace>
             Sign in
@@ -43,7 +41,7 @@ export function SignUpView() {
 
         <Divider />
 
-        <Typography variant='caption'>
+        <Typography variant='subtitle2'>
           By creating an account, you agree to our{' '}
           <Link
             component={NavLink}
