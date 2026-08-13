@@ -34,7 +34,8 @@ export function HeroSection() {
           }}
         >
           <Typography variant='h1'>
-            Accelerate Your Team's{' '}
+            Accelerate Your Team's
+            <br />
             <Box
               component={'span'}
               sx={{

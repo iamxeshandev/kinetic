@@ -1,10 +1,12 @@
-import { Box, Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 import { motion } from 'motion/react';
 import { MdCheckCircle } from 'react-icons/md';
 
 import featuresImg from '../../../../assets/features.svg';
 
 export function FeatureSection() {
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('md'));
+
   return (
     <Grid container spacing={4} sx={{ py: 4, alignItems: 'center' }}>
       <Grid
@@ -20,8 +22,8 @@ export function FeatureSection() {
       </Grid>
       <Grid
         component={motion.div}
-        initial={{ opacity: 0, x: 100 }}
-        whileInView={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, x: isMobile ? 0 : 100, y: isMobile ? 100 : 0 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
         transition={{ duration: 0.5 }}
         viewport={{ once: true }}
         size={{ xs: 12, md: 6 }}

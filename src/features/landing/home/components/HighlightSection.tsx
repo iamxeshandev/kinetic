@@ -21,11 +21,6 @@ export function HighlightSection() {
         </Typography>
       </Box>
       <Box
-        component={motion.div}
-        initial={{ opacity: 0, y: 100 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
         sx={{
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
@@ -37,7 +32,15 @@ export function HighlightSection() {
         }}
       >
         {highlights.map(({ title, description, icon }, index) => (
-          <Card key={index} sx={{ p: 3 }}>
+          <Card
+            key={index}
+            component={motion.div}
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            sx={{ p: 3 }}
+          >
             <Box
               sx={{
                 p: 2,
