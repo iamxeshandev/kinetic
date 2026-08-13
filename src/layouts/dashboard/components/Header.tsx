@@ -18,12 +18,12 @@ import {
   LuSettings,
   LuUser,
 } from 'react-icons/lu';
-import { NavLink, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { ActionMenu, type ActionMenuProps } from '../../../components/ui';
 import { config } from '../../../config';
 import { signOut } from '../../../features/auth';
 import { paths } from '../../../routes/paths';
-import { capitalize } from '../../../utils/capitalize';
+import { capitalize } from '../../../utils/helpers/capitalize';
 
 export function Header({ sx, ...props }: BoxProps) {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ export function Header({ sx, ...props }: BoxProps) {
   const menuActions: ActionMenuProps['actions'] = [
     { label: 'Profile', icon: <LuUser />, onClick: () => {} },
     {
-      label: capitalize(mode ?? 'system'),
+      label: `Theme: ${capitalize(mode ?? 'system')}`,
       icon: <LuContrast />,
       onClick: () =>
         setMode(
@@ -68,7 +68,8 @@ export function Header({ sx, ...props }: BoxProps) {
         display: 'flex',
         alignItems: 'center',
         gap: 2,
-        height: 60,
+        px: 3,
+        py: 1,
         zIndex: (theme) => theme.zIndex.appBar,
         ...sx,
       }}
@@ -76,10 +77,12 @@ export function Header({ sx, ...props }: BoxProps) {
     >
       {isMobile ? (
         <Typography
-          component={NavLink}
+          component={Link}
+          role='link'
           to={paths.home.root}
           variant='h4'
           color='primary'
+          sx={{ textDecoration: 'none' }}
         >
           {config.appName}
         </Typography>

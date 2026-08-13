@@ -27,7 +27,7 @@ export const NavMobile = forwardRef(
         component={'nav'}
         ref={ref}
         sx={{
-          position: 'absolute',
+          position: 'fixed',
           bottom: 0,
           width: 1,
           px: 2,
@@ -36,6 +36,11 @@ export const NavMobile = forwardRef(
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: 2,
+          zIndex: (theme) => theme.zIndex.appBar,
+          backdropFilter: 'var(--backdrop-filter)',
+          WebkitBackdropFilter: 'var(--backdrop-filter)',
+          borderTop: 1,
+          borderColor: 'divider',
         }}
       >
         {navLinks.map(({ label, icon, path }) => {

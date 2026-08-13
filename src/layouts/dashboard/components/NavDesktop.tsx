@@ -1,8 +1,7 @@
 import { alpha, Box, Drawer, IconButton } from '@mui/material';
 import { forwardRef } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { Logo } from '../../../components/ui';
-import { paths } from '../../../routes/paths';
 
 export type NavDesktopProps = {
   navLinks: Array<{
@@ -31,9 +30,7 @@ export const NavDesktop = forwardRef(
             gap: 2,
           }}
         >
-          <NavLink to={paths.home.root}>
-            <Logo sx={{ mb: 2, width: 32 }} />
-          </NavLink>
+          <Logo sx={{ mb: 2, width: 32 }} />
 
           {navLinks.map(({ icon, path }) => {
             const isActive = location.pathname === path;

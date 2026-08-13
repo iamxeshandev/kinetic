@@ -34,8 +34,8 @@ export function NavMobile({ navLinks }: NavMobileProps) {
       </IconButton>
 
       <Drawer open={showMenu} onClose={() => setShowMenu(false)}>
-        <Stack spacing={2} sx={{ width: 'min(60vw, 300px)', p: 2 }}>
-          <Logo />
+        <Stack spacing={2} sx={{ width: 'min(60dvw, 300px)', p: 2 }}>
+          <Logo isLink={false} />
           <SimpleTreeView
             selectedItems={navLinks
               .findIndex((o) => o.to === location.pathname)

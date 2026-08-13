@@ -1,5 +1,5 @@
 import { Box, Button, Container, useMediaQuery } from '@mui/material';
-import { Link, NavLink } from 'react-router';
+import { NavLink } from 'react-router';
 import { Logo } from '../../../components/ui/Logo';
 import { ThemeToggle } from '../../../components/ui/ThemeToggle';
 import { paths } from '../../../routes/paths';
@@ -10,18 +10,8 @@ export function Header() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   return (
-    <Box
-      component={'header'}
-      sx={{
-        position: 'sticky',
-        top: 0,
-        backdropFilter: 'blur(30px)',
-        WebkitBackdropFilter: 'blur(30px)',
-        zIndex: (theme) => theme.zIndex.appBar,
-      }}
-    >
+    <Box component={'header'}>
       <Container
-        component={'header'}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -31,17 +21,9 @@ export function Header() {
       >
         {isMobile && <NavMobile navLinks={navLinks} />}
 
-        <Box
-          component={Link}
-          to={paths.home.root}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mr: 'auto',
-          }}
-        >
-          <Logo />
-        </Box>
+        <Logo />
+
+        <Box aria-hidden sx={{ flex: 1 }} />
 
         {!isMobile && <NavHorizontal navLinks={navLinks} />}
 
