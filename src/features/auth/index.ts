@@ -1,3 +1,4 @@
+export * from './api/checkUserSession';
 export * from './api/signIn';
 export * from './api/signOut';
 export * from './api/signUp';
