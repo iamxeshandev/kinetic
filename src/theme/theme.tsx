@@ -10,11 +10,11 @@ export const theme = createTheme({
   },
   typography: {
     h1: {
-      fontSize: '3rem',
+      fontSize: '2.5rem',
       fontWeight: 'bold',
     },
     h2: {
-      fontSize: '2.5rem',
+      fontSize: '2.25rem',
       fontWeight: 'bold',
     },
     h3: {
@@ -31,6 +31,15 @@ export const theme = createTheme({
     },
     h6: {
       fontSize: '1.25rem',
+      fontWeight: 'bold',
+    },
+    subtitle1: {
+      color: 'var(--mui-palette-text-secondary)',
+    },
+    subtitle2: {
+      color: 'var(--mui-palette-text-secondary)',
+    },
+    caption: {
       fontWeight: 'bold',
     },
   },
@@ -51,6 +60,7 @@ export const theme = createTheme({
           textTransform: 'none',
           fontWeight: 600,
           borderRadius: 8,
+          textWrap: 'nowrap',
         },
       },
     },
@@ -72,6 +82,7 @@ export const theme = createTheme({
         root: {
           fontWeight: 'bold',
           fontSize: '0.9rem',
+          cursor: 'pointer',
         },
       },
     },

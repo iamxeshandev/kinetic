@@ -3,11 +3,19 @@ import { SplashScreen } from '../components/ui/SplashScreen';
 import { AuthLayout, DashboardLayout, MainLayout } from '../layouts';
 
 import { redirect, type MiddlewareFunction } from 'react-router';
+import { checkUserSession } from '../features/auth';
 import { paths } from './paths';
 
 const requireAuth: MiddlewareFunction = async (_, next) => {
-  if (!localStorage.getItem('token')) {
+  if (!checkUserSession()) {
     throw redirect(paths.auth.signIn);
+  }
+  return await next();
+};
+
+const checkAuth: MiddlewareFunction = async (_, next) => {
+  if (checkUserSession()) {
+    return redirect(paths.dashboard.root);
   }
   return await next();
 };
@@ -23,8 +31,10 @@ export const router = createHashRouter([
       { path: 'contact', lazy: () => import('../pages/ContactPage') },
     ],
   },
+  { path: '/splash', Component: SplashScreen },
   {
     path: '/auth',
+    middleware: [checkAuth],
     Component: AuthLayout,
     HydrateFallback: SplashScreen,
     children: [
