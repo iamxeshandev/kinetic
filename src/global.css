@@ -22,10 +22,17 @@ main {
 }
 
 .bg-blur {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background-color: rgb(
-    var(--mui-palette-background-defaultChannel) /
-      var(--mui-palette-action-disabledOpacity)
-  );
+  background-color: rgb(var(--mui-palette-background-defaultChannel) / 0.82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .bg-blur {
+    background-color: rgb(var(--mui-palette-background-defaultChannel) / 0.94);
+  }
 }
