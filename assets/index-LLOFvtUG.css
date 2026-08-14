@@ -1,1 +1,0 @@
-:root{--backdrop-filter:blur(20px)}*{scrollbar-width:thin}#root{box-sizing:border-box;flex-direction:column;min-height:100dvh;display:flex}header{z-index:var(--mui-zIndex-appBar);position:sticky;top:0}main{flex-direction:column;flex:1 0;display:flex}
