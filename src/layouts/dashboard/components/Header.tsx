@@ -1,4 +1,5 @@
 import {
+  alpha,
   Avatar,
   Box,
   IconButton,
@@ -70,7 +71,12 @@ export function Header({ sx, ...props }: BoxProps) {
         gap: 2,
         px: 3,
         py: 1,
-        zIndex: (theme) => theme.zIndex.appBar,
+        backdropFilter: 'var(--backdrop-filter)',
+        backgroundColor: (theme) =>
+          alpha(
+            theme.palette.background.default,
+            theme.palette.action.disabledOpacity,
+          ),
         ...sx,
       }}
       {...props}

@@ -38,7 +38,11 @@ export const NavMobile = forwardRef(
           gap: 2,
           zIndex: (theme) => theme.zIndex.appBar,
           backdropFilter: 'var(--backdrop-filter)',
-          WebkitBackdropFilter: 'var(--backdrop-filter)',
+          backgroundColor: (theme) =>
+            alpha(
+              theme.palette.background.default,
+              theme.palette.action.disabledOpacity,
+            ),
           borderTop: 1,
           borderColor: 'divider',
         }}

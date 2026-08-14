@@ -44,13 +44,6 @@ export const theme = createTheme({
     },
   },
   components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        '*': {
-          scrollbarWidth: 'thin',
-        },
-      },
-    },
     MuiButton: {
       defaultProps: {
         variant: 'contained',

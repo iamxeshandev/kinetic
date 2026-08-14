@@ -1,4 +1,4 @@
-import { Box, Button, Container, useMediaQuery } from '@mui/material';
+import { alpha, Box, Button, Container, useMediaQuery } from '@mui/material';
 import { NavLink } from 'react-router';
 import { Logo } from '../../../components/ui/Logo';
 import { ThemeToggle } from '../../../components/ui/ThemeToggle';
@@ -10,7 +10,17 @@ export function Header() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   return (
-    <Box component={'header'}>
+    <Box
+      component={'header'}
+      sx={{
+        backdropFilter: 'var(--backdrop-filter)',
+        backgroundColor: (theme) =>
+          alpha(
+            theme.palette.background.default,
+            theme.palette.action.disabledOpacity,
+          ),
+      }}
+    >
       <Container
         sx={{
           display: 'flex',

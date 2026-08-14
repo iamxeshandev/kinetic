@@ -1,5 +1,9 @@
 :root {
-  --backdrop-filter: blur(30px);
+  --backdrop-filter: blur(20px);
+}
+
+* {
+  scrollbar-width: thin;
 }
 
 #root {
@@ -12,8 +16,6 @@
 header {
   position: sticky;
   top: 0;
-  backdrop-filter: var(--backdrop-filter);
-  -webkit-backdrop-filter: var(--backdrop-filter);
   z-index: var(--mui-zIndex-appBar);
 }
 
