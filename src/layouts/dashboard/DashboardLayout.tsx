@@ -22,10 +22,12 @@ export function DashboardLayout() {
         component={'main'}
         maxWidth={false}
         sx={{
-          p: 3,
+          p: 2,
           mb: { xs: `${size.height}px`, sm: 0 },
-          ml: { xs: 0, sm: `${size.width}px` },
-          maxWidth: { xs: '100dvw', sm: `calc(100dvw - ${size.width}px)` },
+          pl: (theme) => ({
+            xs: theme.spacing(2),
+            sm: `calc(${size.width}px + ${theme.spacing(3)})`,
+          }),
         }}
       >
         <Outlet />

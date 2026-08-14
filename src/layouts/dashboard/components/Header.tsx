@@ -1,35 +1,27 @@
 import {
-  alpha,
   Avatar,
   Box,
   IconButton,
   InputAdornment,
   TextField,
-  Typography,
-  useColorScheme,
   useMediaQuery,
   type BoxProps,
 } from '@mui/material';
 import { useState } from 'react';
+import { LuBell, LuLogOut, LuSearch, LuSettings, LuUser } from 'react-icons/lu';
+import { useNavigate } from 'react-router';
 import {
-  LuBell,
-  LuContrast,
-  LuLogOut,
-  LuSearch,
-  LuSettings,
-  LuUser,
-} from 'react-icons/lu';
-import { Link, useNavigate } from 'react-router';
-import { ActionMenu, type ActionMenuProps } from '../../../components/ui';
+  ActionMenu,
+  Logo,
+  ThemeSwitcher,
+  type ActionMenuProps,
+} from '../../../components/ui';
 import { config } from '../../../config';
 import { signOut } from '../../../features/auth';
 import { paths } from '../../../routes/paths';
-import { capitalize } from '../../../utils/helpers/capitalize';
 
 export function Header({ sx, ...props }: BoxProps) {
   const navigate = useNavigate();
-
-  const { mode, setMode } = useColorScheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -42,15 +34,6 @@ export function Header({ sx, ...props }: BoxProps) {
 
   const menuActions: ActionMenuProps['actions'] = [
     { label: 'Profile', icon: <LuUser />, onClick: () => {} },
-    {
-      label: `Theme: ${capitalize(mode ?? 'system')}`,
-      icon: <LuContrast />,
-      onClick: () =>
-        setMode(
-          mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system',
-        ),
-      closeOnClick: false,
-    },
     { label: 'Settings', icon: <LuSettings />, onClick: () => {} },
     {
       label: 'Logout',
@@ -63,35 +46,20 @@ export function Header({ sx, ...props }: BoxProps) {
   return (
     <Box
       component={'header'}
+      className='bg-blur'
       sx={{
         borderBottom: 1,
         borderColor: 'divider',
         display: 'flex',
         alignItems: 'center',
         gap: 2,
-        px: 3,
-        py: 1,
-        backdropFilter: 'var(--backdrop-filter)',
-        backgroundColor: (theme) =>
-          alpha(
-            theme.palette.background.default,
-            theme.palette.action.disabledOpacity,
-          ),
+        p: 2,
         ...sx,
       }}
       {...props}
     >
       {isMobile ? (
-        <Typography
-          component={Link}
-          role='link'
-          to={paths.home.root}
-          variant='h4'
-          color='primary'
-          sx={{ textDecoration: 'none' }}
-        >
-          {config.appName}
-        </Typography>
+        <Logo />
       ) : (
         <TextField
           fullWidth
@@ -118,6 +86,8 @@ export function Header({ sx, ...props }: BoxProps) {
           <LuSearch />
         </IconButton>
       )}
+
+      <ThemeSwitcher />
 
       <IconButton aria-label='Notifications'>
         <LuBell />

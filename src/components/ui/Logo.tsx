@@ -13,21 +13,15 @@ export function Logo({
   to = paths.home.root,
   ...props
 }: LogoProps) {
-  const renderLogo = (
+  return (
     <Box
-      component={'img'}
-      src={logoImg}
-      alt='App logo'
+      component={isLink ? Link : 'div'}
+      role='link'
+      to={to}
       {...props}
-      sx={{ width: 50, ...props.sx }}
-    />
+      sx={{ display: 'inline-flex', flexShrink: 0, width: 40, ...props.sx }}
+    >
+      <Box component={'img'} src={logoImg} alt='App logo' sx={{ width: 1 }} />
+    </Box>
   );
-
-  const renderLinkLogo = (
-    <Link role='link' to={to}>
-      {renderLogo}
-    </Link>
-  );
-
-  return isLink ? renderLinkLogo : renderLogo;
 }

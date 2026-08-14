@@ -1,4 +1,4 @@
-import { alpha, Box, Drawer, IconButton } from '@mui/material';
+import { Box, Drawer, IconButton } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { Logo } from '../../../components/ui';
@@ -38,13 +38,9 @@ export const NavDesktop = forwardRef(
               <Box
                 key={path}
                 sx={{
-                  bgcolor: (theme) =>
-                    isActive
-                      ? alpha(
-                          theme.palette.primary.main,
-                          theme.palette.action.activatedOpacity,
-                        )
-                      : undefined,
+                  bgcolor: isActive
+                    ? 'rgb(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))'
+                    : undefined,
                   borderRadius: 2,
                 }}
               >

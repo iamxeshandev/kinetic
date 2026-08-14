@@ -79,5 +79,12 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTooltip: {
+      defaultProps: {
+        arrow: true,
+        placement: 'top',
+        enterDelay: 1000,
+      },
+    },
   },
 });

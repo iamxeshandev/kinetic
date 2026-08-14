@@ -1,10 +1,4 @@
-import {
-  alpha,
-  Box,
-  useMediaQuery,
-  type BoxProps,
-  type ButtonProps,
-} from '@mui/material';
+import { Box, type BoxProps, type ButtonProps } from '@mui/material';
 
 const SIZES: Record<string, { fontSize: string; px: number; py: number }> = {
   small: { fontSize: '0.75rem', px: 1, py: 0.5 },
@@ -27,7 +21,6 @@ export function Label({
   ...props
 }: LabelProps) {
   const isInherit = color === 'inherit';
-  const isLightMode = useMediaQuery('(prefers-color-scheme: light)');
 
   const { fontSize, px, py } = SIZES[size];
   return (
@@ -40,15 +33,7 @@ export function Label({
         borderRadius: chip ? 10 : 1,
         fontWeight: 'bold',
         color: isInherit ? 'inherit' : `${color}.main`,
-        bgcolor: (theme) =>
-          alpha(
-            isInherit
-              ? isLightMode || theme.palette.mode === 'light'
-                ? theme.palette.grey[600]
-                : theme.palette.background.default
-              : theme.palette[color].main,
-            theme.palette.action.selectedOpacity,
-          ),
+        bgcolor: `rgb(var(--mui-palette-${color}-mainChannel) / var(--mui-palette-action-selectedOpacity))`,
         ...sx,
       }}
     >
