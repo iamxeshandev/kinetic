@@ -1,23 +1,25 @@
-import { IconButton, Tooltip, useColorScheme } from '@mui/material';
+import {
+  IconButton,
+  useColorScheme,
+  type IconButtonProps,
+} from '@mui/material';
 import { LuContrast, LuMoon, LuSun } from 'react-icons/lu';
 
-export const THEME_ICONS = {
-  system: <LuContrast />,
-  light: <LuSun />,
-  dark: <LuMoon />,
-};
-
-export function ThemeSwitcher() {
+export function ThemeSwitcher(props: IconButtonProps) {
   const { mode, setMode } = useColorScheme();
 
   const handleClick = () =>
     setMode(mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system');
 
   return (
-    <Tooltip title='Toggle theme'>
-      <IconButton onClick={handleClick}>
-        {THEME_ICONS[mode ?? 'system']}
-      </IconButton>
-    </Tooltip>
+    <IconButton onClick={handleClick} aria-label='Theme Switcher' {...props}>
+      {THEME_ICONS[mode ?? 'system']}
+    </IconButton>
   );
 }
+
+const THEME_ICONS = {
+  system: <LuContrast />,
+  light: <LuSun />,
+  dark: <LuMoon />,
+};

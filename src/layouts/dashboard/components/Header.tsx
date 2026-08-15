@@ -59,7 +59,7 @@ export function Header({ sx, ...props }: BoxProps) {
       {...props}
     >
       {isMobile ? (
-        <Logo />
+        <Logo sx={{ width: 30 }} />
       ) : (
         <TextField
           fullWidth
@@ -87,11 +87,11 @@ export function Header({ sx, ...props }: BoxProps) {
         </IconButton>
       )}
 
-      <ThemeSwitcher />
-
       <IconButton aria-label='Notifications'>
         <LuBell />
       </IconButton>
+
+      <ThemeSwitcher />
 
       <IconButton
         sx={{ p: 0 }}

@@ -1,13 +1,13 @@
 import { Stack } from '@mui/material';
 import { DashboardContent } from './DashboardContent';
 import { DashboardHeader } from './DashboardHeader';
-import { DashboardStat } from './DashboardStat';
+import { DashboardHighlights } from './DashboardHighlights';
 
 export function DashboardView() {
   return (
-    <Stack spacing={3}>
+    <Stack spacing={3} sx={{ flex: 1 }}>
       <DashboardHeader />
-      <DashboardStat />
+      <DashboardHighlights />
       <DashboardContent />
     </Stack>
   );
