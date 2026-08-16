@@ -59,7 +59,7 @@ export function Header({ sx, ...props }: BoxProps) {
       {...props}
     >
       {isMobile ? (
-        <Logo sx={{ width: 30 }} />
+        <Logo />
       ) : (
         <TextField
           fullWidth
