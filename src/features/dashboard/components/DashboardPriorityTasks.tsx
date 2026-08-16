@@ -57,7 +57,7 @@ export function DashboardPriorityTasks() {
                   />
                 )}
                 <Typography variant='subtitle2' sx={{ textWrap: 'nowrap' }}>
-                  {formatDate(dueDate, 'short', true)}
+                  {formatDate(dueDate, 'relative')}
                 </Typography>
               </Box>
             </ListItem>

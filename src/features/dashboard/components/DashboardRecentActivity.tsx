@@ -39,7 +39,7 @@ export function DashboardRecentActivity() {
                 </Link>
                 <br />
                 <Typography variant='subtitle2'>
-                  {formatDate(date, 'short', true)}
+                  {formatDate(date, 'relative')}
                 </Typography>
               </TimelineContent>
             </TimelineItem>

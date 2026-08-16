@@ -27,8 +27,8 @@ export function DashboardHeader() {
         sx={{
           display: { xs: 'inherit', sm: 'none' },
           position: 'fixed',
-          bottom: 90,
-          right: 20,
+          bottom: 64,
+          right: 12,
         }}
       >
         <LuPlus fontSize={'1.5rem'} />
