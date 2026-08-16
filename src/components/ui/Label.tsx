@@ -1,4 +1,5 @@
 import { Box, type BoxProps, type ButtonProps } from '@mui/material';
+import { varAlpha } from '../../utils/helpers';
 
 const SIZES: Record<string, { fontSize: string; px: number; py: number }> = {
   small: { fontSize: '0.75rem', px: 0.5, py: 0.25 },
@@ -7,21 +8,19 @@ const SIZES: Record<string, { fontSize: string; px: number; py: number }> = {
 };
 
 export type LabelProps = Omit<BoxProps, 'color'> & {
-  color?: ButtonProps['color'];
+  color?: Exclude<ButtonProps['color'], 'inherit'>;
   size?: ButtonProps['size'];
   chip?: boolean;
 };
 
 export function Label({
   children,
-  color = 'inherit',
+  color = 'primary',
   size = 'medium',
   chip = false,
   sx,
   ...props
 }: LabelProps) {
-  const isInherit = color === 'inherit';
-
   const { fontSize, px, py } = SIZES[size];
   return (
     <Box
@@ -32,8 +31,12 @@ export function Label({
         fontSize,
         fontWeight: 'bold',
         borderRadius: chip ? 10 : 1,
-        color: isInherit ? 'inherit' : `${color}.main`,
-        backgroundColor: `rgb(var(--mui-palette-${color}-mainChannel) / var(--mui-palette-action-selectedOpacity))`,
+        color: `${color}.main`,
+        backgroundColor: (theme) =>
+          varAlpha(
+            theme.vars!.palette[color].mainChannel,
+            theme.vars!.palette.action.selectedOpacity,
+          ),
         textWrap: 'nowrap',
         ...sx,
       }}

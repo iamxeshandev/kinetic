@@ -1,4 +1,5 @@
 import { type CSSObject, type Theme } from '@mui/material';
+import { varAlpha } from '../utils/helpers';
 
 export const styles = (theme: Theme): Record<string, CSSObject> => ({
   '*': {
@@ -21,17 +22,13 @@ export const styles = (theme: Theme): Record<string, CSSObject> => ({
     flexDirection: 'column',
   },
   '.glass': {
-    backgroundColor: 'rgb(var(--mui-palette-background-defaultChannel) / 0.82)',
+    backgroundColor: varAlpha(
+      theme.vars!.palette.background.defaultChannel,
+      0.8,
+    ),
     backdropFilter: 'blur(6px)',
     WebkitBackdropFilter: 'blur(6px)',
     backgroundClip: 'padding-box',
     WebkitBackgroundClip: 'padding-box',
   },
-  '@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))':
-    {
-      '.glass': {
-        backgroundColor:
-          'rgb(var(--mui-palette-background-defaultChannel) / 0.94)',
-      },
-    },
 });

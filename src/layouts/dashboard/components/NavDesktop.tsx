@@ -2,6 +2,7 @@ import { Box, Drawer, IconButton } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { Logo } from '../../../components/ui';
+import { varAlpha } from '../../../utils/helpers';
 
 export type NavDesktopProps = {
   navLinks: Array<{
@@ -39,7 +40,11 @@ export const NavDesktop = forwardRef(
                 key={path}
                 sx={{
                   bgcolor: isActive
-                    ? 'rgb(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))'
+                    ? (theme) =>
+                        varAlpha(
+                          theme.vars!.palette.primary.mainChannel,
+                          theme.vars!.palette.action.activatedOpacity,
+                        )
                     : undefined,
                   borderRadius: 2,
                 }}

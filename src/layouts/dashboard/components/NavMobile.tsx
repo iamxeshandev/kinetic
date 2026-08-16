@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 
 import { Box, IconButton } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
+import { varAlpha } from '../../../utils/helpers';
 
 export type NavMobileProps = {
   navLinks: Array<{
@@ -46,7 +47,11 @@ export const NavMobile = forwardRef(
                 textAlign: 'center',
                 borderRadius: 10,
                 backgroundColor: isActive
-                  ? 'rgb(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-activatedOpacity))'
+                  ? (theme) =>
+                      varAlpha(
+                        theme.vars!.palette.primary.mainChannel,
+                        theme.vars!.palette.action.activatedOpacity,
+                      )
                   : undefined,
               }}
             >
