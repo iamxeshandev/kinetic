@@ -19,7 +19,7 @@ export const NavMobile = forwardRef(
     return (
       <Box
         component={'nav'}
-        className='bg-blur'
+        className='glass'
         ref={ref}
         sx={{
           position: 'fixed',

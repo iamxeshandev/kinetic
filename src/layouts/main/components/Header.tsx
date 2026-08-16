@@ -10,7 +10,7 @@ export function Header() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   return (
-    <Box component={'header'} className='bg-blur'>
+    <Box component={'header'} className='glass'>
       <Container
         sx={{
           display: 'flex',

@@ -46,7 +46,7 @@ export function Header({ sx, ...props }: BoxProps) {
   return (
     <Box
       component={'header'}
-      className='bg-blur'
+      className='glass'
       sx={{
         borderBottom: 1,
         borderColor: 'divider',
