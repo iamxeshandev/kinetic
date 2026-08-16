@@ -15,15 +15,14 @@ const FORMATS: Record<DateFormat, Intl.DateTimeFormatOptions> = {
 
 export function formatDate(
   date: Date | string,
-  format?: DateFormat,
-  relative?: boolean,
+  format?: DateFormat | 'relative',
   locale?: Intl.LocalesArgument,
 ): string {
   const d = typeof date === 'string' ? new Date(date) : date;
 
   if (typeof d === 'string') return d;
 
-  if (relative) {
+  if (format === 'relative') {
     if (isToday(d)) return 'Today';
     if (isTomorrow(d)) return 'Tomorrow';
     if (isYesterday(d)) return 'Yesterday';
