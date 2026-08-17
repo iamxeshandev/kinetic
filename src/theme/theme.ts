@@ -54,6 +54,7 @@ export const theme = createTheme({
           fontWeight: 600,
           borderRadius: 8,
           textWrap: 'nowrap',
+          flexShrink: 0,
         },
       },
     },
@@ -65,6 +66,13 @@ export const theme = createTheme({
         root: {
           borderRadius: 8,
         },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: ({ ownerState }) => ({
+          ...(ownerState.icon && { paddingLeft: '4px' }),
+        }),
       },
     },
     MuiLink: {

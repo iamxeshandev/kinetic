@@ -7,6 +7,7 @@ export const styles = (theme: Theme): Record<string, CSSObject> => ({
   },
   '#root': {
     minHeight: '100dvh',
+    minWidth: '320px',
     display: 'flex',
     flexDirection: 'column',
     boxSizing: 'border-box',
