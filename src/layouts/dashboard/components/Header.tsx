@@ -4,7 +4,6 @@ import {
   IconButton,
   InputAdornment,
   TextField,
-  useMediaQuery,
   type BoxProps,
 } from '@mui/material';
 import { useState } from 'react';
@@ -24,8 +23,6 @@ export function Header({ sx, ...props }: BoxProps) {
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const handleSignOut = () => {
     signOut();
@@ -58,34 +55,33 @@ export function Header({ sx, ...props }: BoxProps) {
       }}
       {...props}
     >
-      {isMobile ? (
-        <Logo />
-      ) : (
-        <TextField
-          fullWidth
-          placeholder={`Search across ${config.appName}`}
-          size='small'
-          sx={{ maxWidth: 300 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <LuSearch />
-                </InputAdornment>
-              ),
-              sx: { borderRadius: 10 },
-            },
-          }}
-        />
-      )}
+      <Logo sx={{ display: { xs: 'inherit', sm: 'none' } }} />
+
+      <TextField
+        fullWidth
+        placeholder={`Search across ${config.appName}`}
+        size='small'
+        sx={{ maxWidth: 300, display: { xs: 'none', sm: 'inherit' } }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position='start'>
+                <LuSearch />
+              </InputAdornment>
+            ),
+            sx: { borderRadius: 10 },
+          },
+        }}
+      />
 
       <Box sx={{ flex: 1 }} aria-hidden />
 
-      {isMobile && (
-        <IconButton aria-label='Search'>
-          <LuSearch />
-        </IconButton>
-      )}
+      <IconButton
+        aria-label='Search'
+        sx={{ display: { xs: 'inherit', sm: 'none' } }}
+      >
+        <LuSearch />
+      </IconButton>
 
       <IconButton aria-label='Notifications'>
         <LuBell />

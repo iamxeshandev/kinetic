@@ -19,6 +19,7 @@ export const NavMobile = forwardRef(
 
     return (
       <Box
+        id='dashboard-layout-nav-mobile'
         component={'nav'}
         className='glass'
         ref={ref}
