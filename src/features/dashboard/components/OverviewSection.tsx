@@ -6,7 +6,7 @@ import {
   LuTriangleAlert,
 } from 'react-icons/lu';
 
-export function DashboardHighlights() {
+export function OverviewSection() {
   return (
     <Box
       sx={{

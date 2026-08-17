@@ -9,7 +9,7 @@ import { NavLink } from 'react-router';
 import { ListHeader } from '../../../components/ui';
 import { formatDate } from '../../../utils/helpers';
 
-export function DashboardRecentActivity() {
+export function RecentActivity() {
   return (
     <Card>
       <List

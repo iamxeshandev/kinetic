@@ -1,14 +1,14 @@
 import { Stack } from '@mui/material';
-import { DashboardContent } from './DashboardContent';
-import { DashboardHeader } from './DashboardHeader';
-import { DashboardHighlights } from './DashboardHighlights';
+import { ContentSection } from './ContentSection';
+import { HeaderSection } from './HeaderSection';
+import { OverviewSection } from './OverviewSection';
 
 export function DashboardView() {
   return (
     <Stack spacing={3} sx={{ flex: 1 }}>
-      <DashboardHeader />
-      <DashboardHighlights />
-      <DashboardContent />
+      <HeaderSection />
+      <OverviewSection />
+      <ContentSection />
     </Stack>
   );
 }

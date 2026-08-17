@@ -12,7 +12,7 @@ import { LuTriangleAlert } from 'react-icons/lu';
 import { Label, ListHeader } from '../../../components/ui';
 import { checkOverdue, formatDate } from '../../../utils/helpers';
 
-export function DashboardPriorityTasks() {
+export function PriorityTasks() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const handleClick = () => {};

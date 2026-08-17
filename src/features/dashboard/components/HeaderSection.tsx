@@ -1,7 +1,7 @@
 import { Box, Button, Fab, Typography } from '@mui/material';
 import { LuPlus } from 'react-icons/lu';
 
-export function DashboardHeader() {
+export function HeaderSection() {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
       <Box>
