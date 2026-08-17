@@ -1,11 +1,20 @@
 import {
+  Button,
+  Chip,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   type ButtonProps,
+  type ChipProps,
   type MenuProps,
 } from '@mui/material';
+import { useState } from 'react';
+import { LuChevronDown } from 'react-icons/lu';
+
+// ***************************************************************************
+// * ActionMenu
+// ***************************************************************************
 
 export type ActionMenuProps = MenuProps & {
   actions: Array<{
@@ -29,11 +38,81 @@ export function ActionMenu({ actions, ...props }: ActionMenuProps) {
               if (closeOnClick) props.onClose?.(e, 'backdropClick');
             }}
           >
-            <ListItemIcon sx={{ color: `${color}.main` }}>{icon}</ListItemIcon>
+            {icon && (
+              <ListItemIcon sx={{ color: `${color}.main` }}>
+                {icon}
+              </ListItemIcon>
+            )}
             <ListItemText sx={{ color: `${color}.main` }}>{label}</ListItemText>
           </MenuItem>
         ),
       )}
     </Menu>
+  );
+}
+
+// ***************************************************************************
+// * ActionMenuButton
+// ***************************************************************************
+
+export type ActionMenuButtonProps = Omit<ButtonProps, 'onClick'> & {
+  actions: ActionMenuProps['actions'];
+};
+
+export function ActionMenuButton({
+  actions,
+  children,
+  ...props
+}: ActionMenuButtonProps) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  return (
+    <>
+      <Button
+        variant='outlined'
+        endIcon={<LuChevronDown />}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        {...props}
+      >
+        {children}
+      </Button>
+
+      <ActionMenu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        actions={actions}
+      />
+    </>
+  );
+}
+
+// ***************************************************************************
+// * ActionMenuChip
+// ***************************************************************************
+
+export type ActionMenuChipProps = Omit<ChipProps, 'onClick'> & {
+  actions: ActionMenuProps['actions'];
+};
+
+export function ActionMenuChip({ actions, ...props }: ActionMenuChipProps) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  return (
+    <>
+      <Chip
+        variant='outlined'
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        icon={<LuChevronDown />}
+        {...props}
+      />
+
+      <ActionMenu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        actions={actions}
+      />
+    </>
   );
 }

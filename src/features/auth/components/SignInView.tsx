@@ -113,10 +113,14 @@ export function SignInView() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: 2,
+              gap: 1,
+              textWrap: 'nowrap',
             }}
           >
-            <FormControlLabel control={<Checkbox />} label='Remember me' />
+            <FormControlLabel
+              control={<Checkbox />}
+              label={<Typography variant='body2'>Remember me</Typography>}
+            />
             <Link component={NavLink} to={paths.auth.resetPassword} replace>
               Forgot password?
             </Link>
