@@ -1,6 +1,10 @@
-export function checkOverdue(dueDate: Date | string): boolean {
+export function checkOverdue(
+  dueDate: Date | string,
+  tolerance: number = 0,
+): boolean {
   const d = new Date(dueDate);
-  if (typeof d === 'string') return false;
+  if (isNaN(d.getTime())) return false;
   const now = new Date();
-  return d < now;
+  const diffDays = (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
+  return diffDays > tolerance;
 }

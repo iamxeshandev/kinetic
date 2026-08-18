@@ -1,16 +1,18 @@
 import {
   Button,
   Chip,
+  IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   type ButtonProps,
   type ChipProps,
+  type IconButtonProps,
   type MenuProps,
 } from '@mui/material';
 import { useState } from 'react';
-import { LuChevronDown } from 'react-icons/lu';
+import { LuChevronDown, LuEllipsisVertical } from 'react-icons/lu';
 
 // ***************************************************************************
 // * ActionMenu
@@ -76,6 +78,41 @@ export function ActionMenuButton({
       >
         {children}
       </Button>
+
+      <ActionMenu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        actions={actions}
+      />
+    </>
+  );
+}
+
+// ***************************************************************************
+// * ActionMenuIconButton
+// ***************************************************************************
+
+export type ActionMenuIconButtonProps = Omit<IconButtonProps, 'onClick'> & {
+  actions: ActionMenuProps['actions'];
+};
+
+export function ActionMenuIconButton({
+  actions,
+  children = <LuEllipsisVertical />,
+  ...props
+}: ActionMenuIconButtonProps) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  return (
+    <>
+      <IconButton
+        size='small'
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        {...props}
+      >
+        {children}
+      </IconButton>
 
       <ActionMenu
         open={Boolean(anchorEl)}

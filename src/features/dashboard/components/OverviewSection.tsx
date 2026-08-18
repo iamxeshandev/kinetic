@@ -25,15 +25,7 @@ export function OverviewSection() {
                 alignItems: 'center',
               }}
             >
-              <Typography
-                sx={{
-                  color: 'text.secondary',
-                  fontWeight: 'bold',
-                }}
-              >
-                {title}
-              </Typography>
-
+              <Typography variant='overline2'>{title}</Typography>
               {icon}
             </Box>
 

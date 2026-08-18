@@ -1,4 +1,23 @@
-import { createTheme } from '@mui/material';
+import { createTheme, Paper } from '@mui/material';
+
+declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    overline1: React.CSSProperties;
+    overline2: React.CSSProperties;
+  }
+  interface TypographyVariantsOptions {
+    overline1?: React.CSSProperties;
+    overline2?: React.CSSProperties;
+  }
+}
+
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    overline: false;
+    overline1: true;
+    overline2: true;
+  }
+}
 
 export const theme = createTheme({
   cssVariables: {
@@ -38,6 +57,18 @@ export const theme = createTheme({
     },
     subtitle2: {
       color: 'var(--mui-palette-text-secondary)',
+    },
+    overline: undefined,
+    overline1: {
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      color: 'var(--mui-palette-text-secondary)',
+    },
+    overline2: {
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      color: 'var(--mui-palette-text-secondary)',
+      fontSize: '0.875rem',
     },
     caption: {
       fontWeight: 'bold',
@@ -84,6 +115,42 @@ export const theme = createTheme({
           fontWeight: 'bold',
           fontSize: '0.9rem',
           cursor: 'pointer',
+        },
+      },
+    },
+    MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+      },
+    },
+    MuiTableContainer: {
+      defaultProps: {
+        component: Paper,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          // boxShadow: 'none',
+          border: '1px solid',
+          borderColor: 'var(--mui-palette-divider)',
+        },
+      },
+    },
+    MuiTableBody: {
+      styleOverrides: {
+        root: {
+          '& :last-child td': {
+            borderBottom: 'none',
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          backgroundColor: 'var(--mui-palette-action-hover)',
+          fontWeight: 'bold',
+          color: 'var(--mui-palette-text-secondary)',
         },
       },
     },

@@ -20,7 +20,7 @@ export const NavDesktop = forwardRef(
       <Drawer
         component={'nav'}
         variant='permanent'
-        slotProps={{ paper: { ref: ref } }}
+        slotProps={{ paper: { ref: ref, id: 'dashboard-layout-nav-desktop' } }}
       >
         <Box
           sx={{

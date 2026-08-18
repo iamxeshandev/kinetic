@@ -42,6 +42,7 @@ export function Header({ sx, ...props }: BoxProps) {
 
   return (
     <Box
+      id='dashboard-layout-header'
       component={'header'}
       className='glass'
       sx={{
