@@ -1,1 +1,0 @@
-import{n as e,r as t,t as n}from"./config-BfpXExb0.js";import{n as r}from"./landing-BTYU8ORH.js";var i=t(),a=e();function o(){let e=(0,i.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(`title`,{children:`Contact | ${n.appName}`}),(0,a.jsx)(r,{})]}),e[0]=t):t=e[0],t}export{o as Component};

@@ -1,0 +1,1 @@
+import{Ct as e,z as t}from"./components-CeP2QYpZ.js";import{t as n}from"./useThemeProps-CqtCsz6Z.js";function r({props:r,name:i}){return n({props:r,name:i,defaultTheme:t,themeId:e})}export{r as t};

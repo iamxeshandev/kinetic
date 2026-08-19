@@ -1,0 +1,1 @@
+var e={appName:`Kinetic`,appDescription:`The all-in-one workspace for modern teams to plan, track, and collaborate in real-time.`};export{e as t};

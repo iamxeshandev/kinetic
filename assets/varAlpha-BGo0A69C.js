@@ -1,0 +1,1 @@
+function e(e,t){return`rgba(${e} / ${t})`}export{e as t};

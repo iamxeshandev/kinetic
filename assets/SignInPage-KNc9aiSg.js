@@ -1,0 +1,1 @@
+import{n as e,t}from"./jsx-runtime-I8uHACss.js";import{r as n}from"./router-DsbTrQn6.js";import{t as r}from"./config-BIMMi9m_.js";var i=e(),a=t();function o(){let e=(0,i.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(`title`,{children:`Sign In | ${r.appName}`}),(0,a.jsx)(n,{})]}),e[0]=t):t=e[0],t}export{o as Component};
