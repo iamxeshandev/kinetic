@@ -1,4 +1,7 @@
 import {
+  Avatar,
+  AvatarGroup,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -6,9 +9,15 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { ActionMenuIconButton } from '../../../components/ui';
+import { LuArrowRight } from 'react-icons/lu';
+import {
+  ActionMenuIconButton,
+  type ActionMenuIconButtonProps,
+} from '../../../components/ui';
+import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
 import { formatDate } from '../../../utils/helpers';
 import { ProjectHealth } from './ProjectHealth';
+import { ProjectProgress } from './ProjectProgress';
 import type { Project } from './ProjectsView';
 
 const COLUMNS = [
@@ -23,11 +32,19 @@ const COLUMNS = [
 
 export type ProjectListProps = {
   projects: Project[];
+  onFavoriteClick: (projectId: number) => void;
+  onProjectClick: (projectId: number) => void;
+  actions: ActionMenuIconButtonProps['actions'];
 };
 
-export default function ProjectList({ projects }: ProjectListProps) {
+export default function ProjectList({
+  projects,
+  onFavoriteClick,
+  onProjectClick,
+  actions,
+}: ProjectListProps) {
   return (
-    <TableContainer sx={{ mt: 2 }}>
+    <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
@@ -40,7 +57,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
         </TableHead>
         <TableBody>
           {projects.map((p) => {
-            const isCompleted = p.status === 'completed';
+            const isCompleted = p.completedTasks === p.tasks;
             return (
               <TableRow key={p.id}>
                 <TableCell>{p.name}</TableCell>
@@ -50,12 +67,41 @@ export default function ProjectList({ projects }: ProjectListProps) {
                     isCompleted={isCompleted}
                   />
                 </TableCell>
-                <TableCell>{p.progress}</TableCell>
-                <TableCell>{p.team[0]}</TableCell>
+                <TableCell>
+                  {
+                    <ProjectProgress
+                      value={p.completedTasks}
+                      max={p.tasks}
+                      showPercentage
+                    />
+                  }
+                </TableCell>
+                <TableCell>
+                  <Avatar src={p.team[0]} alt={p.team[0]} />
+                </TableCell>
                 <TableCell>{formatDate(p.dueDate)}</TableCell>
-                <TableCell>{p.team.length}</TableCell>
+                <TableCell>
+                  <AvatarGroup max={3} sx={{ justifyContent: 'flex-end' }}>
+                    {p.team.map((name) => (
+                      <Avatar key={name} size='small'>
+                        {name[0]}
+                      </Avatar>
+                    ))}
+                  </AvatarGroup>
+                </TableCell>
                 <TableCell align='right'>
-                  <ActionMenuIconButton actions={[]} />
+                  <FavoriteIconButton
+                    isFavorite={p.isFavorite}
+                    onClick={() => onFavoriteClick(p.id)}
+                  />
+                  <IconButton
+                    size='small'
+                    color='primary'
+                    onClick={() => onProjectClick(p.id)}
+                  >
+                    <LuArrowRight />
+                  </IconButton>
+                  <ActionMenuIconButton actions={actions} />
                 </TableCell>
               </TableRow>
             );

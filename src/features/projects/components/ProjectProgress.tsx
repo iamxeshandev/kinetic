@@ -12,7 +12,7 @@ export function ProjectProgress({
   showPercentage = false,
   ...props
 }: ProjectProgressProps) {
-  const percentage = (value / max) * 100;
+  const percentage = Number(((value / max) * 100).toFixed());
 
   const color =
     percentage >= 100
@@ -28,6 +28,7 @@ export function ProjectProgress({
       {showPercentage && (
         <Typography
           variant='caption'
+          color='textSecondary'
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -35,8 +36,10 @@ export function ProjectProgress({
             gap: 2,
           }}
         >
-          <span>Progress</span>
-          {`${value}/${max} (${percentage}%)`}
+          <span>{percentage}%</span>
+          <span>
+            {value}/{max}
+          </span>
         </Typography>
       )}
       <LinearProgress variant='determinate' value={percentage} color={color} />

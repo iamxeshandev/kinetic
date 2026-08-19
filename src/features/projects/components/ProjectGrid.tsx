@@ -8,34 +8,47 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { LuActivity, LuArrowRight, LuCalendar } from 'react-icons/lu';
 import {
-  LuActivity,
-  LuArrowRight,
-  LuCalendar,
-  LuTriangleAlert,
-} from 'react-icons/lu';
-import { ActionMenuIconButton, IconLabel } from '../../../components/ui';
-import { checkOverdue, formatDate } from '../../../utils/helpers';
+  ActionMenuIconButton,
+  IconLabel,
+  type ActionMenuIconButtonProps,
+} from '../../../components/ui';
+import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
+import { formatDate } from '../../../utils/helpers';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
 import type { Project } from './ProjectsView';
 
 export type ProjectGridProps = {
   projects: Project[];
+  onFavoriteClick: (projectId: number) => void;
+  onProjectClick: (projectId: number) => void;
+  actions: ActionMenuIconButtonProps['actions'];
 };
 
-export default function ProjectGrid({ projects }: ProjectGridProps) {
+export default function ProjectGrid({
+  projects,
+  onFavoriteClick,
+  onProjectClick,
+  actions,
+}: ProjectGridProps) {
   return (
     <Box
       sx={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
         gap: 2,
-        mt: 2,
       }}
     >
       {projects.map((p) => (
-        <ProjectCard key={p.id} project={p} />
+        <ProjectCard
+          key={p.id}
+          project={p}
+          onFavoriteClick={onFavoriteClick}
+          onProjectClick={onProjectClick}
+          actions={actions}
+        />
       ))}
     </Box>
   );
@@ -45,9 +58,18 @@ export default function ProjectGrid({ projects }: ProjectGridProps) {
 // * ProjectCard
 // ***************************************************************************
 
-function ProjectCard({ project }: { project: Project }) {
-  const isCompleted = project.status === 'completed';
-  const isDelayed = checkOverdue(project.dueDate);
+function ProjectCard({
+  project,
+  onFavoriteClick,
+  onProjectClick,
+  actions,
+}: {
+  project: Project;
+  onFavoriteClick: (projectId: number) => void;
+  onProjectClick: (projectId: number) => void;
+  actions: ActionMenuIconButtonProps['actions'];
+}) {
+  const isCompleted = project.completedTasks === project.tasks;
 
   return (
     <Card key={project.id} sx={{ p: 2 }}>
@@ -64,7 +86,11 @@ function ProjectCard({ project }: { project: Project }) {
               {project.description}
             </Typography>
           </Box>
-          <ActionMenuIconButton actions={[]} />
+          <FavoriteIconButton
+            isFavorite={project.isFavorite}
+            onClick={() => onFavoriteClick(project.id)}
+          />
+          <ActionMenuIconButton actions={actions} />
         </Stack>
         <Stack
           direction={'row'}
@@ -83,9 +109,6 @@ function ProjectCard({ project }: { project: Project }) {
               gap: 0.5,
             }}
           >
-            {!isCompleted && isDelayed && (
-              <Box component={LuTriangleAlert} sx={{ color: 'error.main' }} />
-            )}
             {<LuCalendar />}
             {formatDate(project.dueDate)}
           </Typography>
@@ -109,22 +132,18 @@ function ProjectCard({ project }: { project: Project }) {
         >
           <AvatarGroup max={3}>
             {project.team.map((name) => (
-              <Avatar
-                key={name}
-                src={name}
-                alt={name}
-                sx={{
-                  width: '1.5rem',
-                  height: '1.5rem',
-                  fontSize: '1rem',
-                }}
-              >
+              <Avatar key={name} size='small'>
                 {name[0]}
               </Avatar>
             ))}
           </AvatarGroup>
 
-          <Button size='small' variant='text' endIcon={<LuArrowRight />}>
+          <Button
+            size='small'
+            variant='text'
+            endIcon={<LuArrowRight />}
+            onClick={() => onProjectClick(project.id)}
+          >
             Open Project
           </Button>
         </Stack>

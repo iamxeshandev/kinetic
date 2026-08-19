@@ -1,18 +1,43 @@
 import { Stack } from '@mui/material';
+import { useState } from 'react';
 import { AllProjectsSection } from './AllProjectsSection';
+import { FavoriteSection } from './FavoriteSection';
 import { HeaderSection } from './HeaderSection';
-import { StarredAndRecentSection } from './StarredAndRecentSection';
 
 export type ProjectStatus = 'all' | 'active' | 'completed';
 
 export type Priority = 'high' | 'medium' | 'low';
 
 export function ProjectsView() {
+  const [projects, setProjects] = useState<Project[]>(PROJECTS);
+
+  const handleFavoriteClick = (projectId: number) => {
+    setProjects((projects) =>
+      projects.map((p) =>
+        p.id === projectId ? { ...p, isFavorite: !p.isFavorite } : p,
+      ),
+    );
+  };
+
+  const handleProjectClick = () => {};
+
+  const favoriteProjects = projects.filter((p) => p.isFavorite);
+
   return (
     <Stack spacing={3} sx={{ flex: 1 }}>
       <HeaderSection />
-      <StarredAndRecentSection projects={projects} />
-      <AllProjectsSection projects={projects} />
+      <FavoriteSection
+        favoriteProjects={favoriteProjects}
+        onFavoriteClick={handleFavoriteClick}
+        onProjectClick={handleProjectClick}
+        actions={[]}
+      />
+      <AllProjectsSection
+        projects={projects}
+        onFavoriteClick={handleFavoriteClick}
+        onProjectClick={handleProjectClick}
+        actions={[]}
+      />
     </Stack>
   );
 }
@@ -28,10 +53,10 @@ export type Project = {
   progress: number;
   tasks: number;
   completedTasks: number;
-  isStarred: boolean;
+  isFavorite: boolean;
 };
 
-const projects: Project[] = [
+const PROJECTS: Project[] = [
   {
     id: 1,
     name: 'E-Commerce Platform Redesign',
@@ -44,7 +69,7 @@ const projects: Project[] = [
     progress: 75,
     tasks: 24,
     completedTasks: 18,
-    isStarred: true,
+    isFavorite: true,
   },
   {
     id: 2,
@@ -58,7 +83,7 @@ const projects: Project[] = [
     progress: 100,
     tasks: 32,
     completedTasks: 32,
-    isStarred: true,
+    isFavorite: true,
   },
   {
     id: 3,
@@ -72,6 +97,6 @@ const projects: Project[] = [
     progress: 40,
     tasks: 15,
     completedTasks: 6,
-    isStarred: false,
+    isFavorite: false,
   },
 ];

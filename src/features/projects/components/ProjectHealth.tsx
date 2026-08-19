@@ -1,12 +1,18 @@
 import { Typography } from '@mui/material';
+import { Label } from '../../../components/ui';
 import { checkOverdue } from '../../../utils/helpers';
 
 export type ProjectHealthProps = {
   dueDate: string | Date;
   isCompleted: boolean;
+  variant?: 'label' | 'standard';
 };
 
-export function ProjectHealth({ dueDate, isCompleted }: ProjectHealthProps) {
+export function ProjectHealth({
+  dueDate,
+  isCompleted,
+  variant = 'standard',
+}: ProjectHealthProps) {
   const isAtRisk = checkOverdue(dueDate, 7);
   const isDelayed = !isAtRisk && checkOverdue(dueDate);
 
@@ -26,9 +32,17 @@ export function ProjectHealth({ dueDate, isCompleted }: ProjectHealthProps) {
         ? 'error'
         : 'success';
 
-  return (
+  const renderStandard = () => (
     <Typography variant='overline2' color={color}>
       {health}
     </Typography>
   );
+
+  const renderLabel = () => (
+    <Label size='small' color={color}>
+      {health}
+    </Label>
+  );
+
+  return variant === 'label' ? renderLabel() : renderStandard();
 }
