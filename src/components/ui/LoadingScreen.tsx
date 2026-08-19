@@ -8,7 +8,7 @@ export function LoadingScreen() {
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
-        minHeight: 1,
+        minHeight: 240,
       }}
     >
       <LinearProgress color='inherit' sx={{ width: 0.5, maxWidth: 600 }} />
