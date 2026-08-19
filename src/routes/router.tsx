@@ -1,11 +1,5 @@
 import { createHashRouter } from 'react-router';
 import { SplashScreen } from '../components/ui/SplashScreen';
-import {
-  AuthLayout,
-  DashboardLayout,
-  MainLayout,
-  RootLayout,
-} from '../layouts';
 
 import { redirect, type MiddlewareFunction } from 'react-router';
 import { checkUserSession } from '../features/auth';
@@ -28,12 +22,12 @@ const checkAuth: MiddlewareFunction = async (_, next) => {
 export const router = createHashRouter([
   {
     path: '/',
-    Component: RootLayout,
+    lazy: () => import('../layouts/root'),
+    HydrateFallback: SplashScreen,
     children: [
       {
         path: '',
-        Component: MainLayout,
-        HydrateFallback: SplashScreen,
+        lazy: () => import('../layouts/main'),
         children: [
           { index: true, lazy: () => import('../pages/HomePage') },
           { path: 'about', lazy: () => import('../pages/AboutPage') },
@@ -43,8 +37,7 @@ export const router = createHashRouter([
       {
         path: '/auth',
         middleware: [checkAuth],
-        Component: AuthLayout,
-        HydrateFallback: SplashScreen,
+        lazy: () => import('../layouts/auth'),
         children: [
           { path: 'sign-in', lazy: () => import('../pages/SignInPage') },
           { path: 'sign-up', lazy: () => import('../pages/SignUpPage') },
@@ -57,8 +50,7 @@ export const router = createHashRouter([
       {
         path: '/dashboard',
         middleware: [requireAuth],
-        Component: DashboardLayout,
-        HydrateFallback: SplashScreen,
+        lazy: () => import('../layouts/dashboard'),
         children: [
           { index: true, lazy: () => import('../pages/DashboardPage') },
           { path: 'projects', lazy: () => import('../pages/ProjectsPage') },

@@ -19,6 +19,12 @@ declare module '@mui/material/Typography' {
   }
 }
 
+declare module '@mui/material/Avatar' {
+  interface AvatarOwnProps {
+    size?: 'small' | 'medium' | 'large';
+  }
+}
+
 export const theme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'class',
@@ -75,6 +81,25 @@ export const theme = createTheme({
     },
   },
   components: {
+    MuiAvatar: {
+      defaultProps: {
+        size: 'medium',
+      },
+      variants: [
+        {
+          props: { size: 'small' },
+          style: { width: 24, height: 24, fontSize: '0.875rem' },
+        },
+        {
+          props: { size: 'medium' },
+          style: { width: 32, height: 32, fontSize: '1rem' },
+        },
+        {
+          props: { size: 'large' },
+          style: { width: 40, height: 40, fontSize: '1.25rem' },
+        },
+      ],
+    },
     MuiButton: {
       defaultProps: {
         variant: 'contained',
@@ -153,6 +178,13 @@ export const theme = createTheme({
           color: 'var(--mui-palette-text-secondary)',
         },
       },
+    },
+    MuiToggleButton: {
+      variants: [
+        { props: { size: 'small' }, style: { fontSize: '1rem' } },
+        { props: { size: 'medium' }, style: { fontSize: '1.25rem' } },
+        { props: { size: 'large' }, style: { fontSize: '1.5rem' } },
+      ],
     },
     MuiTooltip: {
       defaultProps: {
