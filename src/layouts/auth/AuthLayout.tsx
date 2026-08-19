@@ -13,3 +13,5 @@ export function AuthLayout() {
     </>
   );
 }
+
+export { AuthLayout as Component };

@@ -35,3 +35,5 @@ export function DashboardLayout() {
     </>
   );
 }
+
+export { DashboardLayout as Component };

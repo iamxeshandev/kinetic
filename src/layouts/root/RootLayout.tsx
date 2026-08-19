@@ -9,3 +9,5 @@ export function RootLayout() {
     </>
   );
 }
+
+export { RootLayout as Component };

@@ -14,3 +14,5 @@ export function MainLayout() {
     </>
   );
 }
+
+export { MainLayout as Component };
