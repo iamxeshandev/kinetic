@@ -1,3 +1,3 @@
 export * from './checkOverdue';
-export * from './formateDate';
+export * from './formatDate';
 export * from './varAlpha';
