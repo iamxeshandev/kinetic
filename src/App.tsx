@@ -1,16 +1,24 @@
 import { CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
 import { RouterProvider } from 'react-router';
-import { router } from './routes/router';
-import { styles } from './theme/styles';
-import { theme } from './theme/theme';
+import { SWRConfig } from 'swr';
+import { ToastProvider } from './components/toast';
+import { NotificationProvider } from './features/notifications';
+import { router } from './routes';
+import { styles, theme } from './theme';
+import { swrConfig } from './utils/swr';
 
 function App() {
   return (
-    <ThemeProvider theme={theme} defaultMode='system'>
-      <CssBaseline />
-      <GlobalStyles styles={styles} />
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <SWRConfig value={swrConfig}>
+      <ThemeProvider theme={theme} defaultMode='system'>
+        <NotificationProvider>
+          <CssBaseline />
+          <GlobalStyles styles={styles} />
+          <RouterProvider router={router} />
+          <ToastProvider />
+        </NotificationProvider>
+      </ThemeProvider>
+    </SWRConfig>
   );
 }
 
