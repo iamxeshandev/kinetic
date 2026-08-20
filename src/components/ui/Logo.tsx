@@ -1,6 +1,7 @@
 import { Box, type BoxProps } from '@mui/material';
 import { Link, type LinkProps } from 'react-router';
 import logoImg from '../../assets/logo.svg';
+import { config } from '../../config';
 import { paths } from '../../routes';
 
 export type LogoProps = BoxProps<'img'> & {
@@ -11,6 +12,7 @@ export type LogoProps = BoxProps<'img'> & {
 export function Logo({
   isLink = true,
   to = paths.home.root,
+  sx,
   ...props
 }: LogoProps) {
   return (
@@ -19,9 +21,14 @@ export function Logo({
       role='link'
       to={to}
       {...props}
-      sx={{ display: 'inline-flex', flexShrink: 0, width: 40, ...props.sx }}
+      sx={{ display: 'inline-flex', flexShrink: 0, width: 40, ...sx }}
     >
-      <Box component={'img'} src={logoImg} alt='App logo' sx={{ width: 1 }} />
+      <Box
+        component={'img'}
+        src={logoImg}
+        alt={config.appName}
+        sx={{ width: 1 }}
+      />
     </Box>
   );
 }
