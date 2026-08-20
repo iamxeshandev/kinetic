@@ -4,10 +4,6 @@ import { useRef } from 'react';
 export function ToastProvider() {
   const ref = useRef<SnackbarProvider>(null);
 
-  const handleDismiss = (key: string | number) => {
-    ref.current?.closeSnackbar(key);
-  };
-
   return (
     <SnackbarProvider
       ref={ref}
