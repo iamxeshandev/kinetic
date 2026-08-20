@@ -14,15 +14,15 @@ import {
   type ActionMenuIconButtonProps,
 } from '../../../components/ui';
 import { useLocalStorage } from '../../../utils/hooks';
-import type { Project } from './ProjectsView';
+import type { Project } from '../types/types';
 
 const ProjectGrid = lazy(() => import('./ProjectGrid'));
 const ProjectList = lazy(() => import('./ProjectList'));
 
 export type AllProjectsSectionProps = {
   projects: Project[];
-  onFavoriteClick: (projectId: number) => void;
-  onProjectClick: (projectId: number) => void;
+  onFavoriteClick: (projectId: Project['id']) => void;
+  onProjectClick: (projectId: Project['id']) => void;
   actions: ActionMenuIconButtonProps['actions'];
 };
 

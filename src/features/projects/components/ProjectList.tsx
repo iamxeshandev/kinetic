@@ -16,9 +16,9 @@ import {
 } from '../../../components/ui';
 import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
 import { formatDate } from '../../../utils/helpers';
+import type { Project } from '../types/types';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
-import type { Project } from './ProjectsView';
 
 const COLUMNS = [
   'Project',
@@ -32,8 +32,8 @@ const COLUMNS = [
 
 export type ProjectListProps = {
   projects: Project[];
-  onFavoriteClick: (projectId: number) => void;
-  onProjectClick: (projectId: number) => void;
+  onFavoriteClick: (projectId: Project['id']) => void;
+  onProjectClick: (projectId: Project['id']) => void;
   actions: ActionMenuIconButtonProps['actions'];
 };
 

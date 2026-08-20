@@ -16,14 +16,14 @@ import {
 } from '../../../components/ui';
 import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
 import { formatDate } from '../../../utils/helpers';
+import type { Project } from '../types/types';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
-import type { Project } from './ProjectsView';
 
 export type ProjectGridProps = {
   projects: Project[];
-  onFavoriteClick: (projectId: number) => void;
-  onProjectClick: (projectId: number) => void;
+  onFavoriteClick: (projectId: Project['id']) => void;
+  onProjectClick: (projectId: Project['id']) => void;
   actions: ActionMenuIconButtonProps['actions'];
 };
 
@@ -65,8 +65,8 @@ function ProjectCard({
   actions,
 }: {
   project: Project;
-  onFavoriteClick: (projectId: number) => void;
-  onProjectClick: (projectId: number) => void;
+  onFavoriteClick: (projectId: Project['id']) => void;
+  onProjectClick: (projectId: Project['id']) => void;
   actions: ActionMenuIconButtonProps['actions'];
 }) {
   const isCompleted = project.completedTasks === project.tasks;
