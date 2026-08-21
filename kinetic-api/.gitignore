@@ -1,0 +1,21 @@
+﻿# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Core
+*[Ee]nv.json
+*[Ee]nv.development.json
+
+# NuGet
+*.nupkg
+packages/
