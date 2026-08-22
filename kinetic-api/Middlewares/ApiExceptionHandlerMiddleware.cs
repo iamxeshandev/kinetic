@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
-using kinetic_api.dtos.Common;
+using kinetic_api.Dtos.Common;
+using kinetic_api.Exceptions;
 
 namespace kinetic_api.Middlewares;
 
@@ -30,7 +31,7 @@ public class ApiExceptionHandlerMiddleware(RequestDelegate next, ILogger<ApiExce
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = statusCode;
 
-        var response = new ApiResponse(message);
+        var response = new Response(message);
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         return context.Response.WriteAsJsonAsync(response, options);

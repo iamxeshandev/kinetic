@@ -1,4 +1,4 @@
-﻿namespace kinetic_api.dtos;
+﻿namespace kinetic_api.Dtos.Project;
 
 public record ProjectDto(
     Guid Id,
