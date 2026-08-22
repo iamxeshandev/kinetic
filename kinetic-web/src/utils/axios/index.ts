@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { toast } from '../../components/toast';
+import { paths, router } from '../../routes';
 
 declare module 'axios' {
   interface AxiosResponse {
@@ -9,6 +10,7 @@ declare module 'axios' {
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
 });
 
 api.interceptors.response.use(
@@ -18,9 +20,11 @@ api.interceptors.response.use(
     message: response.data.message,
   }),
   (error: AxiosError<{ message?: string }>) => {
-    let message = error.response?.data?.message;
-    if (!message && !error.request.data) message = "Can't connect to server";
-    toast.error(message || 'An error occurred');
+    if (!error.response) toast.error("Can't connect to server");
+    if (error.response?.status === 401) {
+      toast.error('You have been logged out!');
+      router.navigate(paths.auth.signIn);
+    }
     return Promise.reject(error);
   },
 );

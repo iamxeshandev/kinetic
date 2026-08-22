@@ -1,11 +1,14 @@
 import { Box, Button, Fab, Typography } from '@mui/material';
 import { LuPlus } from 'react-icons/lu';
+import { useAuthContext } from '../../auth/context/useAuthContext';
 
 export function HeaderSection() {
+  const { user } = useAuthContext();
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
       <Box>
-        <Typography variant='h1'>Welcome back!</Typography>
+        <Typography variant='h1'>Welcome back, {user?.firstName}</Typography>
         <Typography variant='subtitle1'>
           Here's what's happening across your projects today.
         </Typography>
