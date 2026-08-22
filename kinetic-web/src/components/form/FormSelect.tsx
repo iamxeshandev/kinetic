@@ -16,7 +16,7 @@ export function FormSelect({ name, children, ...props }: FormSelectProps) {
       name={name}
       control={control}
       render={({ field }) => (
-        <Select {...field} {...props}>
+        <Select {...props} {...field}>
           {children}
         </Select>
       )}

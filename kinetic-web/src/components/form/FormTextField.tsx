@@ -17,10 +17,10 @@ export function FormTextField({ name, ...props }: FormTextFieldProps) {
       control={control}
       render={({ field, fieldState }) => (
         <TextField
+          {...props}
           {...field}
           error={!!fieldState.error}
           helperText={fieldState.error?.message}
-          {...props}
         />
       )}
     />

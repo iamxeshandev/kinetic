@@ -18,7 +18,9 @@ export function Form<TFieldValues extends FieldValues = FieldValues>({
 }: FormProps<TFieldValues>) {
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>{children}</form>
+      <form noValidate onSubmit={methods.handleSubmit(onSubmit)}>
+        {children}
+      </form>
     </FormProvider>
   );
 }
