@@ -1,10 +1,14 @@
 import { Container } from '@mui/material';
 import { useState } from 'react';
-import { Outlet } from 'react-router';
+import { Navigate, Outlet } from 'react-router';
+import { useAuthContext } from '../../features/auth/context/useAuthContext';
+import { paths } from '../../routes';
 import { Header } from './components/Header';
 import { Navbar } from './components/Navbar';
 
 export function DashboardLayout() {
+  const { user } = useAuthContext();
+
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   const navbarRef = (node: HTMLElement) => {
@@ -13,6 +17,8 @@ export function DashboardLayout() {
       setSize({ width, height });
     }
   };
+
+  if (!user) return <Navigate to={paths.auth.signIn} replace />;
 
   return (
     <>

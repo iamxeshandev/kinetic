@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { LuBell, LuLogOut, LuSearch, LuSettings, LuUser } from 'react-icons/lu';
 import { useNavigate } from 'react-router';
+import { toast } from '../../../components/toast';
 import {
   ActionMenu,
   Logo,
@@ -16,18 +17,24 @@ import {
   type ActionMenuProps,
 } from '../../../components/ui';
 import { config } from '../../../config';
-import { signOut } from '../../../features/auth';
+import { authApi } from '../../../features/auth';
+import { useAuthContext } from '../../../features/auth/context/useAuthContext';
 import { paths } from '../../../routes/paths';
 
 export function Header({ sx, ...props }: BoxProps) {
   const navigate = useNavigate();
+  const { setUser } = useAuthContext();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleSignOut = () => {
-    signOut();
-    navigate(paths.auth.signIn);
-  };
+  const handleSignOut = () =>
+    authApi
+      .logout()
+      .then(() => {
+        setUser(null);
+        navigate(paths.auth.signIn);
+      })
+      .catch(toast.error);
 
   const menuActions: ActionMenuProps['actions'] = [
     { label: 'Profile', icon: <LuUser />, onClick: () => {} },
