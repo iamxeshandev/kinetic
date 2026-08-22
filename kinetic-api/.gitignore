@@ -19,3 +19,6 @@
 # NuGet
 *.nupkg
 packages/
+
+# Database
+*.db
