@@ -6,9 +6,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Checkbox,
   Divider,
-  FormControlLabel,
   IconButton,
   InputAdornment,
   Link,
@@ -20,24 +18,29 @@ import { FaGoogle, FaMicrosoft } from 'react-icons/fa';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { NavLink, useNavigate } from 'react-router';
 import z from 'zod';
-import { Form, FormTextField } from '../../../components/form';
+import { Form, FormCheckbox, FormTextField } from '../../../components/form';
 import { Logo } from '../../../components/ui/Logo';
 import { config } from '../../../config';
 import { paths } from '../../../routes/paths';
-import { signIn } from '../api/signIn';
+import { authApi } from '../api/authApi';
+import { useAuthContext } from '../context/useAuthContext';
 
 const schema = z.object({
   email: z.email(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
+  rememberMe: z.boolean(),
 });
 
 const defaultValues: z.infer<typeof schema> = {
-  email: 'admin@example.com',
+  email: 'johndoe@example.com',
   password: 'Password@123',
+  rememberMe: false,
 };
 
 export function SignInView() {
   const navigate = useNavigate();
+
+  const { setUser } = useAuthContext();
 
   const [password, setPassword] = useState<boolean>(true);
 
@@ -46,10 +49,14 @@ export function SignInView() {
     defaultValues,
   });
 
-  const handleSubmit = () => {
-    signIn();
-    navigate(paths.dashboard.root, { replace: true });
-  };
+  const handleSubmit = (data: z.infer<typeof schema>) =>
+    authApi
+      .login(data.email, data.password, data.rememberMe)
+      .then((response) => {
+        setUser(response.data);
+        navigate(paths.dashboard.root, { replace: true });
+      })
+      .catch(console.error);
 
   return (
     <Card sx={{ width: 1, maxWidth: 'sm', textAlign: 'center' }}>
@@ -90,10 +97,11 @@ export function SignInView() {
             <strong>Password:</strong> {defaultValues.password}
           </Alert>
 
-          <FormTextField name='email' label='Email' />
+          <FormTextField name='email' label='Email' required />
           <FormTextField
             name='password'
             label='Password'
+            required
             type={password ? 'password' : 'text'}
             slotProps={{
               input: {
@@ -117,8 +125,8 @@ export function SignInView() {
               textWrap: 'nowrap',
             }}
           >
-            <FormControlLabel
-              control={<Checkbox />}
+            <FormCheckbox
+              name='rememberMe'
               label={<Typography variant='body2'>Remember me</Typography>}
             />
             <Link component={NavLink} to={paths.auth.resetPassword} replace>
@@ -126,7 +134,11 @@ export function SignInView() {
             </Link>
           </Box>
 
-          <Button size='large' type='submit'>
+          <Button
+            size='large'
+            type='submit'
+            loading={methods.formState.isSubmitting}
+          >
             Sign In
           </Button>
 
