@@ -20,6 +20,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<WorkspaceService>();
 builder.Services.AddScoped<ProjectService>();
 
 builder.Services.AddCors(options =>

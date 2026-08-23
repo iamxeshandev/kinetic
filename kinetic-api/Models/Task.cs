@@ -3,17 +3,16 @@ using kinetic_api.Interfaces;
 
 namespace kinetic_api.Models;
 
-public class Project : IAuditableEntity
+public class Task : IAuditableEntity
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
-    public required Guid TeamId { get; set; }
-    public Team? Team { get; set; }
+    public Guid Id { get; set; }
+    public required Guid SectionId { get; set; }
+    public Section? Section { get; set; }
 
-    [MaxLength(100)] public required string Name { get; set; }
-    [MaxLength(1000)] public string? Description { get; set; }
+    [Required] [MaxLength(100)] public required string Name { get; set; }
 
-    public required Guid CreatedBy { get; init; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public required Guid CreatedBy { get; init; }
     public DateTime? UpdatedAt { get; set; }
     public Guid? UpdatedBy { get; set; }
     public DateTime? DeletedAt { get; set; }

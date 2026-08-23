@@ -11,6 +11,7 @@ public class Response<T>(string message, T data)
     {
     }
 
+
     public string Message { get; set; } = message;
     public T Data { get; } = data;
 }
