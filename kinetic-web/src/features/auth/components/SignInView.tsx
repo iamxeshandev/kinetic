@@ -19,11 +19,13 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 import { NavLink, useNavigate } from 'react-router';
 import z from 'zod';
 import { Form, FormCheckbox, FormTextField } from '../../../components/form';
+import { toast } from '../../../components/toast';
 import { Logo } from '../../../components/ui/Logo';
 import { config } from '../../../config';
 import { paths } from '../../../routes/paths';
 import { authApi } from '../api/authApi';
-import { useAuthContext } from '../context/useAuthContext';
+import { setUserSession } from '../helpers/user-session';
+import type { User } from '../types/auth.types';
 
 const schema = z.object({
   email: z.email(),
@@ -40,8 +42,6 @@ const defaultValues: z.infer<typeof schema> = {
 export function SignInView() {
   const navigate = useNavigate();
 
-  const { setUser } = useAuthContext();
-
   const [password, setPassword] = useState<boolean>(true);
 
   const methods = useForm<z.infer<typeof schema>>({
@@ -53,10 +53,12 @@ export function SignInView() {
     authApi
       .login(data.email, data.password, data.rememberMe)
       .then((response) => {
-        setUser(response.data);
-        navigate(paths.dashboard.root, { replace: true });
+        setUserSession(response.data as User);
+        navigate(paths.workspaces(response.data.defaultWorkspaceId).dashboard, {
+          replace: true,
+        });
       })
-      .catch(console.error);
+      .catch((error) => toast.error(error.response.data.message));
 
   return (
     <Card sx={{ width: 1, maxWidth: 'sm', textAlign: 'center' }}>

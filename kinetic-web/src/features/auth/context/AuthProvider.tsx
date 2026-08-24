@@ -1,10 +1,27 @@
-import { useState, type PropsWithChildren } from 'react';
-import { AuthContext, type User } from './AuthContext';
+import { useEffect, useState, type PropsWithChildren } from 'react';
+import { toast } from '../../../components/toast';
+import { SplashScreen } from '../../../components/ui';
+import { authApi } from '../api/authApi';
+import { setUserSession } from '../helpers/user-session';
+import type { User } from '../types/auth.types';
+import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const value = { user, setUser };
+  useEffect(() => {
+    authApi
+      .me()
+      .then((response) => {
+        setUserSession(response.data as User);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  if (isLoading) return <SplashScreen />;
+
+  return <AuthContext.Provider value={null}>{children}</AuthContext.Provider>;
 }

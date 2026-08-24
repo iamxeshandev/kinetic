@@ -1,11 +1,5 @@
 import { createContext, type Dispatch, type SetStateAction } from 'react';
-
-export type User = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-};
+import type { User } from '../types/auth.types';
 
 export type AuthContextValue = {
   user: User | null;
