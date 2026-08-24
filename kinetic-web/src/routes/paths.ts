@@ -15,10 +15,10 @@ export const paths = {
     signUp: '/auth/sign-up',
     resetPassword: '/auth/reset-password',
   },
-  dashboard: {
-    root: '/dashboard',
-    projects: '/dashboard/projects',
-    calendar: '/dashboard/calendar',
-    teams: '/dashboard/teams',
-  },
+  workspaces: (workspaceId: string) => ({
+    dashboard: `/workspaces/${workspaceId}/dashboard`,
+    projects: `/workspaces/${workspaceId}/projects`,
+    calendar: `/workspaces/${workspaceId}/calendar`,
+    teams: `/workspaces/${workspaceId}/teams`,
+  }),
 };
