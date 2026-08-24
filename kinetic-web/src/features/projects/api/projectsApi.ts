@@ -1,5 +1,5 @@
 import { api } from '../../../utils/axios';
-import type { Project } from '../types/types';
+import type { Project } from '../types/project.types';
 
 const BASE_URL = 'projects';
 

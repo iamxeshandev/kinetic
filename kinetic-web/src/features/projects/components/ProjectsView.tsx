@@ -1,6 +1,6 @@
 import { Stack } from '@mui/material';
 import { useProjects, useUpdateProject } from '../hooks/useProjects';
-import type { Project } from '../types/types';
+import type { Project } from '../types/project.types';
 import { AllProjectsSection } from './AllProjectsSection';
 import { FavoriteSection } from './FavoriteSection';
 import { HeaderSection } from './HeaderSection';

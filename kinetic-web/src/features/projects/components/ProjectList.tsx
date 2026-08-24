@@ -16,7 +16,7 @@ import {
 } from '../../../components/ui';
 import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
 import { formatDate } from '../../../utils/helpers';
-import type { Project } from '../types/types';
+import type { Project } from '../types/project.types';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
 

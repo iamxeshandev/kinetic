@@ -1,15 +1,14 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { PROJECTS_KEY, projectsApi } from '../api/projectsApi';
-import { PROJECTS } from '../data/projects';
-import type { Project } from '../types/types';
+import type { Project } from '../types/project.types';
 
 export const useProjects = () =>
   useSWR<Project[]>(
     PROJECTS_KEY,
     () => projectsApi.getAll().then((res) => res.data),
     {
-      fallbackData: PROJECTS,
+      fallbackData: [],
     },
   );
 

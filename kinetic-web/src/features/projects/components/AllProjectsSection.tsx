@@ -14,7 +14,7 @@ import {
   type ActionMenuIconButtonProps,
 } from '../../../components/ui';
 import { useLocalStorage } from '../../../utils/hooks';
-import type { Project } from '../types/types';
+import type { Project } from '../types/project.types';
 
 const ProjectGrid = lazy(() => import('./ProjectGrid'));
 const ProjectList = lazy(() => import('./ProjectList'));
