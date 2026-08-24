@@ -18,12 +18,11 @@ import {
 } from '../../../components/ui';
 import { config } from '../../../config';
 import { authApi } from '../../../features/auth';
-import { useAuthContext } from '../../../features/auth/context/useAuthContext';
+import { removeUserSession } from '../../../features/auth/helpers/user-session';
 import { paths } from '../../../routes/paths';
 
 export function Header({ sx, ...props }: BoxProps) {
   const navigate = useNavigate();
-  const { setUser } = useAuthContext();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -31,7 +30,7 @@ export function Header({ sx, ...props }: BoxProps) {
     authApi
       .logout()
       .then(() => {
-        setUser(null);
+        removeUserSession();
         navigate(paths.auth.signIn);
       })
       .catch(toast.error);

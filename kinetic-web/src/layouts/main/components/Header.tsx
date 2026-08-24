@@ -2,12 +2,15 @@ import { Box, Button, Container, useMediaQuery } from '@mui/material';
 import { NavLink } from 'react-router';
 import { Logo } from '../../../components/ui/Logo';
 import { ThemeSwitcher } from '../../../components/ui/ThemeSwitcher';
+import { getUserSession } from '../../../features/auth/helpers/user-session';
 import { paths } from '../../../routes/paths';
 import { NavHorizontal, type NavHorizontalProps } from './NavHorizontal';
 import { NavMobile, type NavMobileProps } from './NavMobile';
 
 export function Header() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+
+  const user = getUserSession();
 
   return (
     <Box component={'header'} className='glass'>
@@ -29,9 +32,18 @@ export function Header() {
 
         <ThemeSwitcher />
 
-        <Button component={NavLink} to={paths.auth.signIn}>
-          Sign In
-        </Button>
+        {user ? (
+          <Button
+            component={NavLink}
+            to={paths.workspaces(user.defaultWorkspaceId).dashboard}
+          >
+            Dashboard
+          </Button>
+        ) : (
+          <Button component={NavLink} to={paths.auth.signIn}>
+            Sign In
+          </Button>
+        )}
       </Container>
     </Box>
   );
