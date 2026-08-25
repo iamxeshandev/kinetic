@@ -131,6 +131,25 @@ export const theme = createTheme({
         }),
       },
     },
+    MuiDialog: {
+      defaultProps: {
+        closeAfterTransition: false,
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          padding: '0 24px 16px',
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        spacing: {
+          padding: '16px 24px',
+        },
+      },
+    },
     MuiLink: {
       defaultProps: {
         underline: 'hover',
