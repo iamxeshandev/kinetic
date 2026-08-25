@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, type AxiosResponse } from 'axios';
 import { toast } from '../../components/toast';
 import { removeUserSession } from '../../features/auth/helpers/user-session';
 import { paths, router } from '../../routes';
@@ -15,18 +15,28 @@ export const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response) => ({
-    ...response,
-    data: response.data.data,
-    message: response.data.message,
-  }),
-  (error: AxiosError<{ message?: string }>) => {
-    if (!error.response) toast.error("Can't connect to server");
-    if (error.response?.status === 401) {
+  (response: AxiosResponse) => {
+    response.message = response.data.message;
+    response.data = response.data.data;
+
+    return response;
+  },
+  (error: AxiosError<{ message: string } | undefined>) => {
+    if (!error.response) {
+      toast.error("Can't connect to server");
+      return Promise.reject(error);
+    }
+
+    error.response.message =
+      error.response.data?.message ?? 'Something went wrong';
+    error.response.data = undefined;
+
+    if (error.response.status === 401) {
       removeUserSession();
       toast.error('You have been logged out!');
       router.navigate(paths.auth.signIn, { replace: true });
     }
+
     return Promise.reject(error);
   },
 );
