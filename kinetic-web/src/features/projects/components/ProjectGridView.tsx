@@ -1,38 +1,25 @@
 import {
-  Avatar,
-  AvatarGroup,
   Box,
   Button,
   Card,
   Divider,
+  IconButton,
   Stack,
   Typography,
 } from '@mui/material';
 import { LuActivity, LuArrowRight, LuCalendar } from 'react-icons/lu';
-import {
-  ActionMenuIconButton,
-  IconLabel,
-  type ActionMenuIconButtonProps,
-} from '../../../components/ui';
+import { MoreIcon } from '../../../components/icons';
+import { IconLabel } from '../../../components/ui';
 import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
-import { formatDate } from '../../../utils/helpers';
 import type { Project } from '../types/project.types';
-import { ProjectHealth } from './ProjectHealth';
-import { ProjectProgress } from './ProjectProgress';
-
-export type ProjectGridProps = {
-  projects: Project[];
-  onFavoriteClick: (projectId: Project['id']) => void;
-  onProjectClick: (projectId: Project['id']) => void;
-  actions: ActionMenuIconButtonProps['actions'];
-};
+import type { AllProjectSectionProps } from './AllProjectsSection';
 
 export default function ProjectGrid({
   projects,
   onFavoriteClick,
   onProjectClick,
-  actions,
-}: ProjectGridProps) {
+  onMoreClick,
+}: AllProjectSectionProps) {
   return (
     <Box
       sx={{
@@ -47,7 +34,7 @@ export default function ProjectGrid({
           project={p}
           onFavoriteClick={onFavoriteClick}
           onProjectClick={onProjectClick}
-          actions={actions}
+          onMoreClick={onMoreClick}
         />
       ))}
     </Box>
@@ -62,14 +49,14 @@ function ProjectCard({
   project,
   onFavoriteClick,
   onProjectClick,
-  actions,
+  onMoreClick,
 }: {
   project: Project;
-  onFavoriteClick: (projectId: Project['id']) => void;
-  onProjectClick: (projectId: Project['id']) => void;
-  actions: ActionMenuIconButtonProps['actions'];
+  onFavoriteClick: AllProjectSectionProps['onFavoriteClick'];
+  onProjectClick: AllProjectSectionProps['onProjectClick'];
+  onMoreClick: AllProjectSectionProps['onMoreClick'];
 }) {
-  const isCompleted = project.completedTasks === project.tasks;
+  // const isCompleted = project.completedTasks === project.tasks;
 
   return (
     <Card key={project.id} sx={{ p: 2 }}>
@@ -90,7 +77,12 @@ function ProjectCard({
             isFavorite={project.isFavorite}
             onClick={() => onFavoriteClick(project.id)}
           />
-          <ActionMenuIconButton actions={actions} />
+          <IconButton
+            size='small'
+            onClick={(event) => onMoreClick(event, project.id)}
+          >
+            <MoreIcon />
+          </IconButton>
         </Stack>
         <Stack
           direction={'row'}
@@ -100,7 +92,7 @@ function ProjectCard({
             justifyContent: 'space-between',
           }}
         >
-          <ProjectHealth dueDate={project.dueDate} isCompleted={isCompleted} />
+          {/* <ProjectHealth dueDate={project.dueDate} isCompleted={isCompleted} /> */}
           <Typography
             variant='subtitle2'
             sx={{
@@ -110,15 +102,15 @@ function ProjectCard({
             }}
           >
             {<LuCalendar />}
-            {formatDate(project.dueDate)}
+            {/* {formatDate(project.dueDate)} */}
           </Typography>
         </Stack>
 
-        <ProjectProgress
+        {/* <ProjectProgress
           value={project.completedTasks}
           max={project.tasks}
           showPercentage
-        />
+        /> */}
 
         <Divider />
 
@@ -130,13 +122,13 @@ function ProjectCard({
             justifyContent: 'space-between',
           }}
         >
-          <AvatarGroup max={3}>
+          {/* <AvatarGroup max={3}>
             {project.team.map((name) => (
               <Avatar key={name} size='small'>
                 {name[0]}
               </Avatar>
             ))}
-          </AvatarGroup>
+          </AvatarGroup> */}
 
           <Button
             size='small'

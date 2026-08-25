@@ -1,53 +1,54 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { PROJECTS_KEY, projectsApi } from '../api/projectsApi';
-import type { Project } from '../types/project.types';
+import { projectsApi, projectsKey } from '../api/projectsApi';
+import type { Project, ProjectForm } from '../types/project.types';
 
-export const useProjects = () =>
+export const useProjects = (workspaceId: string) =>
   useSWR<Project[]>(
-    PROJECTS_KEY,
-    () => projectsApi.getAll().then((res) => res.data),
+    projectsKey(workspaceId),
+    () => projectsApi.getAll(workspaceId).then((res) => res.data),
     {
       fallbackData: [],
     },
   );
 
-export const useCreateProject = () =>
+export const useCreateProject = (workspaceId: string) =>
   useSWRMutation(
-    PROJECTS_KEY,
-    (_, { arg }: { arg: Project }) =>
-      projectsApi.create(arg).then((res) => res.data),
+    projectsKey(workspaceId),
+    (_, { arg }: { arg: ProjectForm }) => projectsApi.create(workspaceId, arg),
     {
       revalidate: false,
-      populateCache: (responseData, currentData: Project[] = []) => [
+      populateCache: (res, currentData: Project[] = []) => [
         ...currentData,
-        responseData,
+        res.data,
       ],
     },
   );
 
-export const useUpdateProject = () =>
+export const useUpdateProject = (workspaceId: string) =>
   useSWRMutation(
-    PROJECTS_KEY,
-    (_, { arg }: { arg: Project }) =>
-      projectsApi.update(arg.id, arg).then((res) => res.data),
+    projectsKey(workspaceId),
+    (_, { arg }: { arg: { id: string } & ProjectForm }) =>
+      projectsApi.update(workspaceId, arg.id, arg),
     {
       revalidate: false,
-      populateCache: (responseData, currentData: Project[] = []) =>
+      populateCache: (res, currentData: Project[] = []) =>
         currentData.map((project) =>
-          project.id === responseData.id ? responseData : project,
+          project.id === res.data.id ? res.data : project,
         ),
     },
   );
 
-export const useDeleteProject = () =>
+export const useDeleteProject = (workspaceId: string) =>
   useSWRMutation(
-    PROJECTS_KEY,
+    projectsKey(workspaceId),
     (_, { arg }: { arg: Project['id'] }) =>
-      projectsApi.delete(arg).then(() => arg),
+      projectsApi
+        .delete(workspaceId, arg)
+        .then((res) => ({ ...res, data: arg })),
     {
       revalidate: false,
-      populateCache: (deletedId, currentData: Project[] = []) =>
-        currentData.filter((project) => project.id !== deletedId),
+      populateCache: (res, currentData: Project[] = []) =>
+        currentData.filter((project) => project.id !== res.data),
     },
   );

@@ -1,22 +1,11 @@
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  Card,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
 import {
   ActionMenuIconButton,
   type ActionMenuIconButtonProps,
 } from '../../../components/ui';
 import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
-import { formatDate } from '../../../utils/helpers';
 import type { Project } from '../types/project.types';
-import { ProjectHealth } from './ProjectHealth';
-import { ProjectProgress } from './ProjectProgress';
 
 export type FavoriteSectionProps = {
   favoriteProjects: Project[];
@@ -72,19 +61,19 @@ function ProjectCard({
   onFavoriteClick: (projectId: Project['id']) => void;
   actions: ActionMenuIconButtonProps['actions'];
 }) {
-  const isCompleted = project.completedTasks === project.tasks;
+  // const isCompleted = project.completedTasks === project.tasks;
 
   return (
     <Card key={project.id} sx={{ p: 2 }}>
       <Stack spacing={1}>
         <Stack direction={'row'} spacing={0.5} sx={{ alignItems: 'center' }}>
-          <ProjectHealth
+          {/* <ProjectHealth
             dueDate={project.dueDate}
             isCompleted={isCompleted}
             variant='label'
-          />
+          /> */}
 
-          <Typography
+          {/* <Typography
             variant='subtitle2'
             sx={{
               overflow: 'hidden',
@@ -94,7 +83,7 @@ function ProjectCard({
             }}
           >
             {formatDate(project.dueDate, 'relative')}
-          </Typography>
+          </Typography> */}
 
           <Stack direction={'row'} sx={{ alignItems: 'center' }}>
             <FavoriteIconButton
@@ -117,19 +106,19 @@ function ProjectCard({
         <Typography variant='body2'>{project.name}</Typography>
 
         <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
-          <ProjectProgress
+          {/* <ProjectProgress
             value={project.completedTasks}
             max={project.tasks}
             sx={{ flex: 1 }}
-          />
+          /> */}
 
-          <AvatarGroup max={3}>
+          {/* <AvatarGroup max={3}>
             {project.team.map((name) => (
               <Avatar key={name} size='small'>
                 {name[0]}
               </Avatar>
             ))}
-          </AvatarGroup>
+          </AvatarGroup> */}
         </Stack>
       </Stack>
     </Card>

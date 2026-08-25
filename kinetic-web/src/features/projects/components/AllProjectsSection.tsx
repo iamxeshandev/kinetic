@@ -9,29 +9,29 @@ import {
 } from '@mui/material';
 import { lazy, Suspense } from 'react';
 import { LuGrid2X2, LuList } from 'react-icons/lu';
-import {
-  LoadingScreen,
-  type ActionMenuIconButtonProps,
-} from '../../../components/ui';
+import { LoadingScreen } from '../../../components/ui';
 import { useLocalStorage } from '../../../utils/hooks';
 import type { Project } from '../types/project.types';
 
-const ProjectGrid = lazy(() => import('./ProjectGrid'));
-const ProjectList = lazy(() => import('./ProjectList'));
+const ProjectGrid = lazy(() => import('./ProjectGridView'));
+const ProjectList = lazy(() => import('./ProjectListView'));
 
-export type AllProjectsSectionProps = {
+export type AllProjectSectionProps = {
   projects: Project[];
   onFavoriteClick: (projectId: Project['id']) => void;
   onProjectClick: (projectId: Project['id']) => void;
-  actions: ActionMenuIconButtonProps['actions'];
+  onMoreClick: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    projectId: Project['id'],
+  ) => void;
 };
 
 export function AllProjectsSection({
   projects,
   onFavoriteClick,
   onProjectClick,
-  actions,
-}: AllProjectsSectionProps) {
+  onMoreClick,
+}: AllProjectSectionProps) {
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     `projects.view`,
     'grid',
@@ -78,7 +78,7 @@ export function AllProjectsSection({
           projects={projects}
           onFavoriteClick={onFavoriteClick}
           onProjectClick={onProjectClick}
-          actions={actions}
+          onMoreClick={onMoreClick}
         />
       </Suspense>
     </Box>

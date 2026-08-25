@@ -8,14 +8,13 @@ import {
 } from '@mui/material';
 import { useLayoutEffect, useState } from 'react';
 import { LuPlus } from 'react-icons/lu';
-import { type ActionMenuButtonProps } from '../../../components/ui';
+import type { Callback } from '../../../utils/types/callback.types';
 
-export type ProjectsHeaderProps = {
-  statusOptions: ActionMenuButtonProps['actions'];
-  status: string;
+export type HeaderSectionProps = {
+  onCreateClick: Callback;
 };
 
-export function HeaderSection() {
+export function HeaderSection({ onCreateClick }: HeaderSectionProps) {
   const [bottomOffset, setBottomOffset] = useState(0);
 
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
@@ -46,6 +45,7 @@ export function HeaderSection() {
       <Button
         startIcon={<LuPlus />}
         sx={{ display: { xs: 'none', sm: 'inherit' } }}
+        onClick={onCreateClick}
       >
         Create Project
       </Button>

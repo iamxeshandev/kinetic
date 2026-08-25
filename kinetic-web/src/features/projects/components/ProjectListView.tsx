@@ -1,6 +1,4 @@
 import {
-  Avatar,
-  AvatarGroup,
   IconButton,
   Table,
   TableBody,
@@ -10,15 +8,9 @@ import {
   TableRow,
 } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
-import {
-  ActionMenuIconButton,
-  type ActionMenuIconButtonProps,
-} from '../../../components/ui';
+import { MoreIcon } from '../../../components/icons';
 import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
-import { formatDate } from '../../../utils/helpers';
-import type { Project } from '../types/project.types';
-import { ProjectHealth } from './ProjectHealth';
-import { ProjectProgress } from './ProjectProgress';
+import type { AllProjectSectionProps } from './AllProjectsSection';
 
 const COLUMNS = [
   'Project',
@@ -30,19 +22,12 @@ const COLUMNS = [
   '',
 ];
 
-export type ProjectListProps = {
-  projects: Project[];
-  onFavoriteClick: (projectId: Project['id']) => void;
-  onProjectClick: (projectId: Project['id']) => void;
-  actions: ActionMenuIconButtonProps['actions'];
-};
-
 export default function ProjectList({
   projects,
   onFavoriteClick,
   onProjectClick,
-  actions,
-}: ProjectListProps) {
+  onMoreClick,
+}: AllProjectSectionProps) {
   return (
     <TableContainer>
       <Table>
@@ -56,18 +41,18 @@ export default function ProjectList({
           </TableRow>
         </TableHead>
         <TableBody>
-          {projects.map((p) => {
-            const isCompleted = p.completedTasks === p.tasks;
+          {projects.map((project) => {
+            // const isCompleted = p.completedTasks === p.tasks;
             return (
-              <TableRow key={p.id}>
-                <TableCell>{p.name}</TableCell>
-                <TableCell>
+              <TableRow key={project.id}>
+                <TableCell>{project.name}</TableCell>
+                {/* <TableCell>
                   <ProjectHealth
                     dueDate={p.dueDate}
                     isCompleted={isCompleted}
                   />
-                </TableCell>
-                <TableCell>
+                </TableCell> */}
+                {/* <TableCell>
                   {
                     <ProjectProgress
                       value={p.completedTasks}
@@ -75,12 +60,12 @@ export default function ProjectList({
                       showPercentage
                     />
                   }
-                </TableCell>
-                <TableCell>
+                </TableCell> */}
+                {/* <TableCell>
                   <Avatar src={p.team[0]} alt={p.team[0]} />
-                </TableCell>
-                <TableCell>{formatDate(p.dueDate)}</TableCell>
-                <TableCell>
+                </TableCell> */}
+                {/* <TableCell>{formatDate(p.dueDate)}</TableCell> */}
+                {/* <TableCell>
                   <AvatarGroup max={3} sx={{ justifyContent: 'flex-end' }}>
                     {p.team.map((name) => (
                       <Avatar key={name} size='small'>
@@ -88,20 +73,25 @@ export default function ProjectList({
                       </Avatar>
                     ))}
                   </AvatarGroup>
-                </TableCell>
+                </TableCell> */}
                 <TableCell align='right'>
                   <FavoriteIconButton
-                    isFavorite={p.isFavorite}
-                    onClick={() => onFavoriteClick(p.id)}
+                    isFavorite={project.isFavorite}
+                    onClick={() => onFavoriteClick(project.id)}
                   />
                   <IconButton
                     size='small'
                     color='primary'
-                    onClick={() => onProjectClick(p.id)}
+                    onClick={() => onProjectClick(project.id)}
                   >
                     <LuArrowRight />
                   </IconButton>
-                  <ActionMenuIconButton actions={actions} />
+                  <IconButton
+                    size='small'
+                    onClick={(event) => onMoreClick(event, project.id)}
+                  >
+                    <MoreIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             );
