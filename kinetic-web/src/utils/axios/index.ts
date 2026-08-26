@@ -21,20 +21,26 @@ api.interceptors.response.use(
 
     return response;
   },
-  (error: AxiosError<{ message: string } | undefined>) => {
+  (error: AxiosError<{ message?: string; title?: string } | undefined>) => {
     if (!error.response) {
       toast.error("Can't connect to server");
       return Promise.reject(error);
     }
 
+    console.error(error);
+
     error.response.message =
-      error.response.data?.message ?? 'Something went wrong';
-    error.response.data = undefined;
+      error.response.data?.message ??
+      error.response.data?.title ??
+      'Something went wrong';
 
     if (error.response.status === 401) {
       removeUserSession();
       toast.error('You have been logged out!');
       router.navigate(paths.auth.signIn, { replace: true });
+    }
+    if (error.response.status === 403) {
+      toast.error('You are not authorized to access this resource');
     }
 
     return Promise.reject(error);
