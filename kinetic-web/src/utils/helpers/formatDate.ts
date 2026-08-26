@@ -14,10 +14,12 @@ const FORMATS: Record<DateFormat, Intl.DateTimeFormatOptions> = {
 };
 
 export function formatDate(
-  date: Date | string,
+  date?: Date | string | null,
   format?: DateFormat | 'relative',
   locale?: Intl.LocalesArgument,
 ): string {
+  if (!date) return '';
+
   const d = typeof date === 'string' ? new Date(date) : date;
 
   if (typeof d === 'string') return d;
