@@ -1,7 +1,8 @@
 export function checkOverdue(
-  dueDate: Date | string,
+  dueDate?: Date | string | null,
   tolerance: number = 0,
 ): boolean {
+  if (!dueDate) return false;
   const d = new Date(dueDate);
   if (isNaN(d.getTime())) return false;
   const now = new Date();
