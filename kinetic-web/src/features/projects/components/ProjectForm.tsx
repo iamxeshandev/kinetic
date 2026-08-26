@@ -8,10 +8,16 @@ import {
   DialogTitle,
   MenuItem,
 } from '@mui/material';
+import { parseISO } from 'date-fns';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
-import { Form, FormSelect, FormTextField } from '../../../components/form';
+import {
+  Form,
+  FormDatePicker,
+  FormSelect,
+  FormTextField,
+} from '../../../components/form';
 import { toast } from '../../../components/toast';
 import type { Callback } from '../../../utils/types/callback.types';
 import { useCreateProject, useUpdateProject } from '../hooks/useProjects';
@@ -29,6 +35,7 @@ const defaultValues: ProjectForm = {
   status: 'Active',
   priority: 'None',
   isFavorite: false,
+  dueDate: null,
 };
 
 export type ProjectFormProps = {
@@ -55,17 +62,25 @@ export function ProjectForm({
     defaultValues,
   });
 
-  useEffect(
-    () => (project ? methods.reset(project) : methods.reset(defaultValues)),
-    [isNew, methods, project],
-  );
+  useEffect(() => {
+    if (open)
+      methods.reset({
+        ...(project ?? defaultValues),
+        dueDate: project?.dueDate
+          ? parseISO(project.dueDate.toString())
+          : defaultValues.dueDate,
+      });
+  }, [methods, open, project]);
 
   const handleSubmit = (data: ProjectForm) =>
     isNew
       ? createProject(data)
-          .then((res) => toast.success(res.message))
+          .then((res) => {
+            toast.success(res.message);
+            onClose();
+          })
           .catch((err) => toast.error(err.response?.message))
-      : updateProject({ id: project.id, ...data })
+      : updateProject({ ...project, ...data })
           .then((res) => toast.success(res.message))
           .catch((err) => toast.error(err.response?.message));
 
@@ -97,6 +112,7 @@ export function ProjectForm({
                 </MenuItem>
               ))}
             </FormSelect>
+            <FormDatePicker name='dueDate' label='Due Date' />
           </Box>
         </DialogContent>
         <DialogActions>

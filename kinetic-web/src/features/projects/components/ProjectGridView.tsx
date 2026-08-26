@@ -1,23 +1,21 @@
 import {
+  Avatar,
+  AvatarGroup,
   Box,
-  Button,
   Card,
-  Divider,
   IconButton,
-  Stack,
   Typography,
 } from '@mui/material';
-import { LuActivity, LuArrowRight, LuCalendar } from 'react-icons/lu';
-import { MoreIcon } from '../../../components/icons';
-import { IconLabel } from '../../../components/ui';
-import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
+import { ArrowRightIcon, MoreIcon } from '../../../components/icons';
 import type { Project } from '../types/project.types';
 import type { AllProjectSectionProps } from './AllProjectsSection';
+import { ProjectHealth } from './ProjectHealth';
+import { ProjectProgress } from './ProjectProgress';
 
 export default function ProjectGrid({
   projects,
   onFavoriteClick,
-  onProjectClick,
+  onOpenProjectClick: onProjectClick,
   onMoreClick,
 }: AllProjectSectionProps) {
   return (
@@ -33,7 +31,7 @@ export default function ProjectGrid({
           key={p.id}
           project={p}
           onFavoriteClick={onFavoriteClick}
-          onProjectClick={onProjectClick}
+          onOpenProjectClick={onProjectClick}
           onMoreClick={onMoreClick}
         />
       ))}
@@ -47,99 +45,66 @@ export default function ProjectGrid({
 
 function ProjectCard({
   project,
-  onFavoriteClick,
-  onProjectClick,
+  onOpenProjectClick,
   onMoreClick,
 }: {
   project: Project;
   onFavoriteClick: AllProjectSectionProps['onFavoriteClick'];
-  onProjectClick: AllProjectSectionProps['onProjectClick'];
+  onOpenProjectClick: AllProjectSectionProps['onOpenProjectClick'];
   onMoreClick: AllProjectSectionProps['onMoreClick'];
 }) {
-  // const isCompleted = project.completedTasks === project.tasks;
+  const isCompleted = project.status === 'Completed';
 
   return (
-    <Card key={project.id} sx={{ p: 2 }}>
-      <Stack spacing={{ xs: 1, sm: 2 }}>
-        <Stack direction={'row'} spacing={1} sx={{ alignItems: 'center' }}>
-          <IconLabel sx={{}}>
-            <LuActivity />
-          </IconLabel>
-          <Box sx={{ flex: 1, overflow: 'hidden' }}>
-            <Typography noWrap variant='body2'>
-              {project.name}
-            </Typography>
-            <Typography noWrap variant='subtitle2'>
-              {project.description}
-            </Typography>
-          </Box>
-          <FavoriteIconButton
-            isFavorite={project.isFavorite}
-            onClick={() => onFavoriteClick(project.id)}
-          />
+    <Card key={project.id} sx={{ p: 2 }} aria-label={`Project ${project.name}`}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateRows: 'auto 1fr auto auto',
+          gap: 1,
+          height: 180,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            noWrap
+            sx={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}
+          >
+            {project.name}
+          </Typography>
           <IconButton
             size='small'
-            onClick={(event) => onMoreClick(event, project.id)}
+            color='primary'
+            onClick={() => onOpenProjectClick(project.id)}
           >
+            <ArrowRightIcon />
+          </IconButton>
+          <IconButton size='small' onClick={(e) => onMoreClick(e, project.id)}>
             <MoreIcon />
           </IconButton>
-        </Stack>
-        <Stack
-          direction={'row'}
-          spacing={1}
+        </Box>
+
+        <Typography variant='subtitle2'>{project.description}</Typography>
+
+        <ProjectProgress value={25} max={100} showPercentage />
+
+        <Box
           sx={{
-            alignItems: 'center',
+            display: 'flex',
             justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 1,
           }}
         >
-          {/* <ProjectHealth dueDate={project.dueDate} isCompleted={isCompleted} /> */}
-          <Typography
-            variant='subtitle2'
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            {<LuCalendar />}
-            {/* {formatDate(project.dueDate)} */}
-          </Typography>
-        </Stack>
+          <ProjectHealth dueDate={project.dueDate} isCompleted={isCompleted} />
 
-        {/* <ProjectProgress
-          value={project.completedTasks}
-          max={project.tasks}
-          showPercentage
-        /> */}
-
-        <Divider />
-
-        <Stack
-          direction={'row'}
-          spacing={2}
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          {/* <AvatarGroup max={3}>
-            {project.team.map((name) => (
-              <Avatar key={name} size='small'>
-                {name[0]}
-              </Avatar>
+          <AvatarGroup max={3}>
+            {['A', 'B', 'C', 'D', 'E', 'F'].map((member) => (
+              <Avatar key={member}>{member}</Avatar>
             ))}
-          </AvatarGroup> */}
-
-          <Button
-            size='small'
-            variant='text'
-            endIcon={<LuArrowRight />}
-            onClick={() => onProjectClick(project.id)}
-          >
-            Open Project
-          </Button>
-        </Stack>
-      </Stack>
+          </AvatarGroup>
+        </Box>
+      </Box>
     </Card>
   );
 }

@@ -10,6 +10,7 @@ export function ProjectProgress({
   value,
   max,
   showPercentage = false,
+  sx,
   ...props
 }: ProjectProgressProps) {
   const percentage = Number(((value / max) * 100).toFixed());
@@ -24,7 +25,7 @@ export function ProjectProgress({
           : 'error';
 
   return (
-    <Box {...props}>
+    <Box {...props} sx={{ width: 1, ...sx }}>
       {showPercentage && (
         <Typography
           variant='caption'

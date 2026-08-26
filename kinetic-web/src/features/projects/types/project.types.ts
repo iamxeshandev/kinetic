@@ -12,6 +12,7 @@ export const ProjectSchema = z.object({
   description: z.string().max(1000, 'Max 1000 characters allowed'),
   status: ProjectStatusSchema,
   priority: ProjectPrioritySchema,
+  dueDate: z.date().nullable(),
   isFavorite: z.boolean(),
 });
 export type Project = z.infer<typeof ProjectSchema>;
@@ -24,6 +25,7 @@ export const ProjectFormSchema = z.object({
   description: z.string().max(1000, 'Max 1000 characters allowed'),
   status: ProjectStatusSchema,
   priority: ProjectPrioritySchema,
+  dueDate: z.date().nullable(),
   isFavorite: z.boolean(),
 });
 export type ProjectForm = z.infer<typeof ProjectFormSchema>;

@@ -19,7 +19,7 @@ const ProjectList = lazy(() => import('./ProjectListView'));
 export type AllProjectSectionProps = {
   projects: Project[];
   onFavoriteClick: (projectId: Project['id']) => void;
-  onProjectClick: (projectId: Project['id']) => void;
+  onOpenProjectClick: (projectId: Project['id']) => void;
   onMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
     projectId: Project['id'],
@@ -29,7 +29,7 @@ export type AllProjectSectionProps = {
 export function AllProjectsSection({
   projects,
   onFavoriteClick,
-  onProjectClick,
+  onOpenProjectClick,
   onMoreClick,
 }: AllProjectSectionProps) {
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
@@ -77,7 +77,7 @@ export function AllProjectsSection({
         <View
           projects={projects}
           onFavoriteClick={onFavoriteClick}
-          onProjectClick={onProjectClick}
+          onOpenProjectClick={onOpenProjectClick}
           onMoreClick={onMoreClick}
         />
       </Suspense>

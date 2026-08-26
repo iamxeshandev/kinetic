@@ -1,9 +1,10 @@
 import { Typography } from '@mui/material';
 import { Label } from '../../../components/ui';
 import { checkOverdue } from '../../../utils/helpers';
+import type { Project } from '../types/project.types';
 
 export type ProjectHealthProps = {
-  dueDate: string | Date;
+  dueDate?: Project['dueDate'];
   isCompleted: boolean;
   variant?: 'label' | 'standard';
 };

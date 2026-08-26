@@ -1,5 +1,6 @@
 import {
   IconButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -9,8 +10,9 @@ import {
 } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
 import { MoreIcon } from '../../../components/icons';
-import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
+import { formatDate } from '../../../utils/helpers';
 import type { AllProjectSectionProps } from './AllProjectsSection';
+import { ProjectHealth } from './ProjectHealth';
 
 const COLUMNS = [
   'Project',
@@ -24,8 +26,7 @@ const COLUMNS = [
 
 export default function ProjectList({
   projects,
-  onFavoriteClick,
-  onProjectClick,
+  onOpenProjectClick,
   onMoreClick,
 }: AllProjectSectionProps) {
   return (
@@ -42,56 +43,56 @@ export default function ProjectList({
         </TableHead>
         <TableBody>
           {projects.map((project) => {
-            // const isCompleted = p.completedTasks === p.tasks;
+            const isCompleted = project.status === 'Completed';
             return (
               <TableRow key={project.id}>
                 <TableCell>{project.name}</TableCell>
-                {/* <TableCell>
+                <TableCell>
                   <ProjectHealth
-                    dueDate={p.dueDate}
+                    dueDate={project.dueDate}
                     isCompleted={isCompleted}
                   />
-                </TableCell> */}
-                {/* <TableCell>
-                  {
-                    <ProjectProgress
+                </TableCell>
+                <TableCell>
+                  {/* <ProjectProgress
                       value={p.completedTasks}
                       max={p.tasks}
                       showPercentage
-                    />
-                  }
-                </TableCell> */}
-                {/* <TableCell>
-                  <Avatar src={p.team[0]} alt={p.team[0]} />
-                </TableCell> */}
-                {/* <TableCell>{formatDate(p.dueDate)}</TableCell> */}
-                {/* <TableCell>
-                  <AvatarGroup max={3} sx={{ justifyContent: 'flex-end' }}>
+                    /> */}
+                </TableCell>
+                <TableCell>
+                  {/* <Avatar src={p.team[0]} alt={p.team[0]} /> */}
+                </TableCell>
+                <TableCell>{formatDate(project.dueDate)}</TableCell>
+                <TableCell>
+                  {/* <AvatarGroup max={3} sx={{ justifyContent: 'flex-end' }}>
                     {p.team.map((name) => (
                       <Avatar key={name} size='small'>
                         {name[0]}
                       </Avatar>
                     ))}
-                  </AvatarGroup>
-                </TableCell> */}
-                <TableCell align='right'>
-                  <FavoriteIconButton
-                    isFavorite={project.isFavorite}
-                    onClick={() => onFavoriteClick(project.id)}
-                  />
-                  <IconButton
-                    size='small'
-                    color='primary'
-                    onClick={() => onProjectClick(project.id)}
+                  </AvatarGroup> */}
+                </TableCell>
+                <TableCell>
+                  <Stack
+                    spacing={1}
+                    direction={'row'}
+                    sx={{ justifyContent: 'end' }}
                   >
-                    <LuArrowRight />
-                  </IconButton>
-                  <IconButton
-                    size='small'
-                    onClick={(event) => onMoreClick(event, project.id)}
-                  >
-                    <MoreIcon />
-                  </IconButton>
+                    <IconButton
+                      size='small'
+                      color='primary'
+                      onClick={() => onOpenProjectClick(project.id)}
+                    >
+                      <LuArrowRight />
+                    </IconButton>
+                    <IconButton
+                      size='small'
+                      onClick={(event) => onMoreClick(event, project.id)}
+                    >
+                      <MoreIcon />
+                    </IconButton>
+                  </Stack>
                 </TableCell>
               </TableRow>
             );

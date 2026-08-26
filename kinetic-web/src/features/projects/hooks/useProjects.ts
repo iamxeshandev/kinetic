@@ -28,8 +28,8 @@ export const useCreateProject = (workspaceId: string) =>
 export const useUpdateProject = (workspaceId: string) =>
   useSWRMutation(
     projectsKey(workspaceId),
-    (_, { arg }: { arg: { id: string } & ProjectForm }) =>
-      projectsApi.update(workspaceId, arg.id, arg),
+    (_, { arg: { id, ...data } }: { arg: Project }) =>
+      projectsApi.update(workspaceId, id, data),
     {
       revalidate: false,
       populateCache: (res, currentData: Project[] = []) =>
@@ -42,10 +42,10 @@ export const useUpdateProject = (workspaceId: string) =>
 export const useDeleteProject = (workspaceId: string) =>
   useSWRMutation(
     projectsKey(workspaceId),
-    (_, { arg }: { arg: Project['id'] }) =>
+    (_, { arg: projectId }: { arg: Project['id'] }) =>
       projectsApi
-        .delete(workspaceId, arg)
-        .then((res) => ({ ...res, data: arg })),
+        .delete(workspaceId, projectId)
+        .then((res) => ({ ...res, data: projectId })),
     {
       revalidate: false,
       populateCache: (res, currentData: Project[] = []) =>
