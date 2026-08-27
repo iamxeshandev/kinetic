@@ -1,10 +1,13 @@
 import { api } from '../../../utils/axios';
+import { UserSchema, type User } from '../types/auth.types';
 
 const BASE_URL = '/auth';
 
 export const authApi = {
   login: (email: string, password: string, rememberMe: boolean) =>
-    api.post(`${BASE_URL}/login`, { email, password, rememberMe }),
+    api
+      .post<User>(`${BASE_URL}/login`, { email, password, rememberMe })
+      .then((response) => UserSchema.parse(response.data) && response),
 
   register: (
     email: string,
@@ -16,5 +19,8 @@ export const authApi = {
 
   logout: () => api.post(`${BASE_URL}/logout`),
 
-  me: () => api.get(`${BASE_URL}/me`),
+  me: () =>
+    api
+      .get<User>(`${BASE_URL}/me`)
+      .then((response) => UserSchema.parse(response.data) && response),
 };

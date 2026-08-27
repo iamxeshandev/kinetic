@@ -3,7 +3,6 @@ import { toast } from '../../../components/toast';
 import { SplashScreen } from '../../../components/ui';
 import { authApi } from '../api/authApi';
 import { setUserSession } from '../helpers/user-session';
-import type { User } from '../types/auth.types';
 import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: PropsWithChildren) {
@@ -13,10 +12,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     authApi
       .me()
       .then((response) => {
-        setUserSession(response.data as User);
+        setUserSession(response.data);
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+        toast.error(error.response?.data?.message);
       })
       .finally(() => setIsLoading(false));
   }, []);
