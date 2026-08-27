@@ -1,4 +1,9 @@
-import { Select, type SelectProps } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  type SelectProps,
+} from '@mui/material';
 import {
   Controller,
   useFormContext,
@@ -9,16 +14,24 @@ type FormSelectProps = Omit<SelectProps, keyof ControllerProps> & {
   name: ControllerProps['name'];
 };
 
-export function FormSelect({ name, children, ...props }: FormSelectProps) {
+export function FormSelect({
+  name,
+  label,
+  children,
+  ...props
+}: FormSelectProps) {
   const { control } = useFormContext();
   return (
     <Controller
       name={name}
       control={control}
       render={({ field }) => (
-        <Select {...props} {...field}>
-          {children}
-        </Select>
+        <FormControl fullWidth>
+          <InputLabel id='label'>{label}</InputLabel>
+          <Select {...props} {...field} labelId='label' label={label}>
+            {children}
+          </Select>
+        </FormControl>
       )}
     />
   );

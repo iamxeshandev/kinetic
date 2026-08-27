@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { LuChevronDown, LuEllipsisVertical } from 'react-icons/lu';
+import type { Callback } from '../../utils/types/callback.types';
 
 // ***************************************************************************
 // * ActionMenu
@@ -24,7 +25,7 @@ export type ActionMenuProps = MenuProps & {
     icon?: React.ReactNode;
     closeOnClick?: boolean;
     color?: ButtonProps['color'];
-    onClick?: () => void;
+    onClick?: Callback;
   }>;
 };
 

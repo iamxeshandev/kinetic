@@ -1,7 +1,7 @@
 import { SnackbarProvider } from 'notistack';
-import { useRef } from 'react';
+import { useRef, type PropsWithChildren } from 'react';
 
-export function ToastProvider() {
+export function ToastProvider({ children }: PropsWithChildren) {
   const ref = useRef<SnackbarProvider>(null);
 
   return (
@@ -9,6 +9,8 @@ export function ToastProvider() {
       ref={ref}
       anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
       autoHideDuration={3000}
-    />
+    >
+      {children}
+    </SnackbarProvider>
   );
 }
