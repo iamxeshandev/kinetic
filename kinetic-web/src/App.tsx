@@ -12,14 +12,15 @@ function App() {
   return (
     <SWRConfig value={swrConfig}>
       <ThemeProvider theme={theme} defaultMode='system'>
-        <AuthProvider>
-          <NotificationProvider>
-            <CssBaseline />
-            <GlobalStyles styles={styles} />
-            <RouterProvider router={router} />
-            <ToastProvider />
-          </NotificationProvider>
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <CssBaseline />
+              <GlobalStyles styles={styles} />
+              <RouterProvider router={router} />
+            </NotificationProvider>
+          </AuthProvider>
+        </ToastProvider>
       </ThemeProvider>
     </SWRConfig>
   );
