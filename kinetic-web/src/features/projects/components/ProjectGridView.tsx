@@ -14,7 +14,6 @@ import { ProjectProgress } from './ProjectProgress';
 
 export default function ProjectGrid({
   projects,
-  onFavoriteClick,
   onOpenProjectClick: onProjectClick,
   onMoreClick,
 }: AllProjectSectionProps) {
@@ -30,7 +29,6 @@ export default function ProjectGrid({
         <ProjectCard
           key={p.id}
           project={p}
-          onFavoriteClick={onFavoriteClick}
           onOpenProjectClick={onProjectClick}
           onMoreClick={onMoreClick}
         />
@@ -49,7 +47,6 @@ function ProjectCard({
   onMoreClick,
 }: {
   project: Project;
-  onFavoriteClick: AllProjectSectionProps['onFavoriteClick'];
   onOpenProjectClick: AllProjectSectionProps['onOpenProjectClick'];
   onMoreClick: AllProjectSectionProps['onMoreClick'];
 }) {
@@ -62,7 +59,7 @@ function ProjectCard({
           display: 'grid',
           gridTemplateRows: 'auto 1fr auto auto',
           gap: 1,
-          height: 180,
+          height: 1,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -84,7 +81,17 @@ function ProjectCard({
           </IconButton>
         </Box>
 
-        <Typography variant='subtitle2'>{project.description}</Typography>
+        <Typography
+          variant='subtitle2'
+          sx={{
+            display: '-webkit-box',
+            overflow: 'hidden',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+          }}
+        >
+          {project.description}
+        </Typography>
 
         <ProjectProgress value={25} max={100} showPercentage />
 

@@ -1,7 +1,12 @@
 import { Box, Button, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useParams } from 'react-router';
-import { PencilIcon, TrashIcon } from '../../../components/icons';
+import {
+  PencilIcon,
+  StarIcon,
+  StarOffIcon,
+  TrashIcon,
+} from '../../../components/icons';
 import { toast } from '../../../components/toast';
 import { ActionMenu, type ActionMenuButtonProps } from '../../../components/ui';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
@@ -10,7 +15,6 @@ import {
   useProjects,
   useUpdateProject,
 } from '../hooks/useProjects';
-import type { Project } from '../types/project.types';
 import { AllProjectsSection } from './AllProjectsSection';
 import { FavoriteSection } from './FavoriteSection';
 import { HeaderSection } from './HeaderSection';
@@ -35,11 +39,12 @@ export function ProjectsView() {
     id: string | null;
   }>({ anchorEl: null, id: null });
 
-  const handleFavoriteClick = (projectId: Project['id']) => {
+  const handleFavoriteClick = async (projectId: string | null) => {
+    if (!projectId) return;
     const found = projects.find((p) => p.id === projectId);
     if (!found) return;
     const updated = { ...found, isFavorite: !found.isFavorite };
-    updateProject(updated)
+    await updateProject(updated)
       .then((res) => toast.success(res.message))
       .catch((err) => toast.error(err.response?.message));
   };
@@ -60,7 +65,14 @@ export function ProjectsView() {
       })
       .catch((err) => toast.error(err.response?.message));
 
+  const isFavorite = projects.find((p) => p.id === menu.id)?.isFavorite;
+
   const actions: ActionMenuButtonProps['actions'] = [
+    {
+      icon: <Box component={isFavorite ? StarOffIcon : StarIcon} />,
+      label: isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
+      onClick: () => handleFavoriteClick(menu.id),
+    },
     {
       icon: <PencilIcon />,
       label: 'Edit',
@@ -70,8 +82,9 @@ export function ProjectsView() {
       },
     },
     {
-      icon: <Box component={TrashIcon} sx={{ color: 'error.main' }} />,
+      icon: <TrashIcon />,
       label: 'Delete',
+      color: 'error',
       onClick: () => {
         setProjectId(menu.id);
         setConfirmDialog(true);
@@ -90,7 +103,6 @@ export function ProjectsView() {
       />
       <AllProjectsSection
         projects={projects}
-        onFavoriteClick={handleFavoriteClick}
         onOpenProjectClick={handleOpenProjectClick}
         onMoreClick={handleMoreClick}
       />
@@ -120,7 +132,8 @@ export function ProjectsView() {
 
       <ActionMenu
         open={!!menu.anchorEl}
-        onClose={() => setMenu({ anchorEl: null, id: null })}
+        onClose={() => setMenu((prev) => ({ ...prev, anchorEl: null }))}
+        onTransitionExited={() => setMenu((prev) => ({ ...prev, id: null }))}
         anchorEl={menu.anchorEl}
         actions={actions}
       />

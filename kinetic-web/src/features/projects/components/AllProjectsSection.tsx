@@ -18,7 +18,6 @@ const ProjectList = lazy(() => import('./ProjectListView'));
 
 export type AllProjectSectionProps = {
   projects: Project[];
-  onFavoriteClick: (projectId: Project['id']) => void;
   onOpenProjectClick: (projectId: Project['id']) => void;
   onMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -28,7 +27,6 @@ export type AllProjectSectionProps = {
 
 export function AllProjectsSection({
   projects,
-  onFavoriteClick,
   onOpenProjectClick,
   onMoreClick,
 }: AllProjectSectionProps) {
@@ -76,7 +74,6 @@ export function AllProjectsSection({
       <Suspense fallback={<LoadingScreen />}>
         <View
           projects={projects}
-          onFavoriteClick={onFavoriteClick}
           onOpenProjectClick={onOpenProjectClick}
           onMoreClick={onMoreClick}
         />
