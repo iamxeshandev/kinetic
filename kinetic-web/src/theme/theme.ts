@@ -162,11 +162,6 @@ export const theme = createTheme({
         },
       },
     },
-    MuiPaper: {
-      defaultProps: {
-        elevation: 0,
-      },
-    },
     MuiTableContainer: {
       defaultProps: {
         component: Paper,
@@ -174,7 +169,6 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          // boxShadow: 'none',
           border: '1px solid',
           borderColor: 'var(--mui-palette-divider)',
         },
