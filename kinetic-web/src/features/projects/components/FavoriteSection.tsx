@@ -3,9 +3,9 @@ import { LuArrowRight } from 'react-icons/lu';
 import {
   ActionMenuIconButton,
   type ActionMenuIconButtonProps,
-} from '../../../components/ui';
-import { FavoriteIconButton } from '../../../components/ui/FavoriteIconButton';
-import type { Project } from '../types/project.types';
+} from '../../../shared/ui';
+import { FavoriteIconButton } from '../../../shared/ui/FavoriteIconButton';
+import type { Project } from '../types';
 
 export type FavoriteSectionProps = {
   favoriteProjects: Project[];

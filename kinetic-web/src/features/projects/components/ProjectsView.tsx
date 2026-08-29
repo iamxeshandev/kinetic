@@ -6,15 +6,11 @@ import {
   StarIcon,
   StarOffIcon,
   TrashIcon,
-} from '../../../components/icons';
-import { toast } from '../../../components/toast';
-import { ActionMenu, type ActionMenuButtonProps } from '../../../components/ui';
-import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
-import {
-  useDeleteProject,
-  useProjects,
-  useUpdateProject,
-} from '../hooks/useProjects';
+} from '../../../shared/icons';
+import { toast } from '../../../shared/toast';
+import { ActionMenu, type ActionMenuButtonProps } from '../../../shared/ui';
+import { ConfirmDialog } from '../../../shared/ui/ConfirmDialog';
+import { useDeleteProject, useProjects, useUpdateProject } from '../hooks';
 import { AllProjectsSection } from './AllProjectsSection';
 import { FavoriteSection } from './FavoriteSection';
 import { HeaderSection } from './HeaderSection';

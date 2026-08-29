@@ -1,10 +1,10 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { projectsApi, projectsKey } from '../api/projectsApi';
-import type { Project, ProjectForm } from '../types/project.types';
+import { projectsApi, projectsKey } from '../api';
+import type { Project, ProjectForm } from '../types';
 
 export const useProjects = (workspaceId: string) =>
-  useSWR<Project[]>(
+  useSWR(
     projectsKey(workspaceId),
     () => projectsApi.getAll(workspaceId).then((res) => res.data),
     {
@@ -18,10 +18,8 @@ export const useCreateProject = (workspaceId: string) =>
     (_, { arg }: { arg: ProjectForm }) => projectsApi.create(workspaceId, arg),
     {
       revalidate: false,
-      populateCache: (res, currentData: Project[] = []) => [
-        ...currentData,
-        res.data,
-      ],
+      populateCache: (res, currentData: Project[] = []) =>
+        res.data ? [res.data, ...currentData] : currentData,
     },
   );
 
@@ -34,7 +32,7 @@ export const useUpdateProject = (workspaceId: string) =>
       revalidate: false,
       populateCache: (res, currentData: Project[] = []) =>
         currentData.map((project) =>
-          project.id === res.data.id ? res.data : project,
+          project.id === res.data?.id ? res.data : project,
         ),
     },
   );

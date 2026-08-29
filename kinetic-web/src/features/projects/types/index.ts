@@ -1,19 +1,22 @@
 import z from 'zod';
 
-export const ProjectStatusSchema = z.enum(['Active', 'Completed']);
-export type ProjectStatus = z.infer<typeof ProjectStatusSchema>;
-
-export const ProjectPrioritySchema = z.enum(['None', 'Low', 'Medium', 'High']);
-export type ProjectPriority = z.infer<typeof ProjectPrioritySchema>;
+export const ProjectMemberSchema = z.object({
+  id: z.uuid(),
+  fullName: z.string(),
+  email: z.email(),
+  role: z.string(),
+});
+export type ProjectMember = z.infer<typeof ProjectMemberSchema>;
 
 export const ProjectSchema = z.object({
   id: z.uuid(),
   name: z.string().max(100, 'Max 100 characters allowed'),
   description: z.string().max(1000, 'Max 1000 characters allowed'),
-  status: ProjectStatusSchema,
-  priority: ProjectPrioritySchema,
+  status: z.string(),
+  priority: z.string(),
   dueDate: z.date().nullable(),
   isFavorite: z.boolean(),
+  team: z.array(ProjectMemberSchema),
 });
 export type Project = z.infer<typeof ProjectSchema>;
 
@@ -23,9 +26,11 @@ export const ProjectFormSchema = z.object({
     .min(1, 'Name is required')
     .max(100, 'Max 100 characters allowed'),
   description: z.string().max(1000, 'Max 1000 characters allowed'),
-  status: ProjectStatusSchema,
-  priority: ProjectPrioritySchema,
+  status: z.string().min(1, 'Status is required'),
+  priority: z.string().min(1, 'Priority is required'),
   dueDate: z.date().nullable(),
   isFavorite: z.boolean(),
+  leads: z.array(z.object({ id: z.uuid(), label: z.string() })),
+  members: z.array(z.object({ id: z.uuid(), label: z.string() })),
 });
 export type ProjectForm = z.infer<typeof ProjectFormSchema>;

@@ -1,33 +1,33 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   MenuItem,
+  Stack,
+  Typography,
 } from '@mui/material';
 import { parseISO } from 'date-fns';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router';
 import {
   Form,
+  FormAutocomplete,
   FormDatePicker,
   FormSelect,
   FormTextField,
-} from '../../../components/form';
-import { toast } from '../../../components/toast';
+} from '../../../shared/form';
+import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../utils/types/callback.types';
-import { useCreateProject, useUpdateProject } from '../hooks/useProjects';
-import {
-  ProjectFormSchema,
-  ProjectPrioritySchema,
-  ProjectStatusSchema,
-  type Project,
-  type ProjectForm,
-} from '../types/project.types';
+import { useLookups } from '../../lookups/hooks';
+import { usersApi } from '../../users/api';
+import type { User } from '../../users/types';
+import { useCreateProject, useUpdateProject } from '../hooks';
+import { ProjectFormSchema, type Project, type ProjectForm } from '../types';
 
 const defaultValues: ProjectForm = {
   name: '',
@@ -36,6 +36,8 @@ const defaultValues: ProjectForm = {
   priority: 'None',
   isFavorite: false,
   dueDate: null,
+  leads: [],
+  members: [],
 };
 
 export type ProjectFormProps = {
@@ -57,20 +59,72 @@ export function ProjectForm({
   const { trigger: createProject } = useCreateProject(workspaceId!);
   const { trigger: updateProject } = useUpdateProject(workspaceId!);
 
+  const { data: statuses } = useLookups('project-statuses');
+  const { data: priorities } = useLookups('priorities');
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const methods = useForm({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues,
   });
 
+  const leads =
+    project?.team
+      .filter((pm) => pm.role === 'Lead')
+      .map((pm) => ({ id: pm.id, label: pm.fullName })) ?? defaultValues.leads;
+
+  const members =
+    project?.team
+      .filter((pm) => pm.role === 'Member')
+      .map((pm) => ({ id: pm.id, label: pm.fullName })) ??
+    defaultValues.members;
+
+  const watchedLeads = useWatch({
+    control: methods.control,
+    name: 'leads',
+    defaultValue: leads,
+  });
+  const watchedMembers = useWatch({
+    control: methods.control,
+    name: 'members',
+    defaultValue: members,
+  });
+
+  // * Fetch users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      usersApi
+        .getAll(workspaceId!)
+        .then((res) => setUsers((prev) => (res.data ? res.data : prev)))
+        .catch((err) => console.error(err))
+        .finally(() => setIsLoading(false));
+    };
+
+    if (open) fetchUsers();
+  }, [open, workspaceId]);
+
   useEffect(() => {
     if (open)
       methods.reset({
         ...(project ?? defaultValues),
+        // * Parse ISO string to Date object
         dueDate: project?.dueDate
           ? parseISO(project.dueDate.toString())
           : defaultValues.dueDate,
+        leads,
+        members,
       });
-  }, [methods, open, project]);
+  }, [leads, members, methods, open, project]);
+
+  const leadOptions = users
+    .filter((u) => !(watchedMembers ?? []).map((m) => m.id).includes(u.id))
+    .map((u) => ({ id: u.id, label: u.fullName }));
+
+  const memberOptions = users
+    .filter((u) => !(watchedLeads ?? []).map((m) => m.id).includes(u.id))
+    .map((u) => ({ id: u.id, label: u.fullName }));
 
   const handleSubmit = (data: ProjectForm) =>
     isNew
@@ -95,25 +149,57 @@ export function ProjectForm({
       <Form methods={methods} onSubmit={handleSubmit}>
         <DialogTitle>{isNew ? 'Create Project' : 'Edit Project'}</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+          <Stack spacing={2} sx={{ pt: 1 }}>
             <FormTextField name='name' label='Project Name' required />
+
             <FormTextField name='description' label='Description' />
-            <FormSelect name='status' label='Status'>
-              {ProjectStatusSchema.options.map((status) => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </FormSelect>
-            <FormSelect name='priority' label='Priority'>
-              {ProjectPrioritySchema.options.map((priority) => (
-                <MenuItem key={priority} value={priority}>
-                  {priority}
-                </MenuItem>
-              ))}
-            </FormSelect>
+
+            <Stack direction={'row'} spacing={2}>
+              <FormSelect name='status' label='Status' required>
+                {statuses.map(({ value, label }) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </FormSelect>
+
+              <FormSelect name='priority' label='Priority' required>
+                {priorities.map(({ value, label }) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </FormSelect>
+            </Stack>
+
             <FormDatePicker name='dueDate' label='Due Date' />
-          </Box>
+
+            <Divider>
+              <Typography variant='subtitle2'>Project Team</Typography>
+            </Divider>
+
+            <FormAutocomplete
+              name='leads'
+              label='Leads'
+              multiple
+              options={leadOptions}
+              isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              filterSelectedOptions
+              disableCloseOnSelect
+              loading={isLoading}
+            />
+
+            <FormAutocomplete
+              name='members'
+              label='Members'
+              multiple
+              options={memberOptions}
+              isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              filterSelectedOptions
+              disableCloseOnSelect
+              loading={isLoading}
+            />
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button

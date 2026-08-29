@@ -6,8 +6,8 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { ArrowRightIcon, MoreIcon } from '../../../components/icons';
-import type { Project } from '../types/project.types';
+import { ArrowRightIcon, MoreIcon } from '../../../shared/icons';
+import type { Project } from '../types';
 import type { AllProjectSectionProps } from './AllProjectsSection';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
