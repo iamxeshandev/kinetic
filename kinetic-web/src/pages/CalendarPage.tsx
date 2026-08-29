@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { CalendarView } from '../features/calendar';
+import { CalendarView } from '../features/calendar/components';
 
 export function Component() {
   return (

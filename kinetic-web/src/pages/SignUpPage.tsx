@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { SignUpView } from '../features/auth';
+import { SignUpView } from '../features/auth/components';
 
 export function Component() {
   return (

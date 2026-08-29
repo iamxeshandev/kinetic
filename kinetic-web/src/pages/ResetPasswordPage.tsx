@@ -1,5 +1,5 @@
 import { config } from '../config';
-import { ResetPasswordView } from '../features/auth';
+import { ResetPasswordView } from '../features/auth/components';
 
 export function Component() {
   return (

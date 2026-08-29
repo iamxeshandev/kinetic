@@ -1,11 +1,11 @@
 import { config } from '../config';
-import { TeamsView } from '../features/teams';
+import { UsersView } from '../features/users/components';
 
 export function Component() {
   return (
     <>
       <title>{`Teams | ${config.appName}`}</title>
-      <TeamsView />
+      <UsersView />
     </>
   );
 }
