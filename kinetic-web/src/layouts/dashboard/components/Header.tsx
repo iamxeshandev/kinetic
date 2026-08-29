@@ -9,17 +9,17 @@ import {
 import { useState } from 'react';
 import { LuBell, LuLogOut, LuSearch, LuSettings, LuUser } from 'react-icons/lu';
 import { useNavigate } from 'react-router';
-import { toast } from '../../../components/toast';
+import { config } from '../../../config';
+import { authApi } from '../../../features/auth/api';
+import { removeUserSession } from '../../../features/auth/helpers';
+import { paths } from '../../../routes/paths';
+import { toast } from '../../../shared/toast';
 import {
   ActionMenu,
   Logo,
   ThemeSwitcher,
   type ActionMenuProps,
-} from '../../../components/ui';
-import { config } from '../../../config';
-import { authApi } from '../../../features/auth';
-import { removeUserSession } from '../../../features/auth/helpers/user-session';
-import { paths } from '../../../routes/paths';
+} from '../../../shared/ui';
 
 export function Header({ sx, ...props }: BoxProps) {
   const navigate = useNavigate();

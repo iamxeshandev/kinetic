@@ -2,7 +2,7 @@ import { Box, Container } from '@mui/material';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'motion/react';
 import { Navigate, useLocation, useOutlet } from 'react-router';
-import { getUserSession } from '../../features/auth/helpers/user-session';
+import { getUserSession } from '../../features/auth/helpers';
 import { paths } from '../../routes';
 
 export function AuthLayout() {

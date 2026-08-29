@@ -8,7 +8,7 @@ import {
   MdGroups,
 } from 'react-icons/md';
 import { Navigate, useLocation, useOutlet } from 'react-router';
-import { getUserSession } from '../../features/auth/helpers/user-session';
+import { getUserSession } from '../../features/auth/helpers';
 import { paths } from '../../routes';
 import { Header } from './components/Header';
 import { Navbar, type NavbarProps } from './components/Navbar';
