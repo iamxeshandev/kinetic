@@ -19,6 +19,6 @@ export const paths = {
     dashboard: `/workspaces/${workspaceId}/dashboard`,
     projects: `/workspaces/${workspaceId}/projects`,
     calendar: `/workspaces/${workspaceId}/calendar`,
-    teams: `/workspaces/${workspaceId}/teams`,
+    users: `/workspaces/${workspaceId}/users`,
   }),
 };
