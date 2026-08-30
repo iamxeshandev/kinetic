@@ -31,9 +31,6 @@ api.interceptors.response.use(
         );
         router.navigate(paths.auth.signIn, { replace: true });
         break;
-      case 403:
-        toast.error('You are not authorized to access this resource');
-        break;
     }
 
     return Promise.reject(error.response.data);

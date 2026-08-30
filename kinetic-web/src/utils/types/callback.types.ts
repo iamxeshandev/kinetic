@@ -1,2 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Callback = (...args: any[]) => unknown;
+export type Callback<TArgs extends unknown[] = [], R = unknown> = (
+  ...args: TArgs
+) => R;
