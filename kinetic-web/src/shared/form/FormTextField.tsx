@@ -5,7 +5,7 @@ import {
   type ControllerProps,
 } from 'react-hook-form';
 
-type FormTextFieldProps = Omit<TextFieldProps, keyof ControllerProps> & {
+type FormTextFieldProps = Omit<TextFieldProps, 'value' | 'onChange'> & {
   name: ControllerProps['name'];
 };
 
