@@ -1,3 +1,4 @@
+export * from './AccountAvatar';
 export * from './ActionMenu';
 export * from './Label';
 export * from './ListHeader';

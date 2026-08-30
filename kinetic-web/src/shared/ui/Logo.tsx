@@ -1,34 +1,47 @@
-import { Box, type BoxProps } from '@mui/material';
-import { Link, type LinkProps } from 'react-router';
+import { Box, Typography, type BoxProps } from '@mui/material';
+import { Link as RouterLink, type LinkProps } from 'react-router';
 import logoImg from '../../assets/logo.svg';
 import { config } from '../../config';
 import { paths } from '../../routes';
 
-export type LogoProps = BoxProps<'img'> & {
+export type LogoProps = Omit<BoxProps, 'component'> & {
   isLink?: boolean;
   to?: LinkProps['to'];
+  full?: boolean;
 };
 
 export function Logo({
   isLink = true,
   to = paths.home.root,
+  full = false,
   sx,
   ...props
 }: LogoProps) {
   return (
     <Box
-      component={isLink ? Link : 'div'}
-      role='link'
-      to={to}
+      component={isLink ? RouterLink : 'div'}
+      to={isLink ? to : undefined}
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 1,
+        textDecoration: 'none',
+        color: 'primary.main',
+        ...sx,
+      }}
       {...props}
-      sx={{ display: 'inline-flex', flexShrink: 0, width: 40, ...sx }}
     >
       <Box
-        component={'img'}
+        component='img'
         src={logoImg}
         alt={config.appName}
-        sx={{ width: 1 }}
+        sx={{
+          width: { xs: 32, sm: 40 },
+          height: 'auto',
+          display: 'block',
+        }}
       />
+      {full && <Typography variant='h1'>{config.appName}</Typography>}
     </Box>
   );
 }

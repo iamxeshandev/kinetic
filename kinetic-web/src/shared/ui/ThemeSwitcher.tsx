@@ -3,7 +3,7 @@ import {
   useColorScheme,
   type IconButtonProps,
 } from '@mui/material';
-import { LuContrast, LuMoon, LuSun } from 'react-icons/lu';
+import { ContrastIcon, MoonIcon, SunIcon } from '../icons';
 
 export function ThemeSwitcher(props: IconButtonProps) {
   const { mode, setMode } = useColorScheme();
@@ -19,7 +19,7 @@ export function ThemeSwitcher(props: IconButtonProps) {
 }
 
 const THEME_ICONS = {
-  system: <LuContrast />,
-  light: <LuSun />,
-  dark: <LuMoon />,
+  system: <ContrastIcon />,
+  light: <SunIcon />,
+  dark: <MoonIcon />,
 };
