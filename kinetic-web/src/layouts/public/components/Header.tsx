@@ -1,6 +1,6 @@
 import { Box, Button, Container, useMediaQuery } from '@mui/material';
 import { NavLink } from 'react-router';
-import { getUserSession } from '../../../features/auth/helpers';
+import { useAuthContext } from '../../../features/auth/context';
 import { paths } from '../../../routes/paths';
 import { Logo } from '../../../shared/ui/Logo';
 import { ThemeSwitcher } from '../../../shared/ui/ThemeSwitcher';
@@ -8,9 +8,9 @@ import { NavHorizontal, type NavHorizontalProps } from './NavHorizontal';
 import { NavMobile, type NavMobileProps } from './NavMobile';
 
 export function Header() {
-  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const { user } = useAuthContext();
 
-  const user = getUserSession();
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   return (
     <Box component={'header'} className='glass'>
@@ -32,10 +32,10 @@ export function Header() {
 
         <ThemeSwitcher />
 
-        {user ? (
+        {user?.currentWorkspace ? (
           <Button
             component={NavLink}
-            to={paths.workspaces(user.defaultWorkspaceId).dashboard}
+            to={paths.workspaces.dashboard(user.currentWorkspace.id)}
           >
             Dashboard
           </Button>

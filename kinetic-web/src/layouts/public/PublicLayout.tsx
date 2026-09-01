@@ -3,11 +3,19 @@ import { Outlet } from 'react-router';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 
-export function MainLayout() {
+export function PublicLayout() {
   return (
     <>
       <Header />
-      <Container component={'main'}>
+      <Container
+        component={'main'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          p: 2,
+        }}
+      >
         <Outlet />
       </Container>
       <Footer />
@@ -15,4 +23,4 @@ export function MainLayout() {
   );
 }
 
-export { MainLayout as Component };
+export { PublicLayout as Component };

@@ -1,22 +1,13 @@
 import { Box, Container } from '@mui/material';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'motion/react';
-import { Navigate, useLocation, useOutlet } from 'react-router';
-import { getUserSession } from '../../features/auth/helpers';
-import { paths } from '../../routes';
+import { useLocation, useOutlet } from 'react-router';
 
 export function AuthLayout() {
   const location = useLocation();
   const outlet = useOutlet();
 
-  const user = getUserSession();
-
-  return user ? (
-    <Navigate
-      to={paths.workspaces(user.defaultWorkspaceId).dashboard}
-      replace
-    />
-  ) : (
+  return (
     <>
       <Container
         component={'main'}

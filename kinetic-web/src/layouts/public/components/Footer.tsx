@@ -1,6 +1,6 @@
 import { Container, Grid, Link, Paper, Typography } from '@mui/material';
 import { NavLink } from 'react-router';
-import { config } from '../../../config';
+import { CONFIG } from '../../../config';
 import { paths } from '../../../routes/paths';
 
 export function Footer() {
@@ -9,10 +9,10 @@ export function Footer() {
       <Container component={Grid} container spacing={4} sx={{ py: 8 }}>
         <Grid size={{ xs: 12, md: 4.5 }}>
           <Typography variant='h5' sx={{ mb: 2 }}>
-            {config.appName}
+            {CONFIG.APP_NAME}
           </Typography>
           <Typography>
-            &copy; {new Date().getFullYear()} {config.appName}, All rights
+            &copy; {new Date().getFullYear()} {CONFIG.APP_NAME}, All rights
             reserved.
           </Typography>
         </Grid>

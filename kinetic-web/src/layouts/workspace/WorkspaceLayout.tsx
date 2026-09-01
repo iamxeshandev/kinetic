@@ -7,13 +7,16 @@ import {
   MdDashboard,
   MdGroups,
 } from 'react-icons/md';
-import { Navigate, useLocation, useOutlet } from 'react-router';
-import { getUserSession } from '../../features/auth/helpers';
+import { useLocation, useOutlet, useParams } from 'react-router';
+import { useAuthContext } from '../../features/auth/context';
 import { paths } from '../../routes';
 import { Header } from './components/Header';
 import { Navbar, type NavbarProps } from './components/Navbar';
 
-export function DashboardLayout() {
+export function WorkspaceLayout() {
+  const { workspaceId } = useParams();
+  const { user } = useAuthContext();
+
   const location = useLocation();
   const outlet = useOutlet();
 
@@ -26,14 +29,37 @@ export function DashboardLayout() {
     }
   };
 
-  const user = getUserSession();
+  const navLinks = (workspaceId: string): NavbarProps['navLinks'] => [
+    {
+      label: 'Dashboard',
+      icon: <MdDashboard />,
+      path: paths.workspaces.dashboard(workspaceId),
+    },
+    {
+      label: 'Projects',
+      icon: <MdAssignment />,
+      path: paths.workspaces.projects(workspaceId),
+    },
+    {
+      label: 'Calendar',
+      icon: <MdCalendarMonth />,
+      path: paths.workspaces.calendar(workspaceId),
+    },
+    ...(!user?.currentWorkspace?.isPersonal
+      ? [
+          {
+            label: 'Users',
+            icon: <MdGroups />,
+            path: paths.workspaces.users(workspaceId),
+          },
+        ]
+      : []),
+  ];
 
-  return !user ? (
-    <Navigate to={paths.auth.signIn} replace />
-  ) : (
+  return (
     <>
       <Header sx={{ ml: { xs: 0, sm: `${size.width}px` } }} />
-      <Navbar ref={navbarRef} navLinks={navLinks(user.defaultWorkspaceId)} />
+      <Navbar ref={navbarRef} navLinks={navLinks(workspaceId ?? 'undefined')} />
       <Container
         component={'main'}
         maxWidth={false}
@@ -56,6 +82,12 @@ export function DashboardLayout() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.2 }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              width: 1,
+            }}
           >
             {outlet}
           </Box>
@@ -65,27 +97,4 @@ export function DashboardLayout() {
   );
 }
 
-export { DashboardLayout as Component };
-
-const navLinks = (workspaceId: string): NavbarProps['navLinks'] => [
-  {
-    label: 'Dashboard',
-    icon: <MdDashboard />,
-    path: paths.workspaces(workspaceId).dashboard,
-  },
-  {
-    label: 'Projects',
-    icon: <MdAssignment />,
-    path: paths.workspaces(workspaceId).projects,
-  },
-  {
-    label: 'Calendar',
-    icon: <MdCalendarMonth />,
-    path: paths.workspaces(workspaceId).calendar,
-  },
-  {
-    label: 'Teams',
-    icon: <MdGroups />,
-    path: paths.workspaces(workspaceId).teams,
-  },
-];
+export { WorkspaceLayout as Component };
