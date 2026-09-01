@@ -1,6 +1,7 @@
 // * All paths must start with a slash
 
 export const paths = {
+  notFound: '/404',
   home: {
     root: '/',
   },
@@ -15,10 +16,14 @@ export const paths = {
     signUp: '/auth/sign-up',
     resetPassword: '/auth/reset-password',
   },
-  workspaces: (workspaceId: string) => ({
-    dashboard: `/workspaces/${workspaceId}/dashboard`,
-    projects: `/workspaces/${workspaceId}/projects`,
-    calendar: `/workspaces/${workspaceId}/calendar`,
-    users: `/workspaces/${workspaceId}/users`,
-  }),
-};
+  workspaces: {
+    root: '/workspaces',
+    detail: (workspaceId: string) => `/workspaces/${workspaceId}`,
+    dashboard: (workspaceId: string) => `/workspaces/${workspaceId}/dashboard`,
+    projects: (workspaceId: string) => `/workspaces/${workspaceId}/projects`,
+    calendar: (workspaceId: string) => `/workspaces/${workspaceId}/calendar`,
+    users: (workspaceId: string) => `/workspaces/${workspaceId}/users`,
+    settings: (workspaceId: string, section: string = 'general') =>
+      `/workspaces/${workspaceId}/settings?tab=${section}`,
+  },
+} as const;

@@ -1,43 +1,86 @@
-import { createHashRouter } from 'react-router';
+import { createHashRouter, Outlet } from 'react-router';
+import { GuestGuard } from '../features/auth/components';
+import { AuthGuard } from '../features/auth/components/AuthGuard';
+import { SplashScreen } from '../shared/ui';
 
 export const router = createHashRouter([
   {
     path: '',
-    lazy: () => import('../layouts/public'),
+    HydrateFallback: SplashScreen,
+    lazy: () => import('../layouts/root'),
     children: [
-      { index: true, lazy: () => import('../pages/HomePage') },
-      { path: 'about', lazy: () => import('../pages/AboutPage') },
-      { path: 'contact', lazy: () => import('../pages/ContactPage') },
-    ],
-  },
-  {
-    path: 'auth',
-    lazy: () => import('../layouts/auth'),
-    children: [
-      { path: 'sign-in', lazy: () => import('../pages/SignInPage') },
-      { path: 'sign-up', lazy: () => import('../pages/SignUpPage') },
+      // * Public Routes
       {
-        path: 'reset-password',
-        lazy: () => import('../pages/ResetPasswordPage'),
+        path: '',
+        lazy: () => import('../layouts/public'),
+        children: [
+          { index: true, lazy: () => import('../pages/home') },
+          { path: 'about', lazy: () => import('../pages/about') },
+          { path: 'contact', lazy: () => import('../pages/contact') },
+        ],
       },
-    ],
-  },
-  {
-    path: '',
-    lazy: () => import('../layouts/account'),
-    children: [
-      { path: 'workspaces', lazy: () => import('../pages/WorkspacesPage') },
-      { path: 'account', lazy: () => import('../pages/AccountPage') },
-    ],
-  },
-  {
-    path: 'workspaces/:workspaceId',
-    lazy: () => import('../layouts/workspace'),
-    children: [
-      { path: 'dashboard', lazy: () => import('../pages/DashboardPage') },
-      { path: 'projects', lazy: () => import('../pages/ProjectsPage') },
-      { path: 'calendar', lazy: () => import('../pages/CalendarPage') },
-      { path: 'users', lazy: () => import('../pages/UsersPage') },
+
+      // * Guest Routes
+      {
+        element: (
+          <GuestGuard>
+            <Outlet />
+          </GuestGuard>
+        ),
+        children: [
+          {
+            path: 'auth',
+            lazy: () => import('../layouts/auth'),
+            children: [
+              { path: 'sign-in', lazy: () => import('../pages/sign-in') },
+              { path: 'sign-up', lazy: () => import('../pages/sign-up') },
+              {
+                path: 'reset-password',
+                lazy: () => import('../pages/reset-password'),
+              },
+            ],
+          },
+        ],
+      },
+
+      // * Protected Routes
+      {
+        element: (
+          <AuthGuard>
+            <Outlet />
+          </AuthGuard>
+        ),
+        children: [
+          {
+            path: '',
+            lazy: () => import('../layouts/account'),
+            children: [
+              { path: 'workspaces', lazy: () => import('../pages/workspaces') },
+              { path: 'account', lazy: () => import('../pages/account') },
+            ],
+          },
+          {
+            path: 'workspaces/:workspaceId',
+            lazy: () => import('../layouts/workspace'),
+            children: [
+              { path: 'dashboard', lazy: () => import('../pages/dashboard') },
+              { path: 'projects', lazy: () => import('../pages/projects') },
+              { path: 'calendar', lazy: () => import('../pages/calendar') },
+              { path: 'users', lazy: () => import('../pages/users') },
+            ],
+          },
+        ],
+      },
+
+      // * Error Routes
+      {
+        path: '',
+        lazy: () => import('../layouts/error'),
+        children: [
+          { path: '404', lazy: () => import('../pages/404') },
+          { path: '*', lazy: () => import('../pages/404') },
+        ],
+      },
     ],
   },
 ]);
