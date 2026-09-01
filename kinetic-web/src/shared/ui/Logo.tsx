@@ -1,7 +1,7 @@
 import { Box, Typography, type BoxProps } from '@mui/material';
 import { Link as RouterLink, type LinkProps } from 'react-router';
 import logoImg from '../../assets/logo.svg';
-import { config } from '../../config';
+import { CONFIG } from '../../config';
 import { paths } from '../../routes';
 
 export type LogoProps = Omit<BoxProps, 'component'> & {
@@ -34,14 +34,14 @@ export function Logo({
       <Box
         component='img'
         src={logoImg}
-        alt={config.appName}
+        alt={CONFIG.APP_NAME}
         sx={{
           width: { xs: 32, sm: 40 },
           height: 'auto',
           display: 'block',
         }}
       />
-      {full && <Typography variant='h1'>{config.appName}</Typography>}
+      {full && <Typography variant='h1'>{CONFIG.APP_NAME}</Typography>}
     </Box>
   );
 }

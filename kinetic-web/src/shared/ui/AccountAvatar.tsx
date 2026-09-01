@@ -1,21 +1,19 @@
 import { Avatar } from '@mui/material';
-import { useNavigate } from 'react-router';
 import { authApi } from '../../features/auth/api';
-import { removeUserSession } from '../../features/auth/helpers';
-import { paths } from '../../routes';
+import { useAuthContext } from '../../features/auth/context';
+import { getInitials } from '../../utils/helpers';
 import { LogoutIcon, SettingsIcon, UserIcon } from '../icons';
 import { ActionMenuIconButton, type ActionMenuButtonProps } from './ActionMenu';
 
 export function AccountAvatar() {
-  const navigate = useNavigate();
+  const { user, setUser } = useAuthContext();
+
+  const initials = getInitials(user?.fullName ?? 'User');
 
   const handleSignOut = () =>
     authApi
       .logout()
-      .then(() => {
-        removeUserSession();
-        navigate(paths.auth.signIn);
-      })
+      .then(() => setUser(undefined))
       .catch((err) => console.error(err));
 
   const actions: ActionMenuButtonProps['actions'] = [
@@ -31,7 +29,7 @@ export function AccountAvatar() {
 
   return (
     <ActionMenuIconButton actions={actions}>
-      <Avatar size='large'>JD</Avatar>
+      <Avatar size='large'>{initials}</Avatar>
     </ActionMenuIconButton>
   );
 }

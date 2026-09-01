@@ -1,4 +1,5 @@
 import { styled } from '@mui/material';
+import type { ComponentPropsWithoutRef } from 'react';
 import type { IconType } from 'react-icons/lib';
 import type { ColorToken } from '../../theme';
 
@@ -6,7 +7,7 @@ export type StyledIconProps = {
   icon: IconType;
   size?: 'small' | 'medium' | 'large';
   color?: ColorToken | 'inherit';
-};
+} & ComponentPropsWithoutRef<'svg'>;
 
 export const StyledIcon = styled(
   ({ icon: Component, ...props }: StyledIconProps) => <Component {...props} />,

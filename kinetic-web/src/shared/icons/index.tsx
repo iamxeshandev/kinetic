@@ -15,6 +15,7 @@ import {
   LuSun,
   LuTrash,
   LuUser,
+  LuUsers,
 } from 'react-icons/lu';
 
 export const AddIcon = LuPlus;
@@ -30,6 +31,8 @@ export const ArrowUpIcon = LuArrowUp;
 export const CalendarIcon = LuCalendar;
 
 export const ContrastIcon = LuContrast;
+
+export const LogoutIcon = LuLogOut;
 
 export const MoonIcon = LuMoon;
 
@@ -49,4 +52,4 @@ export const TrashIcon = LuTrash;
 
 export const UserIcon = LuUser;
 
-export const LogoutIcon = LuLogOut;
+export const UsersIcon = LuUsers;
