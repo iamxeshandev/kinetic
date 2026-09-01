@@ -1,7 +1,6 @@
 import axios, { AxiosError, type AxiosResponse } from 'axios';
-import { removeUserSession } from '../../features/auth/helpers';
 import { paths, router } from '../../routes';
-import { toast } from '../../shared/toast';
+import { CONFIG } from './../../config';
 
 export type ApiResponse<T = void> = {
   data?: T;
@@ -17,7 +16,6 @@ api.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => response,
   (error: AxiosError<ApiResponse>) => {
     if (!error.response) {
-      toast.error("Can't connect to server");
       return Promise.reject(error);
     }
 
@@ -25,10 +23,7 @@ api.interceptors.response.use(
 
     switch (error.response.status) {
       case 401:
-        removeUserSession();
-        toast.error(
-          error.response?.data?.message ?? 'You have been logged out!',
-        );
+        localStorage.removeItem(CONFIG.STORAGE_KEYS.USER);
         router.navigate(paths.auth.signIn, { replace: true });
         break;
     }
