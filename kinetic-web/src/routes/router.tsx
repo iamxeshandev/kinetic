@@ -1,7 +1,6 @@
 import { createHashRouter, Outlet } from 'react-router';
-import { GuestGuard } from '../features/auth/components';
-import { AuthGuard } from '../features/auth/components/AuthGuard';
-import { SplashScreen } from '../shared/ui';
+import { SplashScreen } from '../shared/components/ui';
+import { AuthGuard, GuestGuard } from '../shared/guards';
 
 export const router = createHashRouter([
   {
@@ -64,7 +63,16 @@ export const router = createHashRouter([
             lazy: () => import('../layouts/workspace'),
             children: [
               { path: 'dashboard', lazy: () => import('../pages/dashboard') },
-              { path: 'projects', lazy: () => import('../pages/projects') },
+              {
+                path: 'projects',
+                children: [
+                  { index: true, lazy: () => import('../pages/projects') },
+                  {
+                    path: ':projectId',
+                    lazy: () => import('../pages/project-details'),
+                  },
+                ],
+              },
               { path: 'calendar', lazy: () => import('../pages/calendar') },
               { path: 'users', lazy: () => import('../pages/users') },
             ],

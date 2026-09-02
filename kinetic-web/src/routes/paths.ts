@@ -18,9 +18,12 @@ export const paths = {
   },
   workspaces: {
     root: '/workspaces',
-    detail: (workspaceId: string) => `/workspaces/${workspaceId}`,
     dashboard: (workspaceId: string) => `/workspaces/${workspaceId}/dashboard`,
-    projects: (workspaceId: string) => `/workspaces/${workspaceId}/projects`,
+    projects: {
+      root: (workspaceId: string) => `/workspaces/${workspaceId}/projects`,
+      details: (workspaceId: string, projectId: string) =>
+        `/workspaces/${workspaceId}/projects/${projectId}`,
+    },
     calendar: (workspaceId: string) => `/workspaces/${workspaceId}/calendar`,
     users: (workspaceId: string) => `/workspaces/${workspaceId}/users`,
     settings: (workspaceId: string, section: string = 'general') =>
