@@ -1,6 +1,6 @@
 import { Box, styled, type CSSObject } from '@mui/material';
-import type { ColorToken } from '../../theme';
-import { varAlpha } from '../../utils/helpers';
+import type { ColorToken } from '../../../theme';
+import { varAlpha } from '../../helpers';
 
 const styles: Record<string, CSSObject> = {
   small: { fontSize: '0.75rem', paddingBlock: 4, paddingInline: 8 },

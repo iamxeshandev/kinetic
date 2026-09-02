@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
-import type { Callback } from '../../utils/types/callback.types';
+import type { Callback } from '../../types';
 
 export type ConfirmDialogProps = {
   open: boolean;

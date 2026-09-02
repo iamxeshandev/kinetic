@@ -1,7 +1,7 @@
 import { Avatar } from '@mui/material';
-import { authApi } from '../../features/auth/api';
-import { useAuthContext } from '../../features/auth/context';
-import { getInitials } from '../../utils/helpers';
+import { authApi } from '../../../features/auth/api';
+import { useAuthContext } from '../../../features/auth/context';
+import { getInitials } from '../../helpers';
 import { LogoutIcon, SettingsIcon, UserIcon } from '../icons';
 import { ActionMenuIconButton, type ActionMenuButtonProps } from './ActionMenu';
 

@@ -1,8 +1,8 @@
 import { Box, Typography, type BoxProps } from '@mui/material';
 import { Link as RouterLink, type LinkProps } from 'react-router';
-import logoImg from '../../assets/logo.svg';
-import { CONFIG } from '../../config';
-import { paths } from '../../routes';
+import logoImg from '../../../assets/logo.svg';
+import { CONFIG } from '../../../config';
+import { paths } from '../../../routes';
 
 export type LogoProps = Omit<BoxProps, 'component'> & {
   isLink?: boolean;

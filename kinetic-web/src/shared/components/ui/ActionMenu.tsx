@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { LuChevronDown, LuEllipsisVertical } from 'react-icons/lu';
-import type { Callback } from '../../utils/types/callback.types';
+import type { Callback } from '../../types';
 
 // ***************************************************************************
 // * ActionMenu
