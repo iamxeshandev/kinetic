@@ -1,5 +1,5 @@
 import { type CSSObject, type Theme } from '@mui/material';
-import { varAlpha } from '../utils/helpers';
+import { varAlpha } from '../shared/helpers';
 
 export const styles = (theme: Theme): Record<string, CSSObject> => ({
   '*': {
