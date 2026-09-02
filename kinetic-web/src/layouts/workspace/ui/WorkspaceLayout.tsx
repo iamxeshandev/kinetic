@@ -1,6 +1,5 @@
 import { Box, Container } from '@mui/material';
 import { AnimatePresence, motion } from 'motion/react';
-import { useState } from 'react';
 import {
   MdAssignment,
   MdCalendarMonth,
@@ -8,49 +7,47 @@ import {
   MdGroups,
 } from 'react-icons/md';
 import { useLocation, useOutlet, useParams } from 'react-router';
-import { useAuthContext } from '../../features/auth/context';
-import { paths } from '../../routes';
-import { Header } from './components/Header';
-import { Navbar, type NavbarProps } from './components/Navbar';
+import { useAuthContext } from '../../../features/auth/context';
+import { paths } from '../../../routes';
+import { useResizeObserver } from '../../../shared/hooks';
+import { Header } from './Header';
+import { NavbarDesktop, type NavbarDesktopProps } from './NavbarDesktop';
+import { NavbarMobile } from './NavbarMobile';
 
 export function WorkspaceLayout() {
   const { workspaceId } = useParams();
+
   const { user } = useAuthContext();
 
   const location = useLocation();
+
   const outlet = useOutlet();
 
-  const [size, setSize] = useState({ width: 0, height: 0 });
+  const { ref: navbarDesktopRef, width } = useResizeObserver();
+  const { ref: navbarMobileRef, height } = useResizeObserver();
 
-  const navbarRef = (node: HTMLElement) => {
-    if (node) {
-      const { width, height } = node.getBoundingClientRect();
-      setSize({ width, height });
-    }
-  };
-
-  const navLinks = (workspaceId: string): NavbarProps['navLinks'] => [
+  const navLinks: NavbarDesktopProps['navLinks'] = [
     {
       label: 'Dashboard',
       icon: <MdDashboard />,
-      path: paths.workspaces.dashboard(workspaceId),
+      path: paths.workspaces.dashboard(workspaceId ?? 'undefined'),
     },
     {
       label: 'Projects',
       icon: <MdAssignment />,
-      path: paths.workspaces.projects(workspaceId),
+      path: paths.workspaces.projects.root(workspaceId ?? 'undefined'),
     },
     {
       label: 'Calendar',
       icon: <MdCalendarMonth />,
-      path: paths.workspaces.calendar(workspaceId),
+      path: paths.workspaces.calendar(workspaceId ?? 'undefined'),
     },
     ...(!user?.currentWorkspace?.isPersonal
       ? [
           {
             label: 'Users',
             icon: <MdGroups />,
-            path: paths.workspaces.users(workspaceId),
+            path: paths.workspaces.users(workspaceId ?? 'undefined'),
           },
         ]
       : []),
@@ -58,20 +55,19 @@ export function WorkspaceLayout() {
 
   return (
     <>
-      <Header sx={{ ml: { xs: 0, sm: `${size.width}px` } }} />
-      <Navbar ref={navbarRef} navLinks={navLinks(workspaceId ?? 'undefined')} />
+      <Header sx={{ ml: { xs: 0, sm: `${width}px` } }} />
+
+      <NavbarDesktop ref={navbarDesktopRef} navLinks={navLinks} />
+
       <Container
         component={'main'}
         maxWidth={false}
         sx={{
           p: 2,
-          mb: { xs: `${size.height}px`, sm: 0 },
-          pl: (theme) => ({
-            xs: theme.spacing(2),
-            sm: `calc(${size.width}px + ${theme.spacing(3)})`,
-          }),
           overflowX: 'hidden',
-          width: 1,
+          width: { xs: 1, sm: `calc(100% - ${width}px)` },
+          ml: { xs: 0, sm: `${width}px` },
+          mb: { xs: `${height}px`, sm: 0 },
         }}
       >
         <AnimatePresence mode='wait'>
@@ -93,6 +89,8 @@ export function WorkspaceLayout() {
           </Box>
         </AnimatePresence>
       </Container>
+
+      <NavbarMobile ref={navbarMobileRef} navLinks={navLinks} />
     </>
   );
 }

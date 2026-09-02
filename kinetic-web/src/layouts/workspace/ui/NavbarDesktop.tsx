@@ -1,10 +1,10 @@
 import { Box, Drawer, IconButton } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { Logo } from '../../../shared/ui';
-import { varAlpha } from '../../../utils/helpers';
+import { Logo } from '../../../shared/components/ui';
+import { varAlpha } from '../../../shared/helpers';
 
-export type NavDesktopProps = {
+export type NavbarDesktopProps = {
   navLinks: Array<{
     label: string;
     icon: React.ReactElement;
@@ -12,15 +12,18 @@ export type NavDesktopProps = {
   }>;
 };
 
-export const NavDesktop = forwardRef(
-  ({ navLinks }: NavDesktopProps, ref: React.Ref<HTMLElement>) => {
+export const NavbarDesktop = forwardRef(
+  ({ navLinks }: NavbarDesktopProps, ref: React.Ref<HTMLElement>) => {
     const location = useLocation();
+
     const navigate = useNavigate();
+
     return (
       <Drawer
         component={'nav'}
         variant='permanent'
-        slotProps={{ paper: { ref: ref, id: 'dashboard-layout-nav-desktop' } }}
+        slotProps={{ paper: { ref: ref } }}
+        sx={{ display: { xs: 'none', sm: 'block' } }}
       >
         <Box
           sx={{
@@ -34,7 +37,7 @@ export const NavDesktop = forwardRef(
           <Logo sx={{ mb: 2, width: 32 }} />
 
           {navLinks.map(({ icon, path }) => {
-            const isActive = location.pathname === path;
+            const isActive = location.pathname.includes(path);
             return (
               <Box
                 key={path}

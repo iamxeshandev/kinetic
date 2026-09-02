@@ -3,7 +3,7 @@ import { SimpleTreeView, TreeItem } from '@mui/x-tree-view';
 import { useState } from 'react';
 import { LuMenu } from 'react-icons/lu';
 import { useLocation, useNavigate } from 'react-router';
-import { Logo } from '../../../shared/ui/Logo.tsx';
+import { Logo } from '../../../shared/components/ui/Logo';
 
 export type NavMobileProps = {
   navLinks: Array<{ label: string; to: string }>;

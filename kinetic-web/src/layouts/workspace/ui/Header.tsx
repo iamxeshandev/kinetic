@@ -8,7 +8,11 @@ import {
 import { LuBell, LuSearch } from 'react-icons/lu';
 import { CONFIG } from '../../../config';
 import { WorkspaceSwitcher } from '../../../features/workspaces/components';
-import { AccountAvatar, Logo, ThemeSwitcher } from '../../../shared/ui';
+import {
+  AccountAvatar,
+  Logo,
+  ThemeSwitcher,
+} from '../../../shared/components/ui';
 
 export function Header({ sx, ...props }: BoxProps) {
   return (

@@ -2,8 +2,8 @@ import { Box, Button, Container, useMediaQuery } from '@mui/material';
 import { NavLink } from 'react-router';
 import { useAuthContext } from '../../../features/auth/context';
 import { paths } from '../../../routes/paths';
-import { Logo } from '../../../shared/ui/Logo';
-import { ThemeSwitcher } from '../../../shared/ui/ThemeSwitcher';
+import { Logo } from '../../../shared/components/ui/Logo';
+import { ThemeSwitcher } from '../../../shared/components/ui/ThemeSwitcher';
 import { NavHorizontal, type NavHorizontalProps } from './NavHorizontal';
 import { NavMobile, type NavMobileProps } from './NavMobile';
 

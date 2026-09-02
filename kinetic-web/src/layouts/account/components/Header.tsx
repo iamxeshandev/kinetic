@@ -1,5 +1,9 @@
 import { Box, Container } from '@mui/material';
-import { AccountAvatar, Logo, ThemeSwitcher } from '../../../shared/ui';
+import {
+  AccountAvatar,
+  Logo,
+  ThemeSwitcher,
+} from '../../../shared/components/ui';
 
 export function Header() {
   return (

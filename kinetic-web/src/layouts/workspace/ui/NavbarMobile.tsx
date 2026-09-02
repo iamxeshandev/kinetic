@@ -1,10 +1,9 @@
-import { forwardRef } from 'react';
-
 import { Box, IconButton } from '@mui/material';
+import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { varAlpha } from '../../../utils/helpers';
+import { varAlpha } from '../../../shared/helpers';
 
-export type NavMobileProps = {
+export type NavbarMobileProps = {
   navLinks: Array<{
     label: string;
     icon: React.ReactElement;
@@ -12,24 +11,23 @@ export type NavMobileProps = {
   }>;
 };
 
-export const NavMobile = forwardRef(
-  ({ navLinks }: NavMobileProps, ref: React.Ref<HTMLElement>) => {
+export const NavbarMobile = forwardRef(
+  ({ navLinks }: NavbarMobileProps, ref: React.Ref<HTMLElement>) => {
     const location = useLocation();
     const navigate = useNavigate();
 
     return (
       <Box
-        id='dashboard-layout-nav-mobile'
+        ref={ref}
         component={'nav'}
         className='glass'
-        ref={ref}
         sx={{
           position: 'fixed',
-          bottom: -1,
+          bottom: 0,
           width: 1,
           px: 2,
           py: 1,
-          display: 'flex',
+          display: { xs: 'flex', sm: 'none' },
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: 2,
