@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { ProjectsView } from '../../features/projects/components';
+import { ProjectsView } from '../../features/projects/ui';
 
 export function ProjectsPage() {
   return (
