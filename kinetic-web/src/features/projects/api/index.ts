@@ -1,34 +1,35 @@
-import { api, type ApiResponse } from '../../../utils/axios';
-import type { Project, ProjectForm } from '../types';
+import { api, type ApiResponse } from '../../../shared/api';
+import type { Project } from '../types';
 
-const baseUrl = (workspaceId: string) =>
+export const projectsUrl = (workspaceId: string) =>
   `api/workspaces/${workspaceId}/projects`;
+
+export const projectUrl = (workspaceId: string, id: Project['id']) =>
+  `api/workspaces/${workspaceId}/projects/${id}`;
 
 export const projectsApi = {
   getAll: (workspaceId: string) =>
     api
-      .get<ApiResponse<Project[]>>(baseUrl(workspaceId))
+      .get<ApiResponse<Project[]>>(projectsUrl(workspaceId))
       .then((res) => res.data),
 
   getById: (workspaceId: string, id: Project['id']) =>
     api
-      .get<ApiResponse<Project>>(`${baseUrl(workspaceId)}/${id}`)
+      .get<ApiResponse<Project>>(projectUrl(workspaceId, id))
       .then((res) => res.data),
 
-  create: (workspaceId: string, data: ProjectForm) =>
+  create: (workspaceId: string, data: Omit<Project, 'id'>) =>
     api
-      .post<ApiResponse<Project>>(`${baseUrl(workspaceId)}`, data)
+      .post<ApiResponse<Project>>(`${projectsUrl(workspaceId)}`, data)
       .then((res) => res.data),
 
-  update: (workspaceId: string, id: Project['id'], data: ProjectForm) =>
+  update: (workspaceId: string, id: Project['id'], data: Omit<Project, 'id'>) =>
     api
-      .put<ApiResponse<Project>>(`${baseUrl(workspaceId)}/${id}`, data)
+      .put<ApiResponse<Project>>(projectUrl(workspaceId, id), data)
       .then((res) => res.data),
 
   delete: (workspaceId: string, id: Project['id']) =>
     api
-      .delete<ApiResponse>(`${baseUrl(workspaceId)}/${id}`)
+      .delete<ApiResponse>(projectUrl(workspaceId, id))
       .then((res) => res.data),
 };
-
-export const projectsKey = baseUrl;

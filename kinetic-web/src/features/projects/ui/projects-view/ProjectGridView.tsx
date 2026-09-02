@@ -6,15 +6,15 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { ArrowRightIcon, MoreIcon } from '../../../shared/icons';
-import type { Project } from '../types';
+import { ArrowRightIcon, MoreIcon } from '../../../../shared/components/icons';
+import type { Project } from '../../types';
 import type { AllProjectSectionProps } from './AllProjectsSection';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
 
 export default function ProjectGrid({
   projects,
-  onOpenProjectClick: onProjectClick,
+  onOpenProjectClick,
   onMoreClick,
 }: AllProjectSectionProps) {
   return (
@@ -29,7 +29,7 @@ export default function ProjectGrid({
         <ProjectCard
           key={p.id}
           project={p}
-          onOpenProjectClick={onProjectClick}
+          onOpenProjectClick={onOpenProjectClick}
           onMoreClick={onMoreClick}
         />
       ))}

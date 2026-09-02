@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
-import { Label } from '../../../shared/ui';
-import { checkOverdue } from '../../../utils/helpers';
-import type { Project } from '../types';
+import { Label } from '../../../../shared/components/ui';
+import { checkOverdue } from '../../../../shared/helpers';
+import type { Project } from '../../types';
 
 export type ProjectHealthProps = {
   dueDate?: Project['dueDate'];

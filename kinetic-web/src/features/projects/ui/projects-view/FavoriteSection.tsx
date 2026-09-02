@@ -3,9 +3,8 @@ import { LuArrowRight } from 'react-icons/lu';
 import {
   ActionMenuIconButton,
   type ActionMenuIconButtonProps,
-} from '../../../shared/ui';
-import { FavoriteIconButton } from '../../../shared/ui/FavoriteIconButton';
-import type { Project } from '../types';
+} from '../../../../shared/components/ui';
+import type { Project } from '../../types';
 
 export type FavoriteSectionProps = {
   favoriteProjects: Project[];
@@ -16,7 +15,6 @@ export type FavoriteSectionProps = {
 
 export function FavoriteSection({
   favoriteProjects,
-  onFavoriteClick,
   onProjectClick,
   actions,
 }: FavoriteSectionProps) {
@@ -37,7 +35,6 @@ export function FavoriteSection({
             key={p.id}
             project={p}
             onProjectClick={onProjectClick}
-            onFavoriteClick={onFavoriteClick}
             actions={actions}
           />
         ))}
@@ -53,12 +50,10 @@ export function FavoriteSection({
 function ProjectCard({
   project,
   onProjectClick,
-  onFavoriteClick,
   actions,
 }: {
   project: Project;
   onProjectClick: (projectId: Project['id']) => void;
-  onFavoriteClick: (projectId: Project['id']) => void;
   actions: ActionMenuIconButtonProps['actions'];
 }) {
   // const isCompleted = project.completedTasks === project.tasks;
@@ -86,11 +81,6 @@ function ProjectCard({
           </Typography> */}
 
           <Stack direction={'row'} sx={{ alignItems: 'center' }}>
-            <FavoriteIconButton
-              isFavorite={project.isFavorite}
-              onClick={() => onFavoriteClick(project.id)}
-            />
-
             <IconButton
               size='small'
               color='primary'

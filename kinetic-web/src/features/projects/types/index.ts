@@ -4,7 +4,7 @@ export const ProjectMemberSchema = z.object({
   id: z.uuid(),
   fullName: z.string(),
   email: z.email(),
-  role: z.string(),
+  role: z.enum(['Owner', 'Lead', 'Member']),
 });
 export type ProjectMember = z.infer<typeof ProjectMemberSchema>;
 

@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import { lazy, Suspense } from 'react';
 import { LuGrid2X2, LuList } from 'react-icons/lu';
-import { LoadingScreen } from '../../../shared/ui';
-import { useLocalStorage } from '../../../utils/hooks';
-import type { Project } from '../types';
+import { LoadingScreen } from '../../../../shared/components/ui';
+import { useLocalStorage } from '../../../../shared/hooks';
+import type { Project } from '../../types';
 
 const ProjectGrid = lazy(() => import('./ProjectGridView'));
 const ProjectList = lazy(() => import('./ProjectListView'));

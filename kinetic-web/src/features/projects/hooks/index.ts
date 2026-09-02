@@ -1,21 +1,27 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { projectsApi, projectsKey } from '../api';
-import type { Project, ProjectForm } from '../types';
+import { projectsApi, projectsUrl, projectUrl } from '../api';
+import type { Project } from '../types';
 
 export const useProjects = (workspaceId: string) =>
   useSWR(
-    projectsKey(workspaceId),
+    projectsUrl(workspaceId),
     () => projectsApi.getAll(workspaceId).then((res) => res.data),
     {
       fallbackData: [],
     },
   );
 
+export const useProject = (workspaceId: string, projectId: Project['id']) =>
+  useSWR(projectUrl(workspaceId, projectId), () =>
+    projectsApi.getById(workspaceId, projectId).then((res) => res.data),
+  );
+
 export const useCreateProject = (workspaceId: string) =>
   useSWRMutation(
-    projectsKey(workspaceId),
-    (_, { arg }: { arg: ProjectForm }) => projectsApi.create(workspaceId, arg),
+    projectsUrl(workspaceId),
+    (_, { arg }: { arg: Omit<Project, 'id'> }) =>
+      projectsApi.create(workspaceId, arg),
     {
       revalidate: false,
       populateCache: (res, currentData: Project[] = []) =>
@@ -25,7 +31,7 @@ export const useCreateProject = (workspaceId: string) =>
 
 export const useUpdateProject = (workspaceId: string) =>
   useSWRMutation(
-    projectsKey(workspaceId),
+    projectsUrl(workspaceId),
     (_, { arg: { id, ...data } }: { arg: Project }) =>
       projectsApi.update(workspaceId, id, data),
     {
@@ -39,7 +45,7 @@ export const useUpdateProject = (workspaceId: string) =>
 
 export const useDeleteProject = (workspaceId: string) =>
   useSWRMutation(
-    projectsKey(workspaceId),
+    projectsUrl(workspaceId),
     (_, { arg: projectId }: { arg: Project['id'] }) =>
       projectsApi
         .delete(workspaceId, projectId)

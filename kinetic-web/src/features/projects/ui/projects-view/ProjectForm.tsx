@@ -20,14 +20,14 @@ import {
   FormDatePicker,
   FormSelect,
   FormTextField,
-} from '../../../shared/form';
-import { toast } from '../../../shared/toast';
-import type { Callback } from '../../../utils/types/callback.types';
-import { useLookups } from '../../lookups/hooks';
-import { usersApi } from '../../users/api';
-import type { User } from '../../users/types';
-import { useCreateProject, useUpdateProject } from '../hooks';
-import { ProjectFormSchema, type Project, type ProjectForm } from '../types';
+} from '../../../../shared/components/form';
+import { toast } from '../../../../shared/toast';
+import type { Callback } from '../../../../shared/types';
+import { useLookups } from '../../../lookups/hooks';
+import { usersApi } from '../../../users/api';
+import type { User } from '../../../users/types';
+import { useCreateProject, useUpdateProject } from '../../hooks';
+import { ProjectFormSchema, type Project, type ProjectForm } from '../../types';
 
 const defaultValues: ProjectForm = {
   name: '',
@@ -53,28 +53,27 @@ export function ProjectForm({
   onExited,
   project,
 }: ProjectFormProps) {
-  const isNew = project === undefined;
-
+  const isNew = !project;
   const { workspaceId } = useParams();
   const { trigger: createProject } = useCreateProject(workspaceId!);
   const { trigger: updateProject } = useUpdateProject(workspaceId!);
-
   const { data: statuses } = useLookups('project-statuses');
   const { data: priorities } = useLookups('priorities');
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const methods = useForm({
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const methods = useForm<ProjectForm>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues,
   });
 
-  const leads =
+  const initialLeads =
     project?.team
       .filter((pm) => pm.role === 'Lead')
       .map((pm) => ({ id: pm.id, label: pm.fullName })) ?? defaultValues.leads;
 
-  const members =
+  const initialMembers =
     project?.team
       .filter((pm) => pm.role === 'Member')
       .map((pm) => ({ id: pm.id, label: pm.fullName })) ??
@@ -83,17 +82,20 @@ export function ProjectForm({
   const watchedLeads = useWatch({
     control: methods.control,
     name: 'leads',
-    defaultValue: leads,
+    defaultValue: initialLeads,
   });
+
   const watchedMembers = useWatch({
     control: methods.control,
     name: 'members',
-    defaultValue: members,
+    defaultValue: initialMembers,
   });
 
-  // * Fetch users
+  // * Fetch users on dialog open
   useEffect(() => {
-    const fetchUsers = async () => {
+    if (!open) return;
+
+    const fetchUsers = () => {
       setIsLoading(true);
       usersApi
         .getAll(workspaceId!)
@@ -102,41 +104,61 @@ export function ProjectForm({
         .finally(() => setIsLoading(false));
     };
 
-    if (open) fetchUsers();
+    fetchUsers();
   }, [open, workspaceId]);
 
+  // * Reset form when project changes or dialog opens
   useEffect(() => {
-    if (open)
-      methods.reset({
-        ...(project ?? defaultValues),
-        // * Parse ISO string to Date object
-        dueDate: project?.dueDate
-          ? parseISO(project.dueDate.toString())
-          : defaultValues.dueDate,
-        leads,
-        members,
-      });
-  }, [leads, members, methods, open, project]);
+    if (!open) return;
+
+    methods.reset({
+      ...(project ?? defaultValues),
+      dueDate: project?.dueDate
+        ? parseISO(project.dueDate.toString())
+        : defaultValues.dueDate,
+      leads: initialLeads,
+      members: initialMembers,
+    });
+  }, [open, project, initialLeads, initialMembers, methods]);
+
+  const selectedLeadIds = new Set(watchedLeads.map((l) => l.id));
+  const selectedMemberIds = new Set(watchedMembers.map((m) => m.id));
 
   const leadOptions = users
-    .filter((u) => !(watchedMembers ?? []).map((m) => m.id).includes(u.id))
+    .filter((u) => !selectedMemberIds.has(u.id))
     .map((u) => ({ id: u.id, label: u.fullName }));
-
   const memberOptions = users
-    .filter((u) => !(watchedLeads ?? []).map((m) => m.id).includes(u.id))
+    .filter((u) => !selectedLeadIds.has(u.id))
     .map((u) => ({ id: u.id, label: u.fullName }));
 
-  const handleSubmit = (data: ProjectForm) =>
-    isNew
-      ? createProject(data)
+  const handleSubmit = async ({ leads, members, ...data }: ProjectForm) => {
+    const team = [
+      ...leads.map((l) => ({
+        id: l.id,
+        fullName: l.label,
+        email: '',
+        role: 'Lead' as const,
+      })),
+      ...members.map((m) => ({
+        id: m.id,
+        fullName: m.label,
+        email: '',
+        role: 'Member' as const,
+      })),
+    ];
+    const payload = { ...data, team };
+
+    return isNew
+      ? createProject(payload)
           .then((res) => {
             toast.success(res.message);
             onClose();
           })
-          .catch((err) => toast.error(err.response?.message))
-      : updateProject({ ...project, ...data })
+          .catch((err) => toast.error(err.message))
+      : updateProject({ id: project!.id, ...payload })
           .then((res) => toast.success(res.message))
-          .catch((err) => toast.error(err.response?.message));
+          .catch((err) => toast.error(err.message));
+  };
 
   return (
     <Dialog
@@ -154,9 +176,9 @@ export function ProjectForm({
 
             <FormTextField name='description' label='Description' />
 
-            <Stack direction={'row'} spacing={2}>
+            <Stack direction='row' spacing={2}>
               <FormSelect name='status' label='Status' required>
-                {statuses.map(({ value, label }) => (
+                {statuses?.map(({ value, label }) => (
                   <MenuItem key={value} value={value}>
                     {label}
                   </MenuItem>
@@ -164,7 +186,7 @@ export function ProjectForm({
               </FormSelect>
 
               <FormSelect name='priority' label='Priority' required>
-                {priorities.map(({ value, label }) => (
+                {priorities?.map(({ value, label }) => (
                   <MenuItem key={value} value={value}>
                     {label}
                   </MenuItem>
