@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { SignUpView } from '../../features/auth/components';
+import { SignUpView } from '../../features/auth/ui';
 
 export function SignUpPage() {
   return (

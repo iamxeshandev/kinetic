@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { UsersView } from '../../features/users/components';
+import { UsersView } from '../../features/users/ui';
 
 export function UsersPage() {
   return (

@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { ResetPasswordView } from '../../features/auth/components';
+import { ResetPasswordView } from '../../features/auth/ui';
 
 export function ResetPasswordPage() {
   return (

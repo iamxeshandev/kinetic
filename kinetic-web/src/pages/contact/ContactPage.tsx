@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { ContactView } from '../../features/landing';
+import { ContactView } from '../../features/landing/ui';
 
 export function ContactPage() {
   return (

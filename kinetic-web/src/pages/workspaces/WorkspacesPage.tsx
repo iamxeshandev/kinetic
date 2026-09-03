@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { WorkspacesView } from '../../features/workspaces/components';
+import { WorkspacesView } from '../../features/workspaces/ui';
 
 export function WorkspacesPage() {
   return (

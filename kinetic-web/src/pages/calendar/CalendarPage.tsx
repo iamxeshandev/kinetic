@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { CalendarView } from '../../features/calendar/components';
+import { CalendarView } from '../../features/calendar/ui';
 
 export function CalendarPage() {
   return (

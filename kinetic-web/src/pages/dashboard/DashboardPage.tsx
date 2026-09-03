@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { DashboardView } from '../../features/dashboard/components';
+import { DashboardView } from '../../features/dashboard/ui';
 
 export function DashboardPage() {
   return (
