@@ -1,4 +1,4 @@
-import { Box, Drawer, IconButton } from '@mui/material';
+import { Box, Drawer, IconButton, Stack } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { Logo } from '../../../shared/components/ui';
@@ -25,16 +25,14 @@ export const NavbarDesktop = forwardRef(
         slotProps={{ paper: { ref: ref } }}
         sx={{ display: { xs: 'none', sm: 'block' } }}
       >
-        <Box
+        <Stack
           sx={{
             p: 2,
-            display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             gap: 2,
           }}
         >
-          <Logo sx={{ mb: 2, width: 32 }} />
+          <Logo sx={{ mb: 2 }} />
 
           {navLinks.map(({ icon, path }) => {
             const isActive = location.pathname.includes(path);
@@ -62,7 +60,7 @@ export const NavbarDesktop = forwardRef(
               </Box>
             );
           })}
-        </Box>
+        </Stack>
       </Drawer>
     );
   },

@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { LuBell, LuSearch } from 'react-icons/lu';
 import { CONFIG } from '../../../config';
-import { WorkspaceSwitcher } from '../../../features/workspaces/components';
+import { WorkspaceSwitcher } from '../../../features/workspaces/ui';
 import {
   AccountAvatar,
   Logo,
