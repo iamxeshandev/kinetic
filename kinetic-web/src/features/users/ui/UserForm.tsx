@@ -30,11 +30,10 @@ const defaultValues: UserForm = {
 export type UserFormProps = {
   open: boolean;
   onClose: Callback;
-  onExited: Callback;
   user?: User;
 };
 
-export function UserForm({ open, onClose, onExited, user }: UserFormProps) {
+export function UserForm({ open, onClose, user }: UserFormProps) {
   const isNew = !user;
 
   const { data: roles } = useLookups('workspace-roles');
@@ -70,13 +69,7 @@ export function UserForm({ open, onClose, onExited, user }: UserFormProps) {
           .catch((err) => toast.error(err.message));
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      onTransitionExited={onExited}
-      fullWidth
-      maxWidth='sm'
-    >
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth='sm'>
       <Form methods={methods} onSubmit={handleSubmit}>
         <DialogTitle>{isNew ? 'Create User' : 'Edit User'}</DialogTitle>
 

@@ -68,9 +68,21 @@ export function ProjectsView() {
       .catch((err) => toast.error(err.message));
   };
 
-  const handleOpenProjectClick = (projectId: Project['id']) => {
-    navigate(paths.workspaces.projects.details(workspaceId!, projectId));
+  const handleOpenProject = (projectId: Project['id']) => {
+    navigate(
+      `${paths.workspaces.projects.details(workspaceId!, projectId)}?view=board`,
+    );
   };
+
+  const handleCreateClick = () => {
+    setProjectId(null);
+    setProjectForm(true);
+  };
+
+  const handleMoreClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+  ) => setMenu({ anchorEl: event.currentTarget, id });
 
   const handleDeleteProject = () =>
     deleteProject(projectId!)
@@ -80,11 +92,6 @@ export function ProjectsView() {
         setConfirmDialog(false);
       })
       .catch((err) => toast.error(err.message));
-
-  const handleMoreClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-  ) => setMenu({ anchorEl: event.currentTarget, id });
 
   const isFavorite = projects.find((p) => p.id === menu.id)?.isFavorite;
 
@@ -135,23 +142,23 @@ export function ProjectsView() {
 
   return (
     <Stack spacing={3} sx={{ flex: 1 }}>
-      <HeaderSection onCreateClick={() => setProjectForm(true)} />
+      <HeaderSection onCreateClick={handleCreateClick} />
+
       <FavoriteSection
         favoriteProjects={projects.filter((p) => p.isFavorite)}
         onFavoriteClick={handleToggleFavorite}
-        onProjectClick={handleOpenProjectClick}
+        onProjectClick={handleOpenProject}
         actions={actions}
       />
       <AllProjectsSection
         projects={projects}
-        onOpenProjectClick={handleOpenProjectClick}
+        onOpenProjectClick={handleOpenProject}
         onMoreClick={handleMoreClick}
       />
 
       <ProjectForm
         open={projectForm}
         onClose={() => setProjectForm(false)}
-        onExited={() => setProjectId(null)}
         project={projects.find((p) => p.id === projectId)}
       />
 

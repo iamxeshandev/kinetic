@@ -1,26 +1,36 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
-import { toast } from '../../../components/toast';
-import { SplashScreen } from '../../../components/ui';
-import { authApi } from '../api/authApi';
-import { setUserSession } from '../helpers/user-session';
+import { CONFIG } from '../../../config';
+import { SplashScreen } from '../../../shared/components/ui';
+import { useLocalStorage } from '../../../shared/hooks';
+import { toast } from '../../../shared/toast';
+import { authApi } from '../api';
+import type { LoginResponse } from '../types';
 import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useLocalStorage<LoginResponse | undefined>(
+    CONFIG.STORAGE_KEYS.USER,
+    undefined,
+  );
+  const [isLoading, setIsLoading] = useState(!user);
 
   useEffect(() => {
     authApi
       .me()
-      .then((response) => {
-        setUserSession(response.data);
-      })
-      .catch((error) => {
-        toast.error(error.response?.data?.message);
-      })
+      .then((res) => setUser(res.data))
+      .catch((err) => toast.error(err.message))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [setUser]);
 
-  if (isLoading) return <SplashScreen />;
+  const value = {
+    user,
+    setUser,
+    isLoading,
+  };
 
-  return <AuthContext.Provider value={null}>{children}</AuthContext.Provider>;
+  return isLoading ? (
+    <SplashScreen />
+  ) : (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 }

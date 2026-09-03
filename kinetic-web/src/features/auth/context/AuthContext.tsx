@@ -1,9 +1,11 @@
 import { createContext, type Dispatch, type SetStateAction } from 'react';
-import type { User } from '../types/auth.types';
+import type { LoginResponse } from '../types';
 
 export type AuthContextValue = {
-  user: User | null;
-  setUser: Dispatch<SetStateAction<User | null>>;
+  user: LoginResponse | undefined;
+  setUser: Dispatch<SetStateAction<LoginResponse | undefined>>;
 };
 
-export const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | undefined>(
+  undefined,
+);

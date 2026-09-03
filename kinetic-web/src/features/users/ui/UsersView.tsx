@@ -31,7 +31,12 @@ export function UsersView() {
     id: string | null;
   }>({ anchorEl: null, id: null });
 
-  const handleMenuOpen = (
+  const handleCreateClick = () => {
+    setUserId(null);
+    setUserForm(true);
+  };
+
+  const handleMenuClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string,
   ) => setMenu({ anchorEl: event.currentTarget, id });
@@ -70,21 +75,19 @@ export function UsersView() {
   return (
     <>
       <Stack spacing={3} sx={{ flex: 1 }}>
-        <HeaderSection onCreateClick={() => setUserForm(true)} />
-        <UsersList users={users} onMenuClick={handleMenuOpen} />
+        <HeaderSection onCreateClick={handleCreateClick} />
+        <UsersList users={users} onMenuClick={handleMenuClick} />
       </Stack>
 
       <UserForm
         open={userForm}
         onClose={() => setUserForm(false)}
-        onExited={() => setUserId(null)}
         user={users.find((u) => u.id === userId)}
       />
 
       <ActionMenu
         open={!!menu.anchorEl}
-        onClose={() => setMenu((prev) => ({ ...prev, anchorEl: null }))}
-        onTransitionExited={() => setMenu((prev) => ({ ...prev, id: null }))}
+        onClose={() => setMenu({ anchorEl: null, id: null })}
         anchorEl={menu.anchorEl}
         actions={actions}
       />

@@ -11,13 +11,13 @@ import {
 import { useForm } from 'react-hook-form';
 import { NavLink, useNavigate } from 'react-router';
 import z from 'zod';
-import { Form, FormTextField } from '../../../components/form';
-import { toast } from '../../../components/toast';
-import { Logo } from '../../../components/ui/Logo';
 import { paths } from '../../../routes/paths';
-import { authApi } from '../api/authApi';
+import { Form, FormTextField } from '../../../shared/components/form';
+import { Logo } from '../../../shared/components/ui';
+import { toast } from '../../../shared/toast';
+import { authApi } from '../api';
 
-const schema = z.object({
+const SignUpFormSchema = z.object({
   email: z.email().max(256),
   password: z
     .string()
@@ -26,30 +26,31 @@ const schema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().max(50),
 });
+type SignUpForm = z.infer<typeof SignUpFormSchema>;
 
-const defaultValues: z.infer<typeof schema> = {
-  email: '',
-  password: '',
-  firstName: '',
-  lastName: '',
+const defaultValues: SignUpForm = {
+  email: 'johndoe@example.com',
+  password: 'Password@123',
+  firstName: 'John',
+  lastName: 'Doe',
 };
 
 export function SignUpView() {
   const navigate = useNavigate();
 
-  const methods = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const methods = useForm<SignUpForm>({
+    resolver: zodResolver(SignUpFormSchema),
     defaultValues,
   });
 
-  const handleSubmit = (data: z.infer<typeof schema>) =>
+  const handleSubmit = (data: SignUpForm) =>
     authApi
       .register(data.email, data.password, data.firstName, data.lastName)
-      .then((response) => {
-        toast.success(response.message ?? 'Account created successfully');
+      .then((res) => {
+        toast.success(res.message);
         navigate(paths.auth.signIn, { replace: true });
       })
-      .catch(console.error);
+      .catch((err) => toast.error(err.message));
 
   return (
     <Card sx={{ width: 1, maxWidth: 'sm', textAlign: 'center' }}>

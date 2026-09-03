@@ -43,16 +43,10 @@ const defaultValues: ProjectForm = {
 export type ProjectFormProps = {
   open: boolean;
   onClose: Callback;
-  onExited: Callback;
   project?: Project;
 };
 
-export function ProjectForm({
-  open,
-  onClose,
-  onExited,
-  project,
-}: ProjectFormProps) {
+export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
   const isNew = !project;
   const { workspaceId } = useParams();
   const { trigger: createProject } = useCreateProject(workspaceId!);
@@ -110,7 +104,6 @@ export function ProjectForm({
   // * Reset form when project changes or dialog opens
   useEffect(() => {
     if (!open) return;
-
     methods.reset({
       ...(project ?? defaultValues),
       dueDate: project?.dueDate
@@ -161,13 +154,7 @@ export function ProjectForm({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth='sm'
-      onTransitionExited={onExited}
-    >
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth='sm'>
       <Form methods={methods} onSubmit={handleSubmit}>
         <DialogTitle>{isNew ? 'Create Project' : 'Edit Project'}</DialogTitle>
         <DialogContent>

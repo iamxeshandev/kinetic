@@ -16,49 +16,48 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle, FaMicrosoft } from 'react-icons/fa';
 import { LuEye, LuEyeOff } from 'react-icons/lu';
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink } from 'react-router';
 import z from 'zod';
-import { Form, FormCheckbox, FormTextField } from '../../../components/form';
-import { toast } from '../../../components/toast';
-import { Logo } from '../../../components/ui/Logo';
-import { config } from '../../../config';
+import { CONFIG } from '../../../config';
 import { paths } from '../../../routes/paths';
-import { authApi } from '../api/authApi';
-import { setUserSession } from '../helpers/user-session';
-import type { User } from '../types/auth.types';
+import {
+  Form,
+  FormCheckbox,
+  FormTextField,
+} from '../../../shared/components/form';
+import { Logo } from '../../../shared/components/ui';
+import { toast } from '../../../shared/toast';
+import { authApi } from '../api';
+import { useAuthContext } from '../context';
 
-const schema = z.object({
+const SignInFormSchema = z.object({
   email: z.email(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   rememberMe: z.boolean(),
 });
+type SignInForm = z.infer<typeof SignInFormSchema>;
 
-const defaultValues: z.infer<typeof schema> = {
+const defaultValues: SignInForm = {
   email: 'johndoe@example.com',
   password: 'Password@123',
   rememberMe: false,
 };
 
 export function SignInView() {
-  const navigate = useNavigate();
+  const { setUser } = useAuthContext();
 
   const [password, setPassword] = useState<boolean>(true);
 
-  const methods = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const methods = useForm<SignInForm>({
+    resolver: zodResolver(SignInFormSchema),
     defaultValues,
   });
 
-  const handleSubmit = (data: z.infer<typeof schema>) =>
+  const handleSubmit = (data: SignInForm) =>
     authApi
       .login(data.email, data.password, data.rememberMe)
-      .then((response) => {
-        setUserSession(response.data as User);
-        navigate(paths.workspaces(response.data.defaultWorkspaceId).dashboard, {
-          replace: true,
-        });
-      })
-      .catch((error) => toast.error(error.response.data.message));
+      .then((res) => setUser(res.data))
+      .catch((error) => toast.error(error.message));
 
   return (
     <Card sx={{ width: 1, maxWidth: 'sm', textAlign: 'center' }}>
@@ -67,7 +66,7 @@ export function SignInView() {
           title={
             <>
               <Logo />
-              <div>Sign in to {config.appName}</div>
+              <div>Sign in to {CONFIG.APP_NAME}</div>
             </>
           }
           subheader='Welcome back. Please enter your details.'

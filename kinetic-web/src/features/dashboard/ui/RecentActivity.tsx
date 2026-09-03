@@ -6,8 +6,8 @@ import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import { Card, Link, List, Typography } from '@mui/material';
 import { NavLink } from 'react-router';
-import { ListHeader } from '../../../components/ui';
-import { formatDate } from '../../../utils/helpers';
+import { ListHeader } from '../../../shared/components/ui';
+import { formatDate } from '../../../shared/helpers';
 
 export function RecentActivity() {
   return (

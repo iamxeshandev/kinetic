@@ -9,8 +9,8 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { LuTriangleAlert } from 'react-icons/lu';
-import { Label, ListHeader } from '../../../components/ui';
-import { checkOverdue, formatDate } from '../../../utils/helpers';
+import { Label, ListHeader } from '../../../shared/components/ui';
+import { checkOverdue, formatDate } from '../../../shared/helpers';
 
 export function PriorityTasks() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));

@@ -1,9 +1,9 @@
 import { Box, Button, Fab, Typography } from '@mui/material';
 import { LuPlus } from 'react-icons/lu';
-import { getUserSession } from '../../auth/helpers/user-session';
+import { useAuthContext } from '../../auth/context';
 
 export function HeaderSection() {
-  const user = getUserSession();
+  const { user } = useAuthContext();
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>

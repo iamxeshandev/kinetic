@@ -5,14 +5,15 @@ import {
   CardContent,
   CardHeader,
   Link,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { motion } from 'motion/react';
 import { LuArrowLeft } from 'react-icons/lu';
 import { NavLink } from 'react-router';
-import { Logo } from '../../../components/ui/Logo';
 import { paths } from '../../../routes/paths';
+import { Logo } from '../../../shared/components/ui';
 
 const arrowVariants = {
   rest: { x: 0 },
@@ -21,7 +22,7 @@ const arrowVariants = {
 
 export function ResetPasswordView() {
   return (
-    <>
+    <Stack spacing={2}>
       <Card sx={{ width: 1, maxWidth: 'sm', textAlign: 'center' }}>
         <CardHeader
           title={
@@ -56,6 +57,6 @@ export function ResetPasswordView() {
         </Box>
         Back to Sign In
       </Link>
-    </>
+    </Stack>
   );
 }
