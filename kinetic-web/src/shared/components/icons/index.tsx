@@ -3,13 +3,18 @@ import {
   LuArrowRight,
   LuArrowUp,
   LuCalendar,
+  LuChartNoAxesCombined,
   LuContrast,
   LuEllipsisVertical,
+  LuFiles,
+  LuList,
+  LuListFilter,
   LuLogOut,
   LuMoon,
   LuPen,
   LuPlus,
   LuSettings,
+  LuSquareKanban,
   LuStar,
   LuStarOff,
   LuSun,
@@ -17,8 +22,11 @@ import {
   LuUser,
   LuUsers,
 } from 'react-icons/lu';
+import { MdTimeline } from 'react-icons/md';
 
 export const AddIcon = LuPlus;
+
+export const AnalyticsIcon = LuChartNoAxesCombined;
 
 export const ArrowDownIcon = LuArrowDown;
 
@@ -31,6 +39,14 @@ export const ArrowUpIcon = LuArrowUp;
 export const CalendarIcon = LuCalendar;
 
 export const ContrastIcon = LuContrast;
+
+export const FilesIcon = LuFiles;
+
+export const FilterIcon = LuListFilter;
+
+export const KanbanIcon = LuSquareKanban;
+
+export const ListIcon = LuList;
 
 export const LogoutIcon = LuLogOut;
 
@@ -47,6 +63,8 @@ export const StarIcon = LuStar;
 export const StarOffIcon = LuStarOff;
 
 export const SunIcon = LuSun;
+
+export const TimelineIcon = MdTimeline;
 
 export const TrashIcon = LuTrash;
 

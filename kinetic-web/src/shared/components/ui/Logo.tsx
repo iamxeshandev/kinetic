@@ -21,6 +21,7 @@ export function Logo({
     <Box
       component={isLink ? RouterLink : 'div'}
       to={isLink ? to : undefined}
+      {...props}
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -29,7 +30,6 @@ export function Logo({
         color: 'primary.main',
         ...sx,
       }}
-      {...props}
     >
       <Box
         component='img'
