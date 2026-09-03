@@ -25,6 +25,12 @@ declare module '@mui/material/Avatar' {
   }
 }
 
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    secondary: true;
+  }
+}
+
 export const theme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'class',
@@ -101,6 +107,16 @@ export const theme = createTheme({
       ],
     },
     MuiButton: {
+      variants: [
+        {
+          props: { variant: 'secondary' },
+          style: {
+            color: 'var(--mui-palette-text-secondary)',
+            border: '1px solid',
+            borderColor: 'var(--mui-palette-divider)',
+          },
+        },
+      ],
       defaultProps: {
         variant: 'contained',
       },
@@ -189,6 +205,14 @@ export const theme = createTheme({
           backgroundColor: 'var(--mui-palette-action-hover)',
           fontWeight: 'bold',
           color: 'var(--mui-palette-text-secondary)',
+        },
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 'bold',
         },
       },
     },
