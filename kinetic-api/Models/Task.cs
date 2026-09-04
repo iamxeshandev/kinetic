@@ -3,18 +3,18 @@ using kinetic_api.Interfaces;
 
 namespace kinetic_api.Models;
 
-public class Task : IAuditableEntity
+public class Task : ITrackable
 {
     public Guid Id { get; set; }
     public required Guid SectionId { get; set; }
-    public Section? Section { get; set; }
+    public virtual Section Section { get; set; } = null!;
 
     [Required] [MaxLength(100)] public required string Name { get; set; }
 
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public required Guid CreatedBy { get; init; }
-    public DateTime? UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
     public Guid? UpdatedBy { get; set; }
-    public DateTime? DeletedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
     public Guid? DeletedBy { get; set; }
 }

@@ -3,18 +3,18 @@ using kinetic_api.Interfaces;
 
 namespace kinetic_api.Models;
 
-public class Subtask : IAuditableEntity
+public class Subtask : ITrackable
 {
     public Guid Id { get; set; }
     public required Guid TaskId { get; set; }
-    public Task? Task { get; set; }
+    public virtual Task Task { get; set; } = null!;
 
     [Required] [MaxLength(100)] public required string Name { get; set; }
 
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public required Guid CreatedBy { get; init; }
-    public DateTime? UpdatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
     public Guid? UpdatedBy { get; set; }
-    public DateTime? DeletedAt { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
     public Guid? DeletedBy { get; set; }
 }
