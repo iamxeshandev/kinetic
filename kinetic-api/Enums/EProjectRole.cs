@@ -1,9 +1,8 @@
 ﻿namespace kinetic_api.Enums;
 
-public enum EWorkspaceRole
+public enum EProjectRole
 {
     Member,
-    Manager,
-    Admin,
+    Lead,
     Owner
 }
