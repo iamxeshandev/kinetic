@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using kinetic_api.Database;
 
@@ -10,9 +11,11 @@ using kinetic_api.Database;
 namespace kinetic_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260901111212_Migration4")]
+    partial class Migration4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
@@ -249,6 +252,9 @@ namespace kinetic_api.Migrations
                     b.Property<long?>("DueDate")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -417,23 +423,6 @@ namespace kinetic_api.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Tasks");
-                });
-
-            modelBuilder.Entity("kinetic_api.Models.UserFavorite", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "EntityId");
-
-                    b.ToTable("UserFavorites");
                 });
 
             modelBuilder.Entity("kinetic_api.Models.Workspace", b =>
@@ -637,17 +626,6 @@ namespace kinetic_api.Migrations
                         .IsRequired();
 
                     b.Navigation("Section");
-                });
-
-            modelBuilder.Entity("kinetic_api.Models.UserFavorite", b =>
-                {
-                    b.HasOne("kinetic_api.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("kinetic_api.Models.WorkspaceMember", b =>
