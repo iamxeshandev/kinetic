@@ -1,2 +1,2 @@
-export * from './project-details-view/ProjectDetailsView';
-export * from './projects-view/ProjectsView';
+export * from '../details/ui/ProjectDetailsView';
+export * from './ProjectsView';
