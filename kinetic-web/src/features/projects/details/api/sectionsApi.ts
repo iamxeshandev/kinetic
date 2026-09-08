@@ -1,0 +1,55 @@
+import { api, type ApiResponse } from '../../../../shared/api';
+import type { Workspace } from '../../../workspaces/types';
+import type { Project } from '../../types';
+import type { Section } from '../types';
+
+const baseUrl = (workspaceId: Workspace['id'], projectId: Project['id']) =>
+  `api/workspaces/${workspaceId}/projects/${projectId}/sections`;
+
+export const sectionsApi = {
+  getAll: (workspaceId: Workspace['id'], projectId: Project['id']) =>
+    api
+      .get<ApiResponse<Section[]>>(baseUrl(workspaceId, projectId))
+      .then((res) => res.data),
+
+  getById: (
+    workspaceId: Workspace['id'],
+    projectId: Project['id'],
+    id: Section['id'],
+  ) =>
+    api
+      .get<ApiResponse<Section>>(`${baseUrl(workspaceId, projectId)}/${id}`)
+      .then((res) => res.data),
+
+  create: (
+    workspaceId: Workspace['id'],
+    projectId: Project['id'],
+    data: Omit<Section, Section['id']>,
+  ) =>
+    api
+      .post<ApiResponse<Section>>(`${baseUrl(workspaceId, projectId)}`, data)
+      .then((res) => res.data),
+
+  update: (
+    workspaceId: Workspace['id'],
+    projectId: Project['id'],
+    id: Section['id'],
+    data: Omit<Section, Section['id']>,
+  ) =>
+    api
+      .put<
+        ApiResponse<Section>
+      >(`${baseUrl(workspaceId, projectId)}/${id}`, data)
+      .then((res) => res.data),
+
+  delete: (
+    workspaceId: Workspace['id'],
+    projectId: Project['id'],
+    id: Section['id'],
+  ) =>
+    api
+      .delete<ApiResponse>(`${baseUrl(workspaceId, projectId)}/${id}`)
+      .then((res) => res.data),
+};
+
+export { baseUrl as sectionsKey };
