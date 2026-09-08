@@ -18,7 +18,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     authApi
       .me()
       .then((res) => setUser(res.data))
-      .catch((err) => toast.error(err.message))
+      .catch((err) => {
+        setUser(undefined);
+        toast.error(err.message);
+      })
       .finally(() => setIsLoading(false));
   }, [setUser]);
 

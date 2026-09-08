@@ -21,6 +21,7 @@ export const useLookups = (category: Category) =>
         .then((res) => res.data?.data ?? []),
     {
       revalidateOnFocus: false,
-      fallbackData: [],
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
     },
   );
