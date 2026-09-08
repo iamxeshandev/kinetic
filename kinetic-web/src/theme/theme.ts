@@ -1,6 +1,18 @@
 import { createTheme, Paper } from '@mui/material';
 
 declare module '@mui/material/styles' {
+  interface Palette {
+    surface: {
+      subtle: string;
+    };
+  }
+
+  interface PaletteOptions {
+    surface: {
+      subtle: string;
+    };
+  }
+
   interface TypographyVariants {
     overline1: React.CSSProperties;
     overline2: React.CSSProperties;
@@ -36,8 +48,8 @@ export const theme = createTheme({
     colorSchemeSelector: 'class',
   },
   colorSchemes: {
-    light: true,
-    dark: true,
+    light: { palette: { surface: { subtle: '#F8F8F8' } } },
+    dark: { palette: { surface: { subtle: '#1A1A1A' } } },
   },
   typography: {
     h1: {
@@ -85,6 +97,9 @@ export const theme = createTheme({
     caption: {
       fontWeight: 'bold',
     },
+  },
+  shape: {
+    borderRadius: 8,
   },
   components: {
     MuiAvatar: {
