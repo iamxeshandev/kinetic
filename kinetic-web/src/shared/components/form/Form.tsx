@@ -1,3 +1,4 @@
+import { Box, type SxProps, type Theme } from '@mui/material';
 import {
   FormProvider,
   type FieldValues,
@@ -9,22 +10,26 @@ type FormProps<TFieldValues extends FieldValues = FieldValues> = {
   methods: UseFormReturn<TFieldValues>;
   onSubmit: SubmitHandler<TFieldValues>;
   children: React.ReactNode;
+  sx?: SxProps<Theme>;
 };
 
 export function Form<TFieldValues extends FieldValues = FieldValues>({
   methods,
   onSubmit,
   children,
+  sx,
 }: FormProps<TFieldValues>) {
   return (
     <FormProvider {...methods}>
-      <form
+      <Box
+        component='form'
         noValidate
         autoComplete='off'
         onSubmit={methods.handleSubmit(onSubmit)}
+        sx={sx}
       >
         {children}
-      </form>
+      </Box>
     </FormProvider>
   );
 }

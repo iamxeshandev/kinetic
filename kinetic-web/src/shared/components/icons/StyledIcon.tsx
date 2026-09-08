@@ -1,26 +1,38 @@
-import { styled } from '@mui/material';
-import type { ComponentPropsWithoutRef } from 'react';
+import { Box, type BoxProps } from '@mui/material';
 import type { IconType } from 'react-icons/lib';
 import type { ColorToken } from '../../../theme';
 
-export type StyledIconProps = {
+const sizes = {
+  small: 16,
+  medium: 24,
+  large: 32,
+} as const;
+
+export type StyledIcon2Props = BoxProps & {
   icon: IconType;
   size?: 'small' | 'medium' | 'large';
   color?: ColorToken | 'inherit';
-} & ComponentPropsWithoutRef<'svg'>;
-
-const sizeMap: Record<'small' | 'medium' | 'large', string> = {
-  small: '1rem',
-  medium: '1.5rem',
-  large: '2rem',
 };
 
-export const StyledIcon = styled(
-  ({ icon: Component, ...props }: StyledIconProps) => <Component {...props} />,
-  { shouldForwardProp: (prop) => prop !== 'size' && prop !== 'color' },
-)(({ theme, size = 'medium', color = 'inherit' }) => {
-  return {
-    fontSize: sizeMap[size],
-    color: color === 'inherit' ? 'inherit' : theme.vars!.palette[color].main,
-  };
-});
+export function StyledIcon({
+  icon,
+  size = 'medium',
+  color = 'inherit',
+  sx,
+  ...props
+}: StyledIcon2Props) {
+  return (
+    <Box
+      component={icon}
+      sx={{
+        fontSize: sizes[size],
+        color:
+          color === 'inherit'
+            ? 'inherit'
+            : (theme) => theme.vars!.palette[color].main,
+        ...sx,
+      }}
+      {...props}
+    />
+  );
+}

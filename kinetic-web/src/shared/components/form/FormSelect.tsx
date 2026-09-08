@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormHelperText,
   InputLabel,
   Select,
   type SelectProps,
@@ -26,12 +27,13 @@ export function FormSelect({
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
-        <FormControl fullWidth>
+      render={({ field, fieldState }) => (
+        <FormControl fullWidth error={!!fieldState.error}>
           <InputLabel id='label'>{inputLabel}</InputLabel>
           <Select {...props} {...field} labelId='label' label={label}>
             {children}
           </Select>
+          <FormHelperText>{fieldState.error?.message}</FormHelperText>
         </FormControl>
       )}
     />

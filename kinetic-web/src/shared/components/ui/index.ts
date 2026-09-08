@@ -1,5 +1,6 @@
 export * from './AccountAvatar';
 export * from './ActionMenu';
+export * from './Centered';
 export * from './ConfirmDialog';
 export * from './Label';
 export * from './ListHeader';
