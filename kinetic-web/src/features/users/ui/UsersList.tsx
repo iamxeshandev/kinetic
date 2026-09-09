@@ -48,7 +48,7 @@ export const UsersList = ({ users, onMenuClick }: UsersListProps) => {
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id}>
-              <TableCell>{user.fullName}</TableCell>
+              <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>{formatDate(user.joinedAt)}</TableCell>

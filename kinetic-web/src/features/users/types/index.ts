@@ -3,10 +3,9 @@ import { WorkspaceRoleSchema } from '../../../shared/types';
 
 export const UserSchema = z.object({
   id: z.uuid(),
-  email: z.string(),
   firstName: z.string(),
-  lastName: z.string().nullish(),
-  fullName: z.string(),
+  lastName: z.string().optional(),
+  email: z.string(),
   role: WorkspaceRoleSchema,
   joinedAt: z.date(),
 });
