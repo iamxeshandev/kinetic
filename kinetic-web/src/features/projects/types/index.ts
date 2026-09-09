@@ -1,4 +1,5 @@
 import z from 'zod';
+import { ProjectRoleSchema } from '../../../shared/types';
 
 export const ProjectMemberSchema = z.object({
   id: z.uuid('Invalid ID'),
@@ -6,7 +7,7 @@ export const ProjectMemberSchema = z.object({
   lastName: z.string().optional(),
   email: z.email('Invalid email'),
   avatarUrl: z.string().optional(),
-  role: z.string().min(1, 'Role is required'),
+  role: ProjectRoleSchema,
 });
 export type ProjectMember = z.infer<typeof ProjectMemberSchema>;
 
@@ -34,7 +35,19 @@ export const ProjectFormSchema = z.object({
   status: z.string().min(1, 'Status is required'),
   priority: z.string().min(1, 'Priority is required'),
   dueDate: z.date().optional(),
-  leads: z.array(z.object({ id: z.uuid(), label: z.string() })),
-  members: z.array(z.object({ id: z.uuid(), label: z.string() })),
+  leads: z.array(
+    z.object({
+      id: z.uuid(),
+      firstName: z.string(),
+      lastName: z.string().optional(),
+    }),
+  ),
+  members: z.array(
+    z.object({
+      id: z.uuid(),
+      firstName: z.string(),
+      lastName: z.string().optional(),
+    }),
+  ),
 });
 export type ProjectForm = z.infer<typeof ProjectFormSchema>;

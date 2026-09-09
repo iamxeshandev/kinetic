@@ -11,7 +11,6 @@ import { paths } from '../../../../routes';
 import { AddIcon } from '../../../../shared/components/icons';
 import { useBoolean } from '../../../../shared/hooks';
 import type { Project } from '../../types';
-import { TaskDetails } from './task-details/TaskDetails';
 
 export type HeaderSectionProps = {
   project: Project;
@@ -51,8 +50,6 @@ export function HeaderSection({ project }: HeaderSectionProps) {
           </Button>
         </Box>
       </Stack>
-
-      <TaskDetails open={taskForm.value} onClose={taskForm.setFalse} />
     </>
   );
 }

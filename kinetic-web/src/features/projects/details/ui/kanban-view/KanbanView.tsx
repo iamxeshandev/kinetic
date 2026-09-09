@@ -18,11 +18,8 @@ export default function KanbanView() {
   const { data: sections = [] } = useSections(workspaceId!, projectId!);
   const { data: tasks = [] } = useTasks(workspaceId!, projectId!);
 
-  const [sectionId, setSectionId] = useState<Section['id'] | undefined>(
-    undefined,
-  );
   const [taskId, setTaskId] = useState<Task['id'] | undefined>(undefined);
-  const taskForm = useBoolean();
+  const taskDetails = useBoolean();
 
   const sectionsMap = sections.reduce(
     (acc, section) => ({ ...acc, [section.id]: section }),
@@ -53,24 +50,15 @@ export default function KanbanView() {
     syncItems();
   }, [sections, tasks]);
 
-  const onCreateTask = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    sectionId: Section['id'],
-  ) => {
-    event.currentTarget.blur();
-    setSectionId(sectionId);
-    setTaskId(undefined);
-    taskForm.setTrue();
-  };
+  const onCreateTask = () => {};
 
   const onEditTask = (
     event: React.MouseEvent<HTMLButtonElement>,
     taskId: Task['id'],
   ) => {
     event.currentTarget.blur();
-    setSectionId(undefined);
     setTaskId(taskId);
-    taskForm.setTrue();
+    taskDetails.setTrue();
   };
 
   return (
@@ -110,10 +98,9 @@ export default function KanbanView() {
       </DragDropProvider>
 
       <TaskDetails
-        open={taskForm.value}
-        onClose={taskForm.setFalse}
-        sectionId={sectionId}
-        task={taskId ? tasksMap[taskId] : undefined}
+        open={taskDetails.value}
+        onClose={taskDetails.setFalse}
+        task={tasksMap[taskId!]}
       />
     </>
   );

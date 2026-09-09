@@ -22,7 +22,7 @@ import {
   FormTextField,
 } from '../../../shared/components/form';
 import { toast } from '../../../shared/toast';
-import type { Callback } from '../../../shared/types';
+import type { Callback, ProjectRole } from '../../../shared/types';
 import { useLookups } from '../../lookups/hooks';
 import { usersApi } from '../../users/api';
 import type { User } from '../../users/types';
@@ -34,8 +34,7 @@ const defaultValues: ProjectForm = {
   description: '',
   status: 'Active',
   priority: 'None',
-  isFavorite: false,
-  dueDate: null,
+  dueDate: undefined,
   leads: [],
   members: [],
 };
@@ -65,13 +64,20 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
   const initialLeads =
     project?.team
       .filter((pm) => pm.role === 'Lead')
-      .map((pm) => ({ id: pm.id, label: pm.fullName })) ?? defaultValues.leads;
+      .map((pm) => ({
+        id: pm.id,
+        firstName: pm.firstName,
+        lastName: pm.lastName,
+      })) ?? defaultValues.leads;
 
   const initialMembers =
     project?.team
       .filter((pm) => pm.role === 'Member')
-      .map((pm) => ({ id: pm.id, label: pm.fullName })) ??
-    defaultValues.members;
+      .map((pm) => ({
+        id: pm.id,
+        firstName: pm.firstName,
+        lastName: pm.lastName,
+      })) ?? defaultValues.members;
 
   const watchedLeads = useWatch({
     control: methods.control,
@@ -119,36 +125,37 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
 
   const leadOptions = users
     .filter((u) => !selectedMemberIds.has(u.id))
-    .map((u) => ({ id: u.id, label: u.fullName }));
+    .map((u) => ({ id: u.id, firstName: u.firstName, lastName: u.lastName }));
   const memberOptions = users
     .filter((u) => !selectedLeadIds.has(u.id))
-    .map((u) => ({ id: u.id, label: u.fullName }));
+    .map((u) => ({ id: u.id, firstName: u.firstName, lastName: u.lastName }));
 
   const handleSubmit = async ({ leads, members, ...data }: ProjectForm) => {
-    const team = [
+    const team: Project['team'] = [
       ...leads.map((l) => ({
         id: l.id,
-        fullName: l.label,
+        firstName: l.firstName,
+        lastName: l.lastName,
         email: '',
-        role: 'Lead' as const,
+        role: 'Lead' as ProjectRole,
       })),
       ...members.map((m) => ({
         id: m.id,
-        fullName: m.label,
+        firstName: m.firstName,
+        lastName: m.lastName,
         email: '',
-        role: 'Member' as const,
+        role: 'Member' as ProjectRole,
       })),
     ];
-    const payload = { ...data, team };
 
     return isNew
-      ? createProject(payload)
+      ? createProject({ ...data, team, isFavorite: false })
           .then((res) => {
             toast.success(res.message);
             onClose();
           })
           .catch((err) => toast.error(err.message))
-      : updateProject({ id: project!.id, ...payload })
+      : updateProject({ ...project, ...data, team })
           .then((res) => toast.success(res.message))
           .catch((err) => toast.error(err.message));
   };
@@ -193,6 +200,7 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
               multiple
               options={leadOptions}
               isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              getOptionLabel={(opt) => `${opt.firstName} ${opt.lastName}`}
               filterSelectedOptions
               disableCloseOnSelect
               loading={isLoading}
@@ -204,6 +212,7 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
               multiple
               options={memberOptions}
               isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              getOptionLabel={(opt) => `${opt.firstName} ${opt.lastName}`}
               filterSelectedOptions
               disableCloseOnSelect
               loading={isLoading}
