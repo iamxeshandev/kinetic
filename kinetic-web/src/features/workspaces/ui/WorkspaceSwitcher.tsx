@@ -12,16 +12,16 @@ import { paths } from '../../../routes';
 import { ArrowRightIcon } from '../../../shared/components/icons';
 import { StyledIcon } from '../../../shared/components/icons/StyledIcon';
 import { useBoolean } from '../../../shared/hooks';
+import { authApi } from '../../auth/api';
 import { useAuthContext } from '../../auth/context';
-import { workspacesApi } from '../api';
-import { useWorkspaces } from '../hooks';
+import { useWorkspaces } from '../../workspaces/hooks';
 
 export function WorkspaceSwitcher() {
   const { user, setUser } = useAuthContext();
 
   const navigate = useNavigate();
 
-  const loading = useBoolean();
+  const isSubmitting = useBoolean();
 
   const { data: workspaces = [], isValidating } = useWorkspaces();
 
@@ -33,8 +33,9 @@ export function WorkspaceSwitcher() {
       return;
     }
 
-    loading.setTrue();
-    workspacesApi
+    isSubmitting.setTrue();
+
+    authApi
       .switch(workspaceId)
       .then((res) => {
         if (!res.data) return;
@@ -52,7 +53,7 @@ export function WorkspaceSwitcher() {
           });
         }
       })
-      .finally(() => loading.setFalse());
+      .finally(() => isSubmitting.setFalse());
   };
 
   const currentId = user?.currentWorkspace?.id ?? '';
@@ -65,13 +66,13 @@ export function WorkspaceSwitcher() {
       value={isValidating || !hasValidWorkspace ? '' : currentId}
       onChange={handleChange}
       endAdornment={
-        loading.value && (
+        isSubmitting.value && (
           <InputAdornment position='end'>
             <CircularProgress size={20} color='inherit' />
           </InputAdornment>
         )
       }
-      disabled={loading.value}
+      disabled={isSubmitting.value}
     >
       {workspaces.map((workspace) => (
         <MenuItem

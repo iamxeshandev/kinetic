@@ -6,8 +6,8 @@ import { AddIcon } from '../../../shared/components/icons';
 import { ConfirmDialog } from '../../../shared/components/ui/ConfirmDialog';
 import { PageHeader } from '../../../shared/components/ui/PageHeader';
 import { toast } from '../../../shared/toast';
+import { authApi } from '../../auth/api';
 import { useAuthContext } from '../../auth/context';
-import { workspacesApi } from '../api';
 import { useDeleteWorkspace, useWorkspaces } from '../hooks';
 import type { Workspace } from '../types';
 import { WorkspaceForm } from './WorkspaceForm';
@@ -31,7 +31,7 @@ export function WorkspacesView() {
       return;
     }
 
-    workspacesApi.switch(workspaceId).then((res) => {
+    authApi.switch(workspaceId).then((res) => {
       if (!res.data) return;
       setUser((prev) =>
         prev

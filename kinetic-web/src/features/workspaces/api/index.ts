@@ -1,5 +1,4 @@
 import { api, type ApiResponse } from '../../../shared/api';
-import type { LoginResponse } from '../../auth/types';
 import type { Workspace, WorkspaceForm } from '../types';
 
 const baseUrl = 'api/workspaces';
@@ -26,11 +25,6 @@ export const workspacesApi = {
   delete: (workspaceId: string) =>
     api
       .delete<ApiResponse>(`${baseUrl}/${workspaceId}`)
-      .then((res) => res.data),
-
-  switch: (workspaceId: string) =>
-    api
-      .put<ApiResponse<LoginResponse>>(`${baseUrl}/${workspaceId}/switch`)
       .then((res) => res.data),
 };
 
