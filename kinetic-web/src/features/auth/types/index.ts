@@ -1,7 +1,7 @@
 import z from 'zod';
 import { WorkspaceSchema } from '../../workspaces/types';
 
-export const LoginResponseSchema = z.object({
+export const MeSchema = z.object({
   id: z.uuid(),
   email: z.string(),
   firstName: z.string(),
@@ -10,4 +10,4 @@ export const LoginResponseSchema = z.object({
   currentWorkspace: WorkspaceSchema.optional(),
 });
 
-export type LoginResponse = z.infer<typeof LoginResponseSchema>;
+export type Me = z.infer<typeof MeSchema>;

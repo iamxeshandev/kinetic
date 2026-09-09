@@ -4,11 +4,11 @@ import { SplashScreen } from '../../../shared/components/ui';
 import { useLocalStorage } from '../../../shared/hooks';
 import { toast } from '../../../shared/toast';
 import { authApi } from '../api';
-import type { LoginResponse } from '../types';
+import type { Me } from '../types';
 import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useLocalStorage<LoginResponse | undefined>(
+  const [user, setUser] = useLocalStorage<Me | undefined>(
     CONFIG.STORAGE_KEYS.USER,
     undefined,
   );

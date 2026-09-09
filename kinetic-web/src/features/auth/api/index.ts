@@ -1,5 +1,6 @@
 import { api, type ApiResponse } from '../../../shared/api';
-import { type LoginResponse } from '../types';
+import type { Workspace } from '../../workspaces/types';
+import { type Me } from '../types';
 
 const baseUrl = 'api/auth';
 
@@ -7,7 +8,7 @@ export const authApi = {
   login: (email: string, password: string, rememberMe: boolean) =>
     api
       .post<
-        ApiResponse<LoginResponse>
+        ApiResponse<Me>
       >(`${baseUrl}/login`, { email, password, rememberMe })
       .then((res) => res.data),
 
@@ -29,8 +30,10 @@ export const authApi = {
   logout: () =>
     api.post<ApiResponse>(`${baseUrl}/logout`).then((res) => res.data),
 
-  me: () =>
+  switch: (workspaceId: Workspace['id']) =>
     api
-      .get<ApiResponse<LoginResponse>>(`${baseUrl}/me`)
+      .patch<ApiResponse<Me>>(`${baseUrl}/switch/${workspaceId}`)
       .then((res) => res.data),
+
+  me: () => api.get<ApiResponse<Me>>(`${baseUrl}/me`).then((res) => res.data),
 };
