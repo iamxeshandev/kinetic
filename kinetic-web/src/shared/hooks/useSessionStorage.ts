@@ -4,7 +4,7 @@ export function useSessionStorage<T>(key: string, initialValue: T) {
   const [state, setState] = useState<T>(() => {
     try {
       const item = sessionStorage.getItem(key);
-      return item !== null ? JSON.parse(item) : initialValue;
+      return item ? JSON.parse(item) : initialValue;
     } catch (error) {
       console.error(error);
       return initialValue;
@@ -20,7 +20,12 @@ export function useSessionStorage<T>(key: string, initialValue: T) {
               ? (value as (val: T) => T)(prev)
               : value;
 
-          sessionStorage.setItem(key, JSON.stringify(nextValue));
+          if (nextValue) {
+            sessionStorage.setItem(key, JSON.stringify(nextValue));
+          } else {
+            sessionStorage.removeItem(key);
+          }
+
           return nextValue;
         });
       } catch (error) {
