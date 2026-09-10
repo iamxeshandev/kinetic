@@ -1,20 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using kinetic_api.Interfaces;
 
 namespace kinetic_api.Models;
 
-public class Subtask : ITrackable
+public class TaskComment
 {
     public Guid Id { get; init; } = Guid.NewGuid();
+
     public required Guid TaskId { get; init; }
     public virtual Task Task { get; set; } = null!;
 
-    [Required] [MaxLength(100)] public required string Name { get; set; }
+    public required Guid AuthorId { get; init; }
+    public virtual ApplicationUser Author { get; set; } = null!;
+
+    [MaxLength(2000)] public required string Content { get; set; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
-    public required Guid CreatedBy { get; init; }
     public DateTimeOffset? UpdatedAt { get; set; }
-    public Guid? UpdatedBy { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
-    public Guid? DeletedBy { get; set; }
 }

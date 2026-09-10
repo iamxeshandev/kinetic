@@ -5,11 +5,12 @@ namespace kinetic_api.Models;
 
 public class Section : ITrackable
 {
-    public Guid Id { get; set; }
-    public required Guid ProjectId { get; set; }
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public required Guid ProjectId { get; init; }
     public virtual Project Project { get; set; } = null!;
 
     [Required] [MaxLength(100)] public required string Name { get; set; }
+    public required long Position { get; set; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public required Guid CreatedBy { get; init; }

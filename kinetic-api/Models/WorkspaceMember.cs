@@ -5,10 +5,12 @@ namespace kinetic_api.Models;
 
 public class WorkspaceMember : IAuditable
 {
-    public required Guid WorkspaceId { get; set; }
+    public required Guid WorkspaceId { get; init; }
     public virtual Workspace Workspace { get; set; } = null!;
-    public required Guid UserId { get; set; }
+
+    public required Guid UserId { get; init; }
     public virtual ApplicationUser User { get; set; } = null!;
+
     public required EWorkspaceRole Role { get; set; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;

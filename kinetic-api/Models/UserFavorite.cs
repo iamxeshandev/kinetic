@@ -4,9 +4,9 @@ namespace kinetic_api.Models;
 
 public class UserFavorite
 {
-    public Guid UserId { get; set; }
+    public required Guid UserId { get; init; }
     public virtual ApplicationUser User { get; set; } = null!;
 
     public EFavoriteEntityType EntityType { get; init; }
-    public Guid EntityId { get; set; }
+    public Guid EntityId { get; init; }
 }

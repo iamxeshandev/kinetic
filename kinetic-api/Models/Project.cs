@@ -7,7 +7,7 @@ namespace kinetic_api.Models;
 public class Project : ITrackable
 {
     public Guid Id { get; init; } = Guid.NewGuid();
-    public required Guid WorkspaceId { get; set; }
+    public required Guid WorkspaceId { get; init; }
     public virtual Workspace Workspace { get; set; } = null!;
 
     [MaxLength(100)] public required string Name { get; set; }
@@ -16,8 +16,8 @@ public class Project : ITrackable
     public required EPriority Priority { get; set; }
     public DateTimeOffset? DueDate { get; set; }
 
-    public required Guid CreatedBy { get; init; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public required Guid CreatedBy { get; init; }
     public DateTimeOffset? UpdatedAt { get; set; }
     public Guid? UpdatedBy { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
