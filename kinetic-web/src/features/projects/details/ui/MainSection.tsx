@@ -89,10 +89,7 @@ export function MainSection() {
         </Button>
       </Box>
 
-      <StyledTabPanel
-        value='board'
-        sx={{ overflowX: 'auto', overflowY: 'clip', p: 0.5 }}
-      >
+      <StyledTabPanel value='board' sx={{ overflowX: 'auto', flex: 1 }}>
         <KanbanView />
       </StyledTabPanel>
 
@@ -117,8 +114,6 @@ export function MainSection() {
 
 const StyledTabPanel = styled(TabPanel)(() => ({
   padding: 0,
-  flex: 1,
-  display: 'flex',
 
   '&[hidden]': {
     display: 'none',

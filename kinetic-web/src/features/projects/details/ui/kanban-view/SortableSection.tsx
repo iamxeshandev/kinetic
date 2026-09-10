@@ -4,8 +4,10 @@ import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { AddIcon, MoreIcon } from '../../../../../shared/components/icons';
 import { varAlpha } from '../../../../../shared/helpers';
+import { useBoolean } from '../../../../../shared/hooks';
 import type { Callback } from '../../../../../shared/types';
 import type { Section } from '../../types';
+import { NewTask } from './NewTask';
 
 type Props = {
   index: number;
@@ -23,7 +25,6 @@ export function SortableSection({
   id,
   count,
   section,
-  onCreateTask,
   children,
 }: Props) {
   const { ref } = useSortable({
@@ -34,9 +35,11 @@ export function SortableSection({
     accept: ['item', 'column'],
   });
 
+  const newTask = useBoolean();
+
   return (
-    <Stack ref={ref} spacing={2} sx={{ width: 300 }}>
-      <Card sx={{ p: 2 }}>
+    <Stack ref={ref} spacing={1}>
+      <Card sx={{ p: 2, mb: 2, width: 300 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography
             sx={{
@@ -64,7 +67,7 @@ export function SortableSection({
           <IconButton
             size='small'
             aria-label='Add Task'
-            onClick={(e) => onCreateTask?.(e, id)}
+            onClick={newTask.setTrue}
           >
             <AddIcon />
           </IconButton>
@@ -74,6 +77,8 @@ export function SortableSection({
           </IconButton>
         </Box>
       </Card>
+
+      {newTask.value && <NewTask sectionId={id} onClose={newTask.setFalse} />}
 
       {children}
     </Stack>

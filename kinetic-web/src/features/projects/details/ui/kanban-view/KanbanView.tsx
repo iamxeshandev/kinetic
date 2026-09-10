@@ -70,7 +70,7 @@ export default function KanbanView() {
           setItems((items) => move(items, event));
         }}
       >
-        <Stack direction='row' spacing={2}>
+        <Stack direction='row' spacing={2} sx={{ p: 0.5 }}>
           {Object.entries(items).map(([sectionId, taskIds], index) => (
             <SortableSection
               key={sectionId}

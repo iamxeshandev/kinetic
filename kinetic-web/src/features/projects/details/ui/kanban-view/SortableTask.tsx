@@ -43,6 +43,7 @@ export function SortableTask({
         display: 'flex',
         flexDirection: 'column',
         gap: 1,
+        flexShrink: 0,
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
