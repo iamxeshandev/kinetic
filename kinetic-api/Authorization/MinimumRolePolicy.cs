@@ -1,52 +1,59 @@
-﻿using System.Security.Claims;
-using kinetic_api.Database;
+﻿using System.Net;
+using System.Security.Claims;
+using kinetic_api.Data;
 using kinetic_api.Enums;
-using kinetic_api.Extensions;
+using kinetic_api.Exceptions;
 using kinetic_api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Task = System.Threading.Tasks.Task;
 
 namespace kinetic_api.Authorization;
 
-public class MinimumRoleRequirement(params (string Table, Enum Role)[] minimumRoles) : IAuthorizationRequirement
+// Check minimum role requirement. Authorize if role is valid
+
+public sealed class MinimumRoleRequirement(params (string Table, Enum Role)[] minimumRoles) : IAuthorizationRequirement
 {
     public (string Table, Enum Role)[] MinimumRoles { get; } = minimumRoles;
 }
 
-public class MinimumRoleHandler(AppDbContext db) : AuthorizationHandler<MinimumRoleRequirement>
+public sealed class MinimumRoleHandler(AppDbContext db) : AuthorizationHandler<MinimumRoleRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         MinimumRoleRequirement requirement)
     {
         if (context.Resource is not HttpContext httpContext ||
             !Guid.TryParse(context.User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
-            return;
+            throw new ApiException(HttpStatusCode.Unauthorized, "You have been logged out.");
 
-        var workspaceId = httpContext.GetRouteValue("workspaceId")?.ToString()?.ToGuid();
-        var projectId = httpContext.GetRouteValue("projectId")?.ToString()?.ToGuid();
+        Guid? workspaceId = Guid.TryParse(httpContext.GetRouteValue("workspaceId")?.ToString(), out var gWorkspaceId)
+            ? gWorkspaceId
+            : null;
+        Guid? projectId = Guid.TryParse(httpContext.GetRouteValue("projectId")?.ToString(), out var gProjectId)
+            ? gProjectId
+            : null;
 
         foreach (var (table, minRole) in requirement.MinimumRoles)
         {
-            var success = table switch
+            var ok = table switch
             {
                 nameof(WorkspaceMember) when workspaceId.HasValue &&
-                                             Enum.TryParse<EWorkspaceRole>(minRole.ToString(), out var minW) &&
-                                             (await db.WorkspaceMembers.FindAsync(workspaceId.Value, userId))?.Role >=
-                                             minW => true,
+                                             Enum.TryParse<EWorkspaceRole>(minRole.ToString(), out var w) =>
+                    (await db.WorkspaceMembers.FindAsync(workspaceId.Value, userId))?.Role >= w,
 
                 nameof(ProjectMember) when workspaceId.HasValue && projectId.HasValue &&
-                                           Enum.TryParse<EProjectRole>(minRole.ToString(), out var minP) &&
-                                           (await db.ProjectMembers.FindAsync(workspaceId.Value, projectId.Value,
-                                               userId))?.Role >=
-                                           minP => true,
+                                           Enum.TryParse<EProjectRole>(minRole.ToString(), out var p) =>
+                    (await db.ProjectMembers.FindAsync(workspaceId.Value, projectId.Value, userId))?.Role >= p,
 
                 _ => false
             };
 
-            if (!success)
+            if (ok)
+            {
+                context.Succeed(requirement);
                 return;
-
-            context.Succeed(requirement);
+            }
         }
+
+        throw new ApiException(HttpStatusCode.Forbidden, "You are not authorized to perform this action.");
     }
 }
