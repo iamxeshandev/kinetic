@@ -1,8 +1,8 @@
 ﻿using kinetic_api.Dtos.Common;
 using kinetic_api.Enums;
+using kinetic_api.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi;
 
 namespace kinetic_api.Controllers;
 
@@ -45,6 +45,7 @@ public class LookupsController : ControllerBase
     public ActionResult<Response<List<LookupDto<EWorkspaceRole>>>> GetWorkspaceRoles()
     {
         var lookups = Enum.GetValues<EWorkspaceRole>()
+            .Where(o => o != EWorkspaceRole.Owner)
             .Select(o => new LookupDto<EWorkspaceRole>(o, o.GetDisplayName()))
             .ToList();
 

@@ -1,3 +1,4 @@
+using kinetic_api.Dtos.Common;
 using kinetic_api.Dtos.Workspace;
 using kinetic_api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -7,37 +8,39 @@ namespace kinetic_api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class WorkspacesController(WorkspaceService workspaceService) : ControllerBase
 {
     [HttpGet("")]
-    public async Task<ActionResult> GetAllWorkspaces()
+    public async Task<ActionResult<Response<List<WorkspaceDto>>>> GetAllWorkspacesAsync()
     {
-        return Ok(await workspaceService.GetAllWorkspaces());
+        return await workspaceService.GetAllWorkspacesAsync();
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult> GetWorkspaceByIdAsync(Guid id)
+    [Authorize(Policy = "WorkspaceMember")]
+    [HttpGet("{workspaceId:guid}")]
+    public async Task<ActionResult<Response<WorkspaceDto>>> GetWorkspaceByIdAsync(Guid workspaceId)
     {
-        return Ok(await workspaceService.GetWorkspaceByIdAsync(id));
+        return await workspaceService.GetWorkspaceByIdAsync(workspaceId);
     }
 
     [HttpPost("")]
-    public async Task<ActionResult> CreateWorkspaceAsync(WorkspaceDto dto)
+    public async Task<ActionResult<Response<WorkspaceDto>>> CreateWorkspaceAsync(WorkspaceDto dto)
     {
-        var result = await workspaceService.CreateWorkspaceAsync(dto);
-        return CreatedAtAction(nameof(GetWorkspaceByIdAsync), new { id = result.Data.Id }, result);
+        return Created("", await workspaceService.CreateWorkspaceAsync(dto));
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateWorkspaceAsync(Guid id, WorkspaceDto dto)
+    [Authorize(Policy = "WorkspaceAdmin")]
+    [HttpPut("{workspaceId:guid}")]
+    public async Task<ActionResult<Response<WorkspaceDto>>> UpdateWorkspaceAsync(Guid workspaceId, WorkspaceDto dto)
     {
-        return Ok(await workspaceService.UpdateWorkspaceAsync(id, dto));
+        return await workspaceService.UpdateWorkspaceAsync(workspaceId, dto);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<ActionResult> DeleteWorkspaceAsync(Guid id)
+    [Authorize(Policy = "WorkspaceOwner")]
+    [HttpDelete("{workspaceId:guid}")]
+    public async Task<ActionResult<Response>> DeleteWorkspaceAsync(Guid workspaceId)
     {
-        return Ok(await workspaceService.DeleteWorkspaceAsync(id));
+        return await workspaceService.DeleteWorkspaceAsync(workspaceId);
     }
 }

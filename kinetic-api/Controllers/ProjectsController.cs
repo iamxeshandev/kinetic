@@ -1,3 +1,4 @@
+using kinetic_api.Dtos.Common;
 using kinetic_api.Dtos.Project;
 using kinetic_api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -7,37 +8,50 @@ namespace kinetic_api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("[controller]")]
+[Route("api/workspaces/{workspaceId:guid}/[controller]")]
 public class ProjectsController(ProjectService projectService) : ControllerBase
 {
+    [Authorize(Policy = "WorkspaceMember")]
     [HttpGet("")]
-    public async Task<ActionResult> GetAllProjectsAsync()
+    public async Task<ActionResult<Response<List<ProjectDto>>>> GetAllProjectsAsync(Guid workspaceId)
     {
-        return Ok(await projectService.GetAllProjectsAsync());
+        return await projectService.GetAllProjectsAsync(workspaceId);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult> GetProjectByIdAsync(Guid id)
+    [Authorize(Policy = "WorkspaceMember")]
+    [HttpGet("{projectId:guid}")]
+    public async Task<ActionResult<Response<ProjectDto>>> GetProjectByIdAsync(Guid workspaceId, Guid projectId)
     {
-        return Ok(await projectService.GetProjectByIdAsync(id));
+        return await projectService.GetProjectByIdAsync(workspaceId, projectId);
     }
 
+    [Authorize(Policy = "WorkspaceManager")]
     [HttpPost("")]
-    public async Task<ActionResult> CreateProjectAsync(ProjectDto dto)
+    public async Task<ActionResult<Response<ProjectDto>>> CreateProjectAsync(Guid workspaceId, ProjectDto dto)
     {
-        var result = await projectService.CreateProjectAsync(dto);
-        return CreatedAtAction(nameof(GetProjectByIdAsync), new { id = result.Data.Id }, result);
+        return Created("", await projectService.CreateProjectAsync(workspaceId, dto));
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateProjectAsync(Guid id, ProjectDto dto)
+    [Authorize(Policy = "WorkspaceAdminOrProjectLead")]
+    [HttpPut("{projectId:guid}")]
+    public async Task<ActionResult<Response<ProjectDto>>> UpdateProjectAsync(Guid workspaceId, Guid projectId,
+        ProjectDto dto)
     {
-        return Ok(await projectService.UpdateProjectAsync(id, dto));
+        return await projectService.UpdateProjectAsync(workspaceId, projectId, dto);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<ActionResult> DeleteProjectAsync(Guid id)
+    [Authorize(Policy = "WorkspaceAdminOrProjectOwner")]
+    [HttpDelete("{projectId:guid}")]
+    public async Task<ActionResult<Response>> DeleteProjectAsync(Guid workspaceId, Guid projectId)
     {
-        return Ok(await projectService.DeleteProjectAsync(id));
+        return await projectService.DeleteProjectAsync(workspaceId, projectId);
+    }
+
+    [Authorize(Policy = "WorkspaceManagerOrProjectLead")]
+    [HttpGet("{projectId:guid}/members")]
+    public async Task<ActionResult<Response<List<ProjectMemberDto>>>> GetProjectMembersAsync(Guid workspaceId,
+        Guid projectId)
+    {
+        return await projectService.GetProjectMembersAsync(workspaceId, projectId);
     }
 }
