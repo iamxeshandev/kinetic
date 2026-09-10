@@ -2,8 +2,8 @@
 
 public static class StringExtensions
 {
-    public static Guid? ToGuid(this string value)
+    public static string ToPublicUrl(this string? value)
     {
-        return Guid.TryParse(value, out var result) ? result : null;
+        return string.IsNullOrEmpty(value) ? string.Empty : $"storage/public/{value}";
     }
 }
