@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using kinetic_api.Database;
+using kinetic_api.Data;
 using kinetic_api.Dtos.Common;
 using kinetic_api.Dtos.User;
 using kinetic_api.Enums;
@@ -11,10 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace kinetic_api.Services;
 
-public class UserService(
-    AppDbContext db,
-    IHttpContextAccessor accessor,
-    UserManager<ApplicationUser> userManager)
+public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserManager<ApplicationUser> userManager)
 {
     public async Task<Response<List<UserDto>>> GetAllUsersAsync(Guid workspaceId)
     {
@@ -31,8 +28,8 @@ public class UserService(
                 o.UserId,
                 o.User.FirstName,
                 o.User.LastName,
-                o.User.FullName,
                 o.User.Email!,
+                o.User.AvatarKey.ToPublicUrl(),
                 o.Role,
                 o.CreatedAt
             ))
@@ -49,8 +46,8 @@ public class UserService(
                 o.UserId,
                 o.User.FirstName,
                 o.User.LastName,
-                o.User.FullName,
                 o.User.Email!,
+                o.User.AvatarKey.ToPublicUrl(),
                 o.Role,
                 o.CreatedAt
             ))

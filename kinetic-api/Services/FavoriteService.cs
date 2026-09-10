@@ -1,4 +1,4 @@
-﻿using kinetic_api.Database;
+﻿using kinetic_api.Data;
 using kinetic_api.Dtos.Common;
 using kinetic_api.Enums;
 using kinetic_api.Extensions;
