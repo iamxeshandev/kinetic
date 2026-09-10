@@ -8,17 +8,85 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.11"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.17.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Migrations\"/>
+        <Folder Include="wwwroot\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Properties\PublishProfiles\kinetic.pubxml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\404-CXvQOZtB.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\about-DHkXV9zI.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\account-BTZUpaW_.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\account-D6pzie9c.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\AnimatePresence-CrexrwCt.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\api-Cud5zT6w.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\auth-D16mg2Z0.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\calendar-DHCaYraK.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\Card-rA9TgOGN.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\CardHeader-DVsGKHbM.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\checkOverdue-eYpn7d2V.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\contact-C4yz_JuY.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\Container-CprG8D4t.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\dashboard-BBVQ3I2c.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\Drawer-Y3N9v8PE.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\en-US-Den_lD3L.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\error-Bdwi-Wu2.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\features-C1LYv8zP.svg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\form-Ci94Ekeo.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\formatDate-CRRZnmJe.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\Grid-B2zQ-ega.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\hero-lNScr9NN.svg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\home-BcRXGG0X.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\hooks-C3jSYvYn.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\index-B1AAlRcl.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\jsx-runtime-I8uHACss.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\Link-DYZLEv8N.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\logo-Cbm4cuCw.svg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\mutation-BBgWjaOl.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\project-details-BXB0cucY.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ProjectGridView-Catp3OB4.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ProjectHealth-CRVGwf55.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ProjectListView-DMPypRt7.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\projects-DtiREIH7.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\proxy-BmPjkY2L.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\public-DXbIEigs.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\reset-password-DLJ1GAu1.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\root-DP4fWKzv.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\shim-Ddl5Z-dB.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\sign-in-DgfIPL43.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\sign-up-DVQMAimj.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\StyledIcon-nsSqSqEg.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\TableRow-C5huaswp.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ui-26BO_uAg.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ui-ClZrngb6.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ui-DK6FNpbO.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\ui-MC2wPdMk.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\useMediaQuery-ChYDwmkL.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\users-CTTFDou8.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\useThemeProps-Dcr8J4xz.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\with-selector-BjNEXrxE.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\workspace-BE0QZGCb.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\assets\workspaces-vr3j_efO.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\favicon.svg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\app\index.html"/>
     </ItemGroup>
 
 </Project>

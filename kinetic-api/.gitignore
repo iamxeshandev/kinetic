@@ -22,4 +22,9 @@ packages/
 
 # Database
 *.db
+
+# Other
 /Properties/PublishProfiles/
+/wwwroot
+/storage
+

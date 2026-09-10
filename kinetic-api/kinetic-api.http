@@ -1,11 +1,6 @@
 @kinetic_api_HostAddress = http://localhost:5197
 
-GET {{kinetic_api_HostAddress}}/api/Projects
-Accept: application/json
-
-###
-
-GET {{kinetic_api_HostAddress}}/Projects/b299ea71-e2eb-432c-89dc-bb9a97587bfb
+GET {{kinetic_api_HostAddress}}/api/Workspaces
 Accept: application/json
 
 ###
