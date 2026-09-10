@@ -1,3 +1,5 @@
-﻿namespace kinetic_api.Dtos.Workspace;
+﻿using kinetic_api.Enums;
 
-public record WorkspaceDto(Guid Id, string Name);
+namespace kinetic_api.Dtos.Workspace;
+
+public record WorkspaceDto(Guid? Id, string Name, EWorkspaceRole? Role, bool IsPersonal, int Members);
