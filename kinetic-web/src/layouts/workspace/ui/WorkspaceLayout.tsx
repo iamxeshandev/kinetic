@@ -1,14 +1,14 @@
 import { Box, Container } from '@mui/material';
 import { AnimatePresence, motion } from 'motion/react';
-import {
-  MdAssignment,
-  MdCalendarMonth,
-  MdDashboard,
-  MdGroups,
-} from 'react-icons/md';
 import { useLocation, useOutlet, useParams } from 'react-router';
 import { useAuthContext } from '../../../features/auth/context';
 import { paths } from '../../../routes';
+import {
+  CalendarIcon,
+  DashboardIcon,
+  ProjectsIcon,
+  UsersIcon,
+} from '../../../shared/components/icons';
 import { useResizeObserver } from '../../../shared/hooks';
 import { Header } from './Header';
 import { NavbarDesktop, type NavbarDesktopProps } from './NavbarDesktop';
@@ -29,24 +29,24 @@ export function WorkspaceLayout() {
   const navLinks: NavbarDesktopProps['navLinks'] = [
     {
       label: 'Dashboard',
-      icon: <MdDashboard />,
+      icon: <DashboardIcon />,
       path: paths.workspaces.dashboard(workspaceId ?? 'undefined'),
     },
     {
       label: 'Projects',
-      icon: <MdAssignment />,
+      icon: <ProjectsIcon />,
       path: paths.workspaces.projects.root(workspaceId ?? 'undefined'),
     },
     {
       label: 'Calendar',
-      icon: <MdCalendarMonth />,
+      icon: <CalendarIcon />,
       path: paths.workspaces.calendar(workspaceId ?? 'undefined'),
     },
     ...(!user?.currentWorkspace?.isPersonal
       ? [
           {
             label: 'Users',
-            icon: <MdGroups />,
+            icon: <UsersIcon />,
             path: paths.workspaces.users(workspaceId ?? 'undefined'),
           },
         ]

@@ -1,7 +1,7 @@
 import { Box, Drawer, IconButton, Stack } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { Logo } from '../../../shared/components/ui';
+import { MenuIcon } from '../../../shared/components/icons';
 import { varAlpha } from '../../../shared/helpers';
 
 export type NavbarDesktopProps = {
@@ -32,7 +32,9 @@ export const NavbarDesktop = forwardRef(
             gap: 2,
           }}
         >
-          <Logo sx={{ mb: 2 }} />
+          <IconButton color='inherit'>
+            <MenuIcon />
+          </IconButton>
 
           {navLinks.map(({ icon, path }) => {
             const isActive = location.pathname.includes(path);
@@ -47,7 +49,7 @@ export const NavbarDesktop = forwardRef(
                           theme.vars!.palette.action.activatedOpacity,
                         )
                     : undefined,
-                  borderRadius: 2,
+                  borderRadius: 1,
                 }}
               >
                 <IconButton

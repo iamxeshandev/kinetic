@@ -26,12 +26,13 @@ export function Header({ sx, ...props }: BoxProps) {
         display: 'flex',
         alignItems: 'center',
         gap: 2,
-        p: 2,
+        px: 2,
+        py: 1,
         ...sx,
       }}
       {...props}
     >
-      <Logo sx={{ display: { xs: 'inherit', sm: 'none' } }} />
+      <Logo isLink={false} sx={{ width: 32 }} />
 
       <WorkspaceSwitcher />
 
@@ -49,7 +50,7 @@ export function Header({ sx, ...props }: BoxProps) {
                 <LuSearch />
               </InputAdornment>
             ),
-            sx: { borderRadius: 10 },
+            sx: { backgroundColor: 'surface.subtle' },
           },
         }}
       />
@@ -61,11 +62,11 @@ export function Header({ sx, ...props }: BoxProps) {
         <LuSearch />
       </IconButton>
 
+      <ThemeSwitcher />
+
       <IconButton aria-label='Notifications'>
         <LuBell />
       </IconButton>
-
-      <ThemeSwitcher />
 
       <AccountAvatar />
     </Box>
