@@ -166,7 +166,7 @@ export function ProjectsView() {
         open={confirmDialog}
         onClose={() => setConfirmDialog(false)}
         title={'Delete Project'}
-        subtitle={'Are you sure you want to delete this project?'}
+        content={'Are you sure you want to delete this project?'}
         action={
           <Button
             color='error'

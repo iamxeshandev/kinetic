@@ -1,6 +1,5 @@
 import { useSortable } from '@dnd-kit/react/sortable';
-import { Box, Card, IconButton, Typography } from '@mui/material';
-import { MoreIcon, PencilIcon } from '../../../../../shared/components/icons';
+import { Box, Card, Typography } from '@mui/material';
 import { Label } from '../../../../../shared/components/ui';
 import type { Callback } from '../../../../../shared/types';
 import type { Section, Task } from '../../types';
@@ -11,7 +10,7 @@ type SortableTaskProps = {
   sectionId: Section['id'];
   task?: Task;
   onEditTask?: Callback<
-    [event: React.MouseEvent<HTMLButtonElement>, taskId: Task['id']]
+    [event: React.MouseEvent<HTMLDivElement>, taskId: Task['id']]
   >;
 };
 
@@ -33,13 +32,10 @@ export function SortableTask({
   return (
     <Card
       ref={ref}
+      onClick={(e) => onEditTask?.(e, id)}
       sx={{
         p: 2,
         scale: isDragging ? 1.05 : 1,
-        '&:hover .task-actions, &:focus-within .task-actions': {
-          opacity: 1,
-          visibility: 'visible',
-        },
         display: 'flex',
         flexDirection: 'column',
         gap: 1,
@@ -60,28 +56,6 @@ export function SortableTask({
           />
           High
         </Label>
-        <Box sx={{ flex: 1 }} aria-hidden />
-        <Box
-          className='task-actions'
-          sx={{
-            display: 'flex',
-            gap: 0.5,
-            opacity: 0,
-            visibility: 'hidden',
-            transition: 'opacity 150ms ease, visibility 150ms ease',
-          }}
-        >
-          <IconButton
-            size='small'
-            aria-label='Edit Task'
-            onClick={(e) => onEditTask?.(e, id)}
-          >
-            <PencilIcon />
-          </IconButton>
-          <IconButton size='small' aria-label='Task Options'>
-            <MoreIcon />
-          </IconButton>
-        </Box>
       </Box>
 
       <Typography sx={{ fontWeight: 'bold' }}>{task?.name}</Typography>

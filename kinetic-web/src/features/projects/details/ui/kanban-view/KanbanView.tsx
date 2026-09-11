@@ -3,12 +3,15 @@ import { DragDropProvider } from '@dnd-kit/react';
 import { Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { TrashIcon } from '../../../../../shared/components/icons/index.js';
+import { ActionMenu } from '../../../../../shared/components/ui/ActionMenu.js';
 import { useBoolean } from '../../../../../shared/hooks/useBoolean.js';
 import { useSections } from '../../hooks/useSections.js';
 import { useTasks } from '../../hooks/useTasks.js';
 import type { Section, Task } from '../../types/index.js';
 import { TaskDetails } from '../task-details/TaskDetails.js';
 import { CreateSectionButton } from './CreateSectionButton.js';
+import { DeleteSectionDialog } from './DeleteSectionDialog.js';
 import { SortableSection } from './SortableSection.js';
 import { SortableTask } from './SortableTask.js';
 
@@ -20,6 +23,16 @@ export default function KanbanView() {
 
   const [taskId, setTaskId] = useState<Task['id'] | undefined>(undefined);
   const taskDetails = useBoolean();
+
+  const [columnMenu, setColumnMenu] = useState<{
+    id: Section['id'] | undefined;
+    anchorEl: HTMLButtonElement | undefined;
+  }>({ id: undefined, anchorEl: undefined });
+
+  const deleteSectionDialog = useBoolean();
+  const [deleteSectionId, setDeleteSectionId] = useState<
+    Section['id'] | undefined
+  >(undefined);
 
   const sectionsMap = sections.reduce(
     (acc, section) => ({ ...acc, [section.id]: section }),
@@ -50,10 +63,8 @@ export default function KanbanView() {
     syncItems();
   }, [sections, tasks]);
 
-  const onCreateTask = () => {};
-
   const onEditTask = (
-    event: React.MouseEvent<HTMLButtonElement>,
+    event: React.MouseEvent<HTMLDivElement>,
     taskId: Task['id'],
   ) => {
     event.currentTarget.blur();
@@ -70,7 +81,7 @@ export default function KanbanView() {
           setItems((items) => move(items, event));
         }}
       >
-        <Stack direction='row' spacing={2} sx={{ p: 0.5 }}>
+        <Stack direction='row' spacing={2} sx={{ p: 0.5, flex: 1 }}>
           {Object.entries(items).map(([sectionId, taskIds], index) => (
             <SortableSection
               key={sectionId}
@@ -78,7 +89,9 @@ export default function KanbanView() {
               id={sectionId}
               count={taskIds.length}
               section={sectionsMap[sectionId]}
-              onCreateTask={onCreateTask}
+              onMoreActionsClick={(event, sectionId) =>
+                setColumnMenu({ id: sectionId, anchorEl: event.currentTarget })
+              }
             >
               {taskIds.map((taskId, index) => (
                 <SortableTask
@@ -101,6 +114,31 @@ export default function KanbanView() {
         open={taskDetails.value}
         onClose={taskDetails.setFalse}
         task={tasksMap[taskId!]}
+      />
+
+      <ActionMenu
+        open={!!columnMenu.anchorEl}
+        anchorEl={columnMenu.anchorEl}
+        onClose={() => setColumnMenu({ id: undefined, anchorEl: undefined })}
+        actions={[
+          {
+            label: 'Delete',
+            icon: <TrashIcon />,
+            color: 'error',
+            onClick: () => {
+              setDeleteSectionId(columnMenu.id);
+              deleteSectionDialog.setTrue();
+            },
+          },
+        ]}
+      />
+
+      <DeleteSectionDialog
+        open={deleteSectionDialog.value}
+        onClose={deleteSectionDialog.setFalse}
+        sectionId={deleteSectionId}
+        hasTasks={items[deleteSectionId ?? '']?.length > 0}
+        options={sections.filter((s) => s.id !== deleteSectionId)}
       />
     </>
   );

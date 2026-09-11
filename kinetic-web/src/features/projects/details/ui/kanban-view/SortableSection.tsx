@@ -14,7 +14,7 @@ type Props = {
   id: Section['id'];
   count: number;
   section?: Section;
-  onCreateTask?: Callback<
+  onMoreActionsClick?: Callback<
     [event: React.MouseEvent<HTMLButtonElement>, sectionId: Section['id']]
   >;
   children: React.ReactNode;
@@ -25,6 +25,7 @@ export function SortableSection({
   id,
   count,
   section,
+  onMoreActionsClick,
   children,
 }: Props) {
   const { ref } = useSortable({
@@ -72,7 +73,11 @@ export function SortableSection({
             <AddIcon />
           </IconButton>
 
-          <IconButton size='small' aria-label='Section Options'>
+          <IconButton
+            size='small'
+            aria-label='Section Options'
+            onClick={(e) => onMoreActionsClick?.(e, id)}
+          >
             <MoreIcon />
           </IconButton>
         </Box>

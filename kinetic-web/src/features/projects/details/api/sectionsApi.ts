@@ -15,10 +15,12 @@ export const sectionsApi = {
   getById: (
     workspaceId: Workspace['id'],
     projectId: Project['id'],
-    id: Section['id'],
+    sectionId: Section['id'],
   ) =>
     api
-      .get<ApiResponse<Section>>(`${baseUrl(workspaceId, projectId)}/${id}`)
+      .get<
+        ApiResponse<Section>
+      >(`${baseUrl(workspaceId, projectId)}/${sectionId}`)
       .then((res) => res.data),
 
   create: (
@@ -33,22 +35,26 @@ export const sectionsApi = {
   update: (
     workspaceId: Workspace['id'],
     projectId: Project['id'],
-    id: Section['id'],
+    sectionId: Section['id'],
     data: Omit<Section, Section['id']>,
   ) =>
     api
       .put<
         ApiResponse<Section>
-      >(`${baseUrl(workspaceId, projectId)}/${id}`, data)
+      >(`${baseUrl(workspaceId, projectId)}/${sectionId}`, data)
       .then((res) => res.data),
 
   delete: (
     workspaceId: Workspace['id'],
     projectId: Project['id'],
-    id: Section['id'],
+    sectionId: Section['id'],
+    moveTasksTo?: Section['id'],
+    deleteTasks?: boolean,
   ) =>
     api
-      .delete<ApiResponse>(`${baseUrl(workspaceId, projectId)}/${id}`)
+      .delete<ApiResponse>(
+        `${baseUrl(workspaceId, projectId)}/${sectionId}${moveTasksTo ? `?moveTasksTo=${moveTasksTo}` : ''}${deleteTasks ? `&deleteTasks=${deleteTasks}` : ''}`,
+      )
       .then((res) => res.data),
 };
 

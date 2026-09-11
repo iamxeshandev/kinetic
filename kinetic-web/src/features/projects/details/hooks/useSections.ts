@@ -42,9 +42,20 @@ export const useUpdateSection = (workspaceId: string, projectId: string) =>
 export const useDeleteSection = (workspaceId: string, projectId: string) =>
   useSWRMutation(
     sectionsKey(workspaceId, projectId),
-    (_, { arg: sectionId }: { arg: Section['id'] }) =>
+    (
+      _,
+      {
+        arg: { sectionId, moveTasksTo, deleteTasks },
+      }: {
+        arg: {
+          sectionId: Section['id'];
+          moveTasksTo?: Section['id'];
+          deleteTasks?: boolean;
+        };
+      },
+    ) =>
       sectionsApi
-        .delete(workspaceId, projectId, sectionId)
+        .delete(workspaceId, projectId, sectionId, moveTasksTo, deleteTasks)
         .then((res) => ({ ...res, data: sectionId })),
     {
       revalidate: false,
