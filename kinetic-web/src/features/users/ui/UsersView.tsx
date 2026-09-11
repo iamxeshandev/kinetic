@@ -96,7 +96,7 @@ export function UsersView() {
         open={confirm}
         onClose={() => setConfirm(false)}
         title='Delete User'
-        subtitle='Are you sure you want to delete the user?'
+        content='Are you sure you want to delete the user?'
         strict
         action={
           <Button color='error' onClick={handleDeleteUser} loading={isDeleting}>
