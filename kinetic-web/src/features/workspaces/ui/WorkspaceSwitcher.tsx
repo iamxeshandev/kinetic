@@ -7,6 +7,7 @@ import {
   Select,
   type SelectChangeEvent,
 } from '@mui/material';
+import { LuBuilding } from 'react-icons/lu';
 import { useNavigate } from 'react-router';
 import { paths } from '../../../routes';
 import { ArrowRightIcon } from '../../../shared/components/icons';
@@ -62,9 +63,13 @@ export function WorkspaceSwitcher() {
   return (
     <Select
       size='small'
-      sx={{ width: 320, display: { xs: 'none', sm: 'block' } }}
       value={isValidating || !hasValidWorkspace ? '' : currentId}
       onChange={handleChange}
+      startAdornment={
+        <InputAdornment position='start'>
+          <LuBuilding />
+        </InputAdornment>
+      }
       endAdornment={
         isSubmitting.value && (
           <InputAdornment position='end'>
@@ -73,6 +78,11 @@ export function WorkspaceSwitcher() {
         )
       }
       disabled={isSubmitting.value}
+      sx={{
+        minWidth: 200,
+        display: { xs: 'none', sm: 'flex' },
+        backgroundColor: 'surface.subtle',
+      }}
     >
       {workspaces.map((workspace) => (
         <MenuItem

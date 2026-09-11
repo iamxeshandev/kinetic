@@ -102,7 +102,7 @@ export function WorkspacesView() {
         open={confirm}
         onClose={() => setConfirm(false)}
         title='Delete Workspace'
-        subtitle='Are you sure you want to delete the workspace?'
+        content='Are you sure you want to delete the workspace?'
         strict
         action={
           <Button
