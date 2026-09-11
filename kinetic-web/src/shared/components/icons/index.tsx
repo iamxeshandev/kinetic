@@ -8,9 +8,12 @@ import {
   LuContrast,
   LuEllipsisVertical,
   LuFiles,
+  LuFolderKanban,
+  LuLayoutDashboard,
   LuList,
   LuListFilter,
   LuLogOut,
+  LuMenu,
   LuMoon,
   LuPaperclip,
   LuPen,
@@ -49,6 +52,8 @@ export const CheckIcon = LuCheck;
 
 export const ContrastIcon = LuContrast;
 
+export const DashboardIcon = LuLayoutDashboard;
+
 export const FilesIcon = LuFiles;
 
 export const FilterIcon = LuListFilter;
@@ -59,11 +64,15 @@ export const ListIcon = LuList;
 
 export const LogoutIcon = LuLogOut;
 
+export const MenuIcon = LuMenu;
+
 export const MoonIcon = LuMoon;
 
 export const MoreIcon = LuEllipsisVertical;
 
 export const PencilIcon = LuPen;
+
+export const ProjectsIcon = LuFolderKanban;
 
 export const SettingsIcon = LuSettings;
 

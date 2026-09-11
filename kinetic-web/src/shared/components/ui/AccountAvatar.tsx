@@ -8,7 +8,9 @@ import { ActionMenuIconButton, type ActionMenuButtonProps } from './ActionMenu';
 export function AccountAvatar() {
   const { user, setUser } = useAuthContext();
 
-  const initials = getInitials(user?.fullName ?? 'User');
+  const initials = getInitials(
+    `${user?.firstName ?? 'User'} ${user?.lastName ?? ''}`,
+  );
 
   const handleSignOut = () =>
     authApi
@@ -29,7 +31,7 @@ export function AccountAvatar() {
 
   return (
     <ActionMenuIconButton actions={actions}>
-      <Avatar size='large'>{initials}</Avatar>
+      <Avatar size='medium'>{initials}</Avatar>
     </ActionMenuIconButton>
   );
 }

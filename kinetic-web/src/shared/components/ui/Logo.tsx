@@ -28,6 +28,8 @@ export function Logo({
         gap: 1,
         textDecoration: 'none',
         color: 'primary.main',
+        width: { xs: 32, sm: 40 },
+        height: 'auto',
         ...sx,
       }}
     >
@@ -36,8 +38,8 @@ export function Logo({
         src={logoImg}
         alt={CONFIG.APP_NAME}
         sx={{
-          width: { xs: 32, sm: 40 },
-          height: 'auto',
+          width: 1,
+          height: 1,
           display: 'block',
         }}
       />

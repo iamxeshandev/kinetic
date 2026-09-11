@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -7,17 +8,14 @@ import {
   Stack,
   TextField,
   Typography,
+  type DialogProps,
 } from '@mui/material';
-import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
-import type { Callback } from '../../types';
 
-export type ConfirmDialogProps = {
-  open: boolean;
-  onClose: Callback;
+export type ConfirmDialogProps = Omit<DialogProps, 'content'> & {
   title: string;
-  subtitle: string;
-  action: ReactNode;
+  content: React.ReactNode;
+  action: React.ReactNode;
   strict?: boolean;
 };
 
@@ -25,17 +23,23 @@ export function ConfirmDialog({
   open,
   onClose,
   title,
-  subtitle,
+  content,
   action,
   strict = false,
+  ...props
 }: ConfirmDialogProps) {
   const ref = useRef<HTMLInputElement>(null);
 
   const [value, setValue] = useState<string>('');
+
   const isConfirmed = !strict || value === title;
 
   useEffect(() => {
     if (!strict || !open) return;
+
+    const reset = () => setValue('');
+
+    reset();
 
     const timeout = setTimeout(() => ref.current?.focus(), 0);
 
@@ -43,38 +47,32 @@ export function ConfirmDialog({
   }, [open, strict]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth='xs'
-      onTransitionExited={() => setValue('')}
-    >
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs' {...props}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
-          <Typography variant='body1'>{subtitle}</Typography>
+          <Box>{content}</Box>
           {strict && (
-            <>
+            <Box>
               <Typography variant='caption'>
-                Enter <Typography component='span'>"{title}"</Typography> to
-                confirm.
+                Enter "{title}" to confirm.
               </Typography>
               <TextField
                 inputRef={ref}
+                fullWidth
                 size='small'
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
               />
-            </>
+            </Box>
           )}
         </Stack>
       </DialogContent>
       <DialogActions>
-        {isConfirmed && action}
-        <Button onClick={onClose} color='inherit'>
+        <Button onClick={(e) => onClose?.(e, 'backdropClick')} color='inherit'>
           Cancel
         </Button>
+        {isConfirmed && action}
       </DialogActions>
     </Dialog>
   );
