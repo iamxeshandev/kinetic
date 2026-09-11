@@ -40,9 +40,9 @@ public class SectionsController(SectionService service) : ControllerBase
 
     [HttpDelete("{sectionId:guid}")]
     public async Task<ActionResult<Response<SectionDto>>> DeleteSectionAsync(Guid workspaceId, Guid projectId,
-        Guid sectionId)
+        Guid sectionId, [FromQuery] Guid? moveTasksTo, [FromQuery] bool deleteTasks)
     {
-        return Ok(await service.DeleteSectionAsync(workspaceId, projectId, sectionId));
+        return Ok(await service.DeleteSectionAsync(workspaceId, projectId, sectionId, moveTasksTo, deleteTasks));
     }
 
     [HttpPatch("{sectionId:guid}/move")]

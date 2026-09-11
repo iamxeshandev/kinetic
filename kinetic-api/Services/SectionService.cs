@@ -10,7 +10,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace kinetic_api.Services;
 
-public class SectionService(AppDbContext db, IHttpContextAccessor accessor)
+public class SectionService(AppDbContext db, IHttpContextAccessor accessor, TaskService taskService)
 {
     private const long PositionStep = 1000000;
 
@@ -92,14 +92,31 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor)
             await GetSectionByIdAsync(workspaceId, projectId, sectionId).TryGetDataAsync());
     }
 
-    public async Task<Response> DeleteSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId)
+    public async Task<Response> DeleteSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId,
+        Guid? moveTasksTo, bool deleteTasks)
     {
+        var userId = accessor.GetUserId();
+
         var section = await db.Sections.SingleOrDefaultAsync(o =>
                           o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId) ??
                       throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
+        var hasTasks = await db.Tasks.AnyAsync(o =>
+            o.SectionId == sectionId && o.Section.ProjectId == projectId &&
+            o.Section.Project.WorkspaceId == workspaceId);
+
+        if (hasTasks)
+        {
+            if (moveTasksTo.HasValue)
+                await taskService.MoveSectionTasksAsync(workspaceId, projectId, sectionId, moveTasksTo.Value);
+            else if (deleteTasks)
+                await taskService.DeleteSectionTasksAsync(workspaceId, projectId, sectionId);
+            else
+                throw new ApiException(HttpStatusCode.BadRequest, "Cannot delete section with tasks.");
+        }
+
         section.DeletedAt = DateTimeOffset.UtcNow;
-        section.DeletedBy = accessor.GetUserId();
+        section.DeletedBy = userId;
 
         await db.SaveChangesAsync();
         return new Response("Section deleted.");

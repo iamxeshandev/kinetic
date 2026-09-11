@@ -172,6 +172,50 @@ public class TaskService(AppDbContext db, StorageService storageService, IHttpCo
         return new Response("Task deleted.");
     }
 
+    public async Task<Response> DeleteSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId)
+    {
+        await db.Tasks
+            .Where(o =>
+                o.SectionId == sectionId &&
+                o.Section.ProjectId == projectId &&
+                o.Section.Project.WorkspaceId == workspaceId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(o => o.DeletedAt, DateTimeOffset.UtcNow)
+                .SetProperty(o => o.DeletedBy, accessor.GetUserId())
+            );
+
+        return new Response("Tasks deleted.");
+    }
+
+    public async Task<Response> MoveSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId,
+        Guid newSectionId)
+    {
+        var newSectionExists = await db.Sections.AnyAsync(o =>
+            o.Id == newSectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
+        if (!newSectionExists)
+            throw new ApiException(HttpStatusCode.NotFound, "Target section not found.");
+
+        var lastPosition = await db.Tasks
+            .Where(o => o.SectionId == newSectionId && o.Section.ProjectId == projectId &&
+                        o.Section.Project.WorkspaceId == workspaceId).Select(o => (long?)o.Position).MaxAsync() ?? 0L;
+
+        var tasks = await db.Tasks
+            .Where(o =>
+                o.SectionId == sectionId && o.Section.ProjectId == projectId &&
+                o.Section.Project.WorkspaceId == workspaceId)
+            .OrderBy(o => o.Position)
+            .ToListAsync();
+
+        foreach (var task in tasks)
+        {
+            task.SectionId = newSectionId;
+            task.Position = lastPosition += TaskPositionStep;
+        }
+
+        await db.SaveChangesAsync();
+        return new Response("Tasks moved.");
+    }
+
     #endregion
 
 
