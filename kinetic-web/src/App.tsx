@@ -5,7 +5,7 @@ import { AuthProvider } from './features/auth/context/AuthProvider';
 import { NotificationProvider } from './features/notifications/context';
 import { router } from './routes';
 import { swrConfig } from './shared/api';
-import { IconProvider } from './shared/components/icons/IconProvider';
+import { IconProvider } from './shared/icons/IconProvider';
 import { ToastProvider } from './shared/toast';
 import { styles, theme } from './theme';
 
