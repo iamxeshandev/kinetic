@@ -2,7 +2,7 @@ import { useParams } from 'react-router';
 import { CONFIG } from '../../config';
 import { useProject } from '../../features/projects/hooks';
 import { ProjectDetailsView } from '../../features/projects/ui';
-import { LoadingScreen } from '../../shared/components/ui';
+import { LoadingScreen } from '../../shared/ui';
 
 export function ProjectDetailsPage() {
   const { workspaceId, projectId } = useParams();
