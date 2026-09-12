@@ -2,6 +2,7 @@ export * from './AccountAvatar';
 export * from './ActionMenu';
 export * from './Centered';
 export * from './ConfirmDialog';
+export * from './InlineText';
 export * from './Label';
 export * from './ListHeader';
 export * from './LoadingScreen';

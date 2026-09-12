@@ -1,6 +1,6 @@
 import { Box, type BoxProps } from '@mui/material';
 import type { IconType } from 'react-icons/lib';
-import type { ColorToken } from '../../../theme';
+import type { ColorToken } from '../../theme';
 
 const sizes = {
   small: 16,
