@@ -1,5 +1,5 @@
 import { createBrowserRouter, Outlet } from 'react-router';
-import { SplashScreen } from '../shared/components/ui';
+import { SplashScreen } from '../shared/ui';
 import { AuthGuard, GuestGuard } from '../shared/guards';
 
 export const router = createBrowserRouter([
