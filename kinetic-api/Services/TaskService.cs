@@ -174,17 +174,72 @@ public class TaskService(AppDbContext db, StorageService storageService, IHttpCo
 
     public async Task<Response> DeleteSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId)
     {
-        await db.Tasks
-            .Where(o =>
-                o.SectionId == sectionId &&
-                o.Section.ProjectId == projectId &&
-                o.Section.Project.WorkspaceId == workspaceId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(o => o.DeletedAt, DateTimeOffset.UtcNow)
-                .SetProperty(o => o.DeletedBy, accessor.GetUserId())
-            );
+        var userId = accessor.GetUserId();
 
+        var tasks = await db.Tasks.Where(o =>
+            o.SectionId == sectionId && o.Section.ProjectId == projectId &&
+            o.Section.Project.WorkspaceId == workspaceId).ToListAsync();
+
+        foreach (var task in tasks)
+        {
+            task.DeletedAt = DateTimeOffset.UtcNow;
+            task.DeletedBy = userId;
+        }
+
+        await db.SaveChangesAsync();
         return new Response("Tasks deleted.");
+    }
+
+    public async Task<Response> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId, MoveTaskDto dto)
+    {
+        var task = await db.Tasks.SingleOrDefaultAsync(o =>
+                       o.Id == taskId && o.Section.ProjectId == projectId &&
+                       o.Section.Project.WorkspaceId == workspaceId) ??
+                   throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
+
+        if (dto.SectionId.HasValue)
+        {
+            var sectionExists = await db.Sections.AnyAsync(o =>
+                o.Id == dto.SectionId.Value && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
+            if (!sectionExists)
+                throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
+
+            task.SectionId = dto.SectionId.Value;
+        }
+
+        var newPosition = dto switch
+        {
+            { PreviousTaskId: null } => (await db.Tasks
+                .Where(o => o.Id != task.Id &&
+                            o.SectionId == task.SectionId &&
+                            o.Section.ProjectId == projectId &&
+                            o.Section.Project.WorkspaceId == workspaceId)
+                .Select(o => (long?)o.Position)
+                .MinAsync() ?? 2 * TaskPositionStep) - TaskPositionStep,
+
+            { NextTaskId: null } => (await db.Tasks
+                .Where(o => o.Id != task.Id &&
+                            o.SectionId == task.SectionId &&
+                            o.Section.ProjectId == projectId &&
+                            o.Section.Project.WorkspaceId == workspaceId)
+                .Select(o => (long?)o.Position)
+                .MaxAsync() ?? 0L) + TaskPositionStep,
+
+            _ => await db.Tasks
+                .Where(o =>
+                    (o.Id == dto.PreviousTaskId.Value || o.Id == dto.NextTaskId.Value) &&
+                    o.SectionId == task.SectionId && o.Section.ProjectId == projectId &&
+                    o.Section.Project.WorkspaceId == workspaceId)
+                .Select(o => o.Position)
+                .ToListAsync() is { Count: 2 } positions
+                ? positions.Sum() / 2
+                : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring tasks.")
+        };
+
+        task.Position = newPosition;
+
+        await db.SaveChangesAsync();
+        return new Response("Task moved.");
     }
 
     public async Task<Response> MoveSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId,

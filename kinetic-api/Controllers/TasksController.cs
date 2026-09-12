@@ -43,6 +43,13 @@ public class TasksController(TaskService service) : ControllerBase
         return await service.DeleteTaskAsync(workspaceId, projectId, taskId);
     }
 
+    [HttpPatch("{taskId:guid}/move")]
+    public async Task<ActionResult<Response>> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
+        MoveTaskDto dto)
+    {
+        return await service.MoveTaskAsync(workspaceId, projectId, taskId, dto);
+    }
+
 
     // Task Attachments
     [HttpGet("{taskId:guid}/attachments")]

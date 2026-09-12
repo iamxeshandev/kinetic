@@ -46,7 +46,7 @@ public class SectionsController(SectionService service) : ControllerBase
     }
 
     [HttpPatch("{sectionId:guid}/move")]
-    public async Task<ActionResult<Response<SectionDto>>> MoveSectionAsync(Guid workspaceId, Guid projectId,
+    public async Task<ActionResult<Response>> MoveSectionAsync(Guid workspaceId, Guid projectId,
         Guid sectionId, MoveSectionDto dto)
     {
         return Ok(await service.MoveSectionAsync(workspaceId, projectId, sectionId, dto));

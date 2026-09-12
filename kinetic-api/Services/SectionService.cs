@@ -95,49 +95,74 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
     public async Task<Response> DeleteSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId,
         Guid? moveTasksTo, bool deleteTasks)
     {
-        var userId = accessor.GetUserId();
+        // Make single retriable strategy for custom transaction
+        var strategy = db.Database.CreateExecutionStrategy();
 
-        var section = await db.Sections.SingleOrDefaultAsync(o =>
-                          o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId) ??
-                      throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
-
-        var hasTasks = await db.Tasks.AnyAsync(o =>
-            o.SectionId == sectionId && o.Section.ProjectId == projectId &&
-            o.Section.Project.WorkspaceId == workspaceId);
-
-        if (hasTasks)
+        return await strategy.ExecuteAsync(async () =>
         {
-            if (moveTasksTo.HasValue)
-                await taskService.MoveSectionTasksAsync(workspaceId, projectId, sectionId, moveTasksTo.Value);
-            else if (deleteTasks)
-                await taskService.DeleteSectionTasksAsync(workspaceId, projectId, sectionId);
-            else
-                throw new ApiException(HttpStatusCode.BadRequest, "Cannot delete section with tasks.");
-        }
+            await using var transaction = await db.Database.BeginTransactionAsync();
 
-        section.DeletedAt = DateTimeOffset.UtcNow;
-        section.DeletedBy = userId;
+            try
+            {
+                var section = await db.Sections.SingleOrDefaultAsync(o =>
+                                  o.Id == sectionId && o.ProjectId == projectId &&
+                                  o.Project.WorkspaceId == workspaceId) ??
+                              throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
-        await db.SaveChangesAsync();
-        return new Response("Section deleted.");
+                var hasTasks = await db.Tasks.AnyAsync(o =>
+                    o.SectionId == sectionId && o.Section.ProjectId == projectId &&
+                    o.Section.Project.WorkspaceId == workspaceId);
+
+                if (hasTasks)
+                {
+                    if (moveTasksTo.HasValue)
+                        await taskService.MoveSectionTasksAsync(workspaceId, projectId, sectionId, moveTasksTo.Value);
+                    else if (deleteTasks)
+                        await taskService.DeleteSectionTasksAsync(workspaceId, projectId, sectionId);
+                    else
+                        throw new ApiException(HttpStatusCode.BadRequest, "Cannot delete section with tasks.");
+                }
+
+                section.DeletedAt = DateTimeOffset.UtcNow;
+                section.DeletedBy = accessor.GetUserId();
+
+                await db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new Response("Section deleted.");
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        });
     }
 
     public async Task<Response> MoveSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId, MoveSectionDto dto)
     {
-        // TODO: Handle the case where previous or next section not found in database.
         var newPosition = dto switch
         {
-            { PreviousSectionId: null } => await db.Sections
-                .Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-                .MinAsync(o => o.Position) - PositionStep,
+            { PreviousSectionId: null } => (await db.Sections
+                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                .Select(o => (long?)o.Position)
+                .MinAsync() ?? 2 * PositionStep) - PositionStep,
 
-            { NextSectionId: null } => await db.Sections
-                .Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-                .MaxAsync(o => o.Position) + PositionStep,
+            { NextSectionId: null } => (await db.Sections
+                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                .Select(o => (long?)o.Position)
+                .MaxAsync() ?? 0L) + PositionStep,
 
-            _ => await db.Sections.Where(o =>
-                new List<Guid> { dto.PreviousSectionId.Value, dto.NextSectionId.Value }.Contains(o.Id) &&
-                o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId).SumAsync(o => o.Position) / 2
+            _ => await db.Sections
+                .Where(o =>
+                    (o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value) &&
+                    o.ProjectId == projectId &&
+                    o.Project.WorkspaceId == workspaceId)
+                .Select(o => o.Position)
+                .ToListAsync() is { Count: 2 } positions
+                ? positions.Sum() / 2
+                : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring sections.")
         };
 
         await db.Sections
