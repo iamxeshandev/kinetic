@@ -3,7 +3,7 @@ import {
   AccountAvatar,
   Logo,
   ThemeSwitcher,
-} from '../../../shared/components/ui';
+} from '../../../shared/ui';
 
 export function Header() {
   return (

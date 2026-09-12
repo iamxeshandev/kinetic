@@ -1,7 +1,7 @@
 import { Box, Drawer, IconButton, Stack } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { MenuIcon } from '../../../shared/components/icons';
+import { MenuIcon } from '../../../shared/icons';
 import { varAlpha } from '../../../shared/helpers';
 
 export type NavbarDesktopProps = {

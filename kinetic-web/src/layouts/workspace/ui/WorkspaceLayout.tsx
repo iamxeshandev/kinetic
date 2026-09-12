@@ -8,7 +8,7 @@ import {
   DashboardIcon,
   ProjectsIcon,
   UsersIcon,
-} from '../../../shared/components/icons';
+} from '../../../shared/icons';
 import { useResizeObserver } from '../../../shared/hooks';
 import { Header } from './Header';
 import { NavbarDesktop, type NavbarDesktopProps } from './NavbarDesktop';
