@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
-import { MoreIcon } from '../../../shared/components/icons';
+import { MoreIcon } from '../../../shared/icons';
 import { formatDate } from '../../../shared/helpers';
 import type { AllProjectSectionProps } from './AllProjectsSection';
 import { ProjectHealth } from './ProjectHealth';

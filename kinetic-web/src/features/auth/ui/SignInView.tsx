@@ -20,12 +20,8 @@ import { NavLink } from 'react-router';
 import z from 'zod';
 import { CONFIG } from '../../../config';
 import { paths } from '../../../routes/paths';
-import {
-  Form,
-  FormCheckbox,
-  FormTextField,
-} from '../../../shared/components/form';
-import { Logo } from '../../../shared/components/ui';
+import { Logo } from '../../../shared/ui';
+import { Form, FormCheckbox, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import { authApi } from '../api';
 import { useAuthContext } from '../context';

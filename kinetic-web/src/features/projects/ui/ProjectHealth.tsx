@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { Label } from '../../../shared/components/ui';
+import { Label } from '../../../shared/ui';
 import { checkOverdue } from '../../../shared/helpers';
 import type { Project } from '../types';
 

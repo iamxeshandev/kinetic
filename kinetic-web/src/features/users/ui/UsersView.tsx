@@ -1,12 +1,12 @@
 import { Button, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useParams } from 'react-router';
-import { PencilIcon, TrashIcon } from '../../../shared/components/icons';
+import { PencilIcon, TrashIcon } from '../../../shared/icons';
 import {
   ActionMenu,
   type ActionMenuProps,
-} from '../../../shared/components/ui';
-import { ConfirmDialog } from '../../../shared/components/ui/ConfirmDialog';
+} from '../../../shared/ui';
+import { ConfirmDialog } from '../../../shared/ui/ConfirmDialog';
 import { toast } from '../../../shared/toast';
 import { useDeleteUser, useUsers } from '../hooks';
 import { HeaderSection } from './HeaderSection';

@@ -11,11 +11,7 @@ import {
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
-import {
-  Form,
-  FormSelect,
-  FormTextField,
-} from '../../../shared/components/form';
+import { Form, FormSelect, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
 import { useLookups } from '../../lookups/hooks';

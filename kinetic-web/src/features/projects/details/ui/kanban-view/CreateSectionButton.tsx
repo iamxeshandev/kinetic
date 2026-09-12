@@ -1,6 +1,6 @@
 import { Button, TextField } from '@mui/material';
 import { useParams } from 'react-router';
-import { AddIcon } from '../../../../../shared/components/icons';
+import { AddIcon } from '../../../../../shared/icons';
 import { useBoolean } from '../../../../../shared/hooks';
 import { toast } from '../../../../../shared/toast';
 import { useCreateSection } from '../../hooks';

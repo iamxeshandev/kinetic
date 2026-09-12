@@ -2,14 +2,18 @@ import { CollisionPriority } from '@dnd-kit/abstract';
 import { useSortable } from '@dnd-kit/react/sortable';
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { AddIcon, MoreIcon } from '../../../../../shared/components/icons';
-import { varAlpha } from '../../../../../shared/helpers';
-import { useBoolean } from '../../../../../shared/hooks';
-import type { Callback } from '../../../../../shared/types';
-import type { Section } from '../../types';
-import { NewTask } from './NewTask';
+import { useParams } from 'react-router';
+import { varAlpha } from '../../../../../../shared/helpers';
+import { useBoolean } from '../../../../../../shared/hooks';
+import { AddIcon, MoreIcon } from '../../../../../../shared/icons';
+import { toast } from '../../../../../../shared/toast';
+import type { Callback } from '../../../../../../shared/types';
+import { InlineText } from '../../../../../../shared/ui';
+import { useUpdateSection } from '../../../hooks';
+import type { Section } from '../../../types';
+import { NewTask } from './NewItem';
 
-type Props = {
+export type KanbanColumnProps = {
   index: number;
   id: Section['id'];
   count: number;
@@ -20,27 +24,40 @@ type Props = {
   children: React.ReactNode;
 };
 
-export function SortableSection({
+export function KanbanColumn({
   index,
   id,
   count,
   section,
   onMoreActionsClick,
   children,
-}: Props) {
+}: KanbanColumnProps) {
   const { ref } = useSortable({
     id,
     index,
-    type: 'column',
+    type: 'section',
     collisionPriority: CollisionPriority.Low,
-    accept: ['item', 'column'],
+    accept: ['task', 'section'],
   });
+  const { workspaceId, projectId } = useParams();
 
   const newTask = useBoolean();
 
+  const { trigger: updateSection, isMutating: isUpdating } = useUpdateSection(
+    workspaceId!,
+    projectId!,
+  );
+
+  const handleUpdateSectionName = async (name: string) => {
+    if (!section?.id) return;
+    await updateSection({ id: section.id, name })
+      .then((res) => toast.success(res.message))
+      .catch((err) => toast.error(err.message));
+  };
+
   return (
     <Stack ref={ref} spacing={1}>
-      <Card sx={{ p: 2, mb: 2, width: 300 }}>
+      <Card sx={{ p: 1, width: 300 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography
             sx={{
@@ -48,6 +65,7 @@ export function SortableSection({
               width: 30,
               height: 30,
               display: 'flex',
+              flexShrink: 0,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 50,
@@ -61,9 +79,12 @@ export function SortableSection({
             {count > 99 ? '99+' : count}
           </Typography>
 
-          <Typography>{section?.name}</Typography>
-
-          <Box sx={{ flex: 1 }} aria-hidden />
+          <InlineText
+            value={section?.name ?? ''}
+            onSave={handleUpdateSectionName}
+            loading={isUpdating}
+            sx={{ flex: 1, height: 40, display: 'flex', alignItems: 'center' }}
+          />
 
           <IconButton
             size='small'

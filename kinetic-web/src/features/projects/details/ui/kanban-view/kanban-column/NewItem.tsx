@@ -5,9 +5,9 @@ import {
   TextField,
 } from '@mui/material';
 import { useParams } from 'react-router';
-import { toast } from '../../../../../shared/toast';
-import { useCreateTask } from '../../hooks';
-import type { Section, Task } from '../../types';
+import { toast } from '../../../../../../shared/toast';
+import { useCreateTask } from '../../../hooks';
+import type { Section, Task } from '../../../types';
 
 export function NewTask({
   sectionId,

@@ -53,7 +53,24 @@ export const sectionsApi = {
   ) =>
     api
       .delete<ApiResponse>(
-        `${baseUrl(workspaceId, projectId)}/${sectionId}${moveTasksTo ? `?moveTasksTo=${moveTasksTo}` : ''}${deleteTasks ? `&deleteTasks=${deleteTasks}` : ''}`,
+        `${baseUrl(workspaceId, projectId)}/${sectionId}${moveTasksTo ? `?moveTasksTo=${moveTasksTo}` : deleteTasks ? '?deleteTasks=true' : ''}`,
+      )
+      .then((res) => res.data),
+
+  move: (
+    workspaceId: Workspace['id'],
+    projectId: Project['id'],
+    sectionId: Section['id'],
+    previousSectionId?: Section['id'],
+    nextSectionId?: Section['id'],
+  ) =>
+    api
+      .patch<ApiResponse>(
+        `${baseUrl(workspaceId, projectId)}/${sectionId}/move`,
+        {
+          previousSectionId,
+          nextSectionId,
+        },
       )
       .then((res) => res.data),
 };

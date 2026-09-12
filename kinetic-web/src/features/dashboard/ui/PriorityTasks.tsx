@@ -9,7 +9,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { LuTriangleAlert } from 'react-icons/lu';
-import { Label, ListHeader } from '../../../shared/components/ui';
+import { Label, ListHeader } from '../../../shared/ui';
 import { checkOverdue, formatDate } from '../../../shared/helpers';
 
 export function PriorityTasks() {

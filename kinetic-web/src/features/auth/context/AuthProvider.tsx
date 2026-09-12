@@ -1,8 +1,8 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
 import { CONFIG } from '../../../config';
-import { SplashScreen } from '../../../shared/components/ui';
 import { useLocalStorage } from '../../../shared/hooks';
 import { toast } from '../../../shared/toast';
+import { SplashScreen } from '../../../shared/ui';
 import { authApi } from '../api';
 import type { Me } from '../types';
 import { AuthContext } from './AuthContext';

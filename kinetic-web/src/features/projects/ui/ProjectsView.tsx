@@ -7,12 +7,12 @@ import {
   StarIcon,
   StarOffIcon,
   TrashIcon,
-} from '../../../shared/components/icons';
+} from '../../../shared/icons';
 import {
   ActionMenu,
   ConfirmDialog,
   type ActionMenuButtonProps,
-} from '../../../shared/components/ui';
+} from '../../../shared/ui';
 import { hasProjectRole } from '../../../shared/permissions/hasProjectRole';
 import { hasWorkspaceRole } from '../../../shared/permissions/hasWorkspaceRole';
 import { toast } from '../../../shared/toast';

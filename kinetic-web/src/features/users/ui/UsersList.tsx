@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@mui/material';
 import type React from 'react';
-import { MoreIcon } from '../../../shared/components/icons';
+import { MoreIcon } from '../../../shared/icons';
 import { formatDate } from '../../../shared/helpers';
 import type { Callback } from '../../../shared/types';
 import { WORKSPACE_RANKS, type WorkspaceRole } from '../../../shared/types';

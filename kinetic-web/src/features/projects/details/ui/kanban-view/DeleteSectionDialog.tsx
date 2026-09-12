@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { ConfirmDialog } from '../../../../../shared/components/ui/ConfirmDialog.js';
+import { ConfirmDialog } from '../../../../../shared/ui/ConfirmDialog.js';
 import { toast } from '../../../../../shared/toast/toast.js';
 import type { Callback } from '../../../../../shared/types/callback.js';
 import { useDeleteSection } from '../../hooks/useSections.js';

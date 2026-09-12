@@ -16,8 +16,8 @@ import {
   FormRichTextEditor,
   FormSelect,
   FormTextField,
-} from '../../../../../shared/components/form';
-import { CancelIcon, CheckIcon } from '../../../../../shared/components/icons';
+} from '../../../../../shared/form';
+import { CancelIcon, CheckIcon } from '../../../../../shared/icons';
 import { toast } from '../../../../../shared/toast';
 import { useLookups } from '../../../../lookups/hooks';
 import { sectionsApi } from '../../api';
@@ -35,7 +35,7 @@ const defaultValues: TaskForm = {
   sectionId: '',
   name: '',
   description: '',
-  priority: '',
+  priority: 'None',
   dueDate: undefined,
   assigneeId: '',
 };

@@ -12,8 +12,8 @@ import { useForm } from 'react-hook-form';
 import { NavLink, useNavigate } from 'react-router';
 import z from 'zod';
 import { paths } from '../../../routes/paths';
-import { Form, FormTextField } from '../../../shared/components/form';
-import { Logo } from '../../../shared/components/ui';
+import { Logo } from '../../../shared/ui';
+import { Form, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import { authApi } from '../api';
 

@@ -3,7 +3,7 @@ import { LuArrowRight } from 'react-icons/lu';
 import {
   ActionMenuIconButton,
   type ActionMenuIconButtonProps,
-} from '../../../shared/components/ui';
+} from '../../../shared/ui';
 import type { Project } from '../types';
 
 export type FavoriteSectionProps = {

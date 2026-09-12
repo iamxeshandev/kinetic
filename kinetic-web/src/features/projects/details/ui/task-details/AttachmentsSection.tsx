@@ -1,7 +1,7 @@
 import { Box, Button, Stack } from '@mui/material';
 import { LuFileUp } from 'react-icons/lu';
-import { AttachmentIcon } from '../../../../../shared/components/icons';
-import { Centered } from '../../../../../shared/components/ui';
+import { AttachmentIcon } from '../../../../../shared/icons';
+import { Centered } from '../../../../../shared/ui';
 import { FieldLabel } from './FieldLabel';
 
 export function AttachmentsSection() {

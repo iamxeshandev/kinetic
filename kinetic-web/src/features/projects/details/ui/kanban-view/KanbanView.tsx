@@ -1,24 +1,34 @@
-import { move } from '@dnd-kit/helpers';
-import { DragDropProvider } from '@dnd-kit/react';
+import { arrayMove, move } from '@dnd-kit/helpers';
+import {
+  DragDropProvider,
+  type DragEndEvent,
+  type DragOverEvent,
+} from '@dnd-kit/react';
+import { isSortable } from '@dnd-kit/react/sortable';
 import { Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { TrashIcon } from '../../../../../shared/components/icons/index.js';
-import { ActionMenu } from '../../../../../shared/components/ui/ActionMenu.js';
 import { useBoolean } from '../../../../../shared/hooks/useBoolean.js';
+import { TrashIcon } from '../../../../../shared/icons/index.js';
+import { toast } from '../../../../../shared/toast/toast.js';
+import { ActionMenu } from '../../../../../shared/ui/ActionMenu.js';
+import { sectionsApi } from '../../api/sectionsApi.js';
 import { useSections } from '../../hooks/useSections.js';
 import { useTasks } from '../../hooks/useTasks.js';
 import type { Section, Task } from '../../types/index.js';
 import { TaskDetails } from '../task-details/TaskDetails.js';
 import { CreateSectionButton } from './CreateSectionButton.js';
 import { DeleteSectionDialog } from './DeleteSectionDialog.js';
-import { SortableSection } from './SortableSection.js';
-import { SortableTask } from './SortableTask.js';
+import { KanbanColumn } from './kanban-column/KanbanColumn.js';
+import { KanbanItem } from './kanban-item/KanbanItem.js';
 
 export default function KanbanView() {
   const { workspaceId, projectId } = useParams();
 
-  const { data: sections = [] } = useSections(workspaceId!, projectId!);
+  const { data: sections = [], mutate: mutateSections } = useSections(
+    workspaceId!,
+    projectId!,
+  );
   const { data: tasks = [] } = useTasks(workspaceId!, projectId!);
 
   const [taskId, setTaskId] = useState<Task['id'] | undefined>(undefined);
@@ -72,18 +82,50 @@ export default function KanbanView() {
     taskDetails.setTrue();
   };
 
+  const onDragOver = (event: DragOverEvent) => {
+    const { source } = event.operation;
+    if (source?.type === 'section') return;
+    setItems((items) => move(items, event));
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    if (event.canceled) return;
+    const { source } = event.operation;
+
+    if (!isSortable(source)) return;
+
+    if (source?.type === 'section' && source.initialIndex !== source.index) {
+      const currentIndex = source.initialIndex;
+      const newIndex = source.index;
+
+      const oldSections = sections;
+      const newSections = arrayMove(sections, currentIndex, newIndex);
+
+      const prevId = newIndex === 0 ? undefined : newSections[newIndex - 1].id;
+      const currentId = source.id as Section['id'];
+      const nextId = newSections[newIndex + 1]?.id;
+
+      mutateSections(newSections, false);
+
+      sectionsApi
+        .move(workspaceId!, projectId!, currentId, prevId, nextId)
+        .catch((err) => {
+          toast.error(err.message);
+          mutateSections(oldSections, false);
+        });
+    }
+
+    if (source?.type === 'task') {
+      console.log('Task moved');
+    }
+  };
+
   return (
     <>
-      <DragDropProvider
-        onDragOver={(event) => {
-          const { source } = event.operation;
-          if (source?.type === 'column') return;
-          setItems((items) => move(items, event));
-        }}
-      >
+      <DragDropProvider onDragOver={onDragOver} onDragEnd={onDragEnd}>
         <Stack direction='row' spacing={2} sx={{ p: 0.5, flex: 1 }}>
           {Object.entries(items).map(([sectionId, taskIds], index) => (
-            <SortableSection
+            <KanbanColumn
               key={sectionId}
               index={index}
               id={sectionId}
@@ -94,7 +136,7 @@ export default function KanbanView() {
               }
             >
               {taskIds.map((taskId, index) => (
-                <SortableTask
+                <KanbanItem
                   key={taskId}
                   index={index}
                   id={taskId}
@@ -103,7 +145,7 @@ export default function KanbanView() {
                   onEditTask={onEditTask}
                 />
               ))}
-            </SortableSection>
+            </KanbanColumn>
           ))}
 
           <CreateSectionButton />

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { lazy, Suspense } from 'react';
 import { LuGrid2X2, LuList } from 'react-icons/lu';
-import { LoadingScreen } from '../../../shared/components/ui';
+import { LoadingScreen } from '../../../shared/ui';
 import { useLocalStorage } from '../../../shared/hooks';
 import type { Project } from '../types';
 

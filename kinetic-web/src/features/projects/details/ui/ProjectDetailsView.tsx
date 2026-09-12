@@ -19,8 +19,8 @@ import {
   KanbanIcon,
   ListIcon,
   TimelineIcon,
-} from '../../../../shared/components/icons';
-import { StyledIcon } from '../../../../shared/components/icons/StyledIcon';
+} from '../../../../shared/icons';
+import { StyledIcon } from '../../../../shared/icons/StyledIcon';
 import { varAlpha } from '../../../../shared/helpers';
 import type { Project } from '../../types';
 import { AnalyticsView } from './analytics-view/AnalyticsView';

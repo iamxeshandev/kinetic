@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { Form, FormTextField } from '../../../shared/components/form';
+import { Form, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
 import { useCreateWorkspace, useUpdateWorkspace } from '../hooks';

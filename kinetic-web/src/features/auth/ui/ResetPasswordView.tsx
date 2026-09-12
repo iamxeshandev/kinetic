@@ -13,7 +13,7 @@ import { motion } from 'motion/react';
 import { LuArrowLeft } from 'react-icons/lu';
 import { NavLink } from 'react-router';
 import { paths } from '../../../routes/paths';
-import { Logo } from '../../../shared/components/ui';
+import { Logo } from '../../../shared/ui';
 
 const arrowVariants = {
   rest: { x: 0 },

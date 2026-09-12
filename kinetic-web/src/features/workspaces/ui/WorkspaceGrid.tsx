@@ -13,9 +13,9 @@ import {
   PencilIcon,
   TrashIcon,
   UsersIcon,
-} from '../../../shared/components/icons';
-import { StyledIcon } from '../../../shared/components/icons/StyledIcon';
-import { Label } from '../../../shared/components/ui';
+} from '../../../shared/icons';
+import { StyledIcon } from '../../../shared/icons/StyledIcon';
+import { Label } from '../../../shared/ui';
 import type { Callback } from '../../../shared/types';
 import type { Workspace } from '../types';
 

@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material';
-import { AddIcon } from '../../../shared/components/icons';
+import { AddIcon } from '../../../shared/icons';
 import type { Callback } from '../../../shared/types';
 import { WORKSPACE_RANKS } from '../../../shared/types';
 import { useAuthContext } from '../../auth/context';

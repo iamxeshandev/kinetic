@@ -1,6 +1,6 @@
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { sectionsApi, sectionsKey } from '../api';
+import { sectionsApi, sectionsKey, tasksKey } from '../api';
 import type { Section } from '../types';
 
 export const useSections = (workspaceId: string, projectId: string) =>
@@ -61,5 +61,6 @@ export const useDeleteSection = (workspaceId: string, projectId: string) =>
       revalidate: false,
       populateCache: (res, currentData: Section[] = []) =>
         currentData.filter((section) => section.id !== res.data),
+      onSuccess: () => mutate(tasksKey(workspaceId, projectId)),
     },
   );

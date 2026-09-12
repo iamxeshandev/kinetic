@@ -20,7 +20,7 @@ import {
   FormDatePicker,
   FormSelect,
   FormTextField,
-} from '../../../shared/components/form';
+} from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback, ProjectRole } from '../../../shared/types';
 import { useLookups } from '../../lookups/hooks';
