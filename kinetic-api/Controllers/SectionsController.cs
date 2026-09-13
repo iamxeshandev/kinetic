@@ -38,17 +38,17 @@ public class SectionsController(SectionService service) : ControllerBase
         return Ok(await service.UpdateSectionAsync(workspaceId, projectId, sectionId, dto));
     }
 
-    [HttpDelete("{sectionId:guid}")]
-    public async Task<ActionResult<Response<SectionDto>>> DeleteSectionAsync(Guid workspaceId, Guid projectId,
-        Guid sectionId, [FromQuery] Guid? moveTasksTo, [FromQuery] bool deleteTasks)
-    {
-        return Ok(await service.DeleteSectionAsync(workspaceId, projectId, sectionId, moveTasksTo, deleteTasks));
-    }
-
     [HttpPatch("{sectionId:guid}/move")]
     public async Task<ActionResult<Response>> MoveSectionAsync(Guid workspaceId, Guid projectId,
         Guid sectionId, MoveSectionDto dto)
     {
         return Ok(await service.MoveSectionAsync(workspaceId, projectId, sectionId, dto));
+    }
+
+    [HttpDelete("{sectionId:guid}")]
+    public async Task<ActionResult<Response<SectionDto>>> DeleteSectionAsync(Guid workspaceId, Guid projectId,
+        Guid sectionId, [FromQuery] Guid? moveTasksTo, [FromQuery] bool deleteTasks)
+    {
+        return Ok(await service.DeleteSectionAsync(workspaceId, projectId, sectionId, moveTasksTo, deleteTasks));
     }
 }
