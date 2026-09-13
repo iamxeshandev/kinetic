@@ -158,38 +158,6 @@ public class TaskService(AppDbContext db, StorageService storageService, IHttpCo
             await GetTaskByIdAsync(workspaceId, projectId, taskId).TryGetDataAsync());
     }
 
-    public async Task<Response> DeleteTaskAsync(Guid workspaceId, Guid projectId, Guid taskId)
-    {
-        var task = await db.Tasks.SingleOrDefaultAsync(o =>
-                       o.Id == taskId && o.Section.ProjectId == projectId &&
-                       o.Section.Project.WorkspaceId == workspaceId) ??
-                   throw new ApiException(HttpStatusCode.NotFound, "Task not found");
-
-        task.DeletedAt = DateTimeOffset.UtcNow;
-        task.DeletedBy = accessor.GetUserId();
-
-        await db.SaveChangesAsync();
-        return new Response("Task deleted.");
-    }
-
-    public async Task<Response> DeleteSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId)
-    {
-        var userId = accessor.GetUserId();
-
-        var tasks = await db.Tasks.Where(o =>
-            o.SectionId == sectionId && o.Section.ProjectId == projectId &&
-            o.Section.Project.WorkspaceId == workspaceId).ToListAsync();
-
-        foreach (var task in tasks)
-        {
-            task.DeletedAt = DateTimeOffset.UtcNow;
-            task.DeletedBy = userId;
-        }
-
-        await db.SaveChangesAsync();
-        return new Response("Tasks deleted.");
-    }
-
     public async Task<Response> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId, MoveTaskDto dto)
     {
         var task = await db.Tasks.SingleOrDefaultAsync(o =>
@@ -197,15 +165,12 @@ public class TaskService(AppDbContext db, StorageService storageService, IHttpCo
                        o.Section.Project.WorkspaceId == workspaceId) ??
                    throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
-        if (dto.SectionId.HasValue)
-        {
-            var sectionExists = await db.Sections.AnyAsync(o =>
-                o.Id == dto.SectionId.Value && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
-            if (!sectionExists)
-                throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
+        var sectionExists = await db.Sections.AnyAsync(o =>
+            o.Id == dto.SectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
+        if (!sectionExists)
+            throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
-            task.SectionId = dto.SectionId.Value;
-        }
+        task.SectionId = dto.SectionId;
 
         var newPosition = dto switch
         {
@@ -269,6 +234,38 @@ public class TaskService(AppDbContext db, StorageService storageService, IHttpCo
 
         await db.SaveChangesAsync();
         return new Response("Tasks moved.");
+    }
+
+    public async Task<Response> DeleteTaskAsync(Guid workspaceId, Guid projectId, Guid taskId)
+    {
+        var task = await db.Tasks.SingleOrDefaultAsync(o =>
+                       o.Id == taskId && o.Section.ProjectId == projectId &&
+                       o.Section.Project.WorkspaceId == workspaceId) ??
+                   throw new ApiException(HttpStatusCode.NotFound, "Task not found");
+
+        task.DeletedAt = DateTimeOffset.UtcNow;
+        task.DeletedBy = accessor.GetUserId();
+
+        await db.SaveChangesAsync();
+        return new Response("Task deleted.");
+    }
+
+    public async Task<Response> DeleteSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId)
+    {
+        var userId = accessor.GetUserId();
+
+        var tasks = await db.Tasks.Where(o =>
+            o.SectionId == sectionId && o.Section.ProjectId == projectId &&
+            o.Section.Project.WorkspaceId == workspaceId).ToListAsync();
+
+        foreach (var task in tasks)
+        {
+            task.DeletedAt = DateTimeOffset.UtcNow;
+            task.DeletedBy = userId;
+        }
+
+        await db.SaveChangesAsync();
+        return new Response("Tasks deleted.");
     }
 
     #endregion
