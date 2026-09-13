@@ -57,20 +57,17 @@ export default function KanbanView() {
   const [items, setItems] = useState<Record<Section['id'], Task['id'][]>>({});
 
   useEffect(() => {
-    const syncItems = () =>
-      setItems(
-        sections.reduce(
-          (acc, section) => {
-            acc[section.id] = tasks
-              .filter((task) => task.sectionId === section.id)
-              .map((task) => task.id);
-            return acc;
-          },
-          {} as Record<Section['id'], Task['id'][]>,
-        ),
-      );
-
-    syncItems();
+    const newItems = sections.reduce(
+      (acc, section) => {
+        acc[section.id] = tasks
+          .filter((task) => task.sectionId === section.id)
+          .map((task) => task.id);
+        return acc;
+      },
+      {} as Record<Section['id'], Task['id'][]>,
+    );
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems(newItems);
   }, [sections, tasks]);
 
   const onEditTask = (
@@ -101,14 +98,18 @@ export default function KanbanView() {
       const oldSections = sections;
       const newSections = arrayMove(sections, currentIndex, newIndex);
 
-      const prevId = newIndex === 0 ? undefined : newSections[newIndex - 1].id;
-      const currentId = source.id as Section['id'];
-      const nextId = newSections[newIndex + 1]?.id;
+      const previousSectionId =
+        newIndex === 0 ? undefined : newSections[newIndex - 1].id;
+      const currentSectionId = source.id as Section['id'];
+      const nextSectionId = newSections[newIndex + 1]?.id;
 
       mutateSections(newSections, false);
 
       sectionsApi
-        .move(workspaceId!, projectId!, currentId, prevId, nextId)
+        .move(workspaceId!, projectId!, currentSectionId, {
+          previousSectionId,
+          nextSectionId,
+        })
         .catch((err) => {
           toast.error(err.message);
           mutateSections(oldSections, false);
