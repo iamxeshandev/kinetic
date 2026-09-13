@@ -10,9 +10,9 @@ export const tasksApi = {
       .get<ApiResponse<Task[]>>(baseUrl(workspaceId, projectId))
       .then((res) => res.data),
 
-  getById: (workspaceId: string, projectId: string, id: Task['id']) =>
+  getById: (workspaceId: string, projectId: string, taskId: string) =>
     api
-      .get<ApiResponse<Task>>(`${baseUrl(workspaceId, projectId)}/${id}`)
+      .get<ApiResponse<Task>>(`${baseUrl(workspaceId, projectId)}/${taskId}`)
       .then((res) => res.data),
 
   create: (workspaceId: string, projectId: string, data: Omit<Task, 'id'>) =>
@@ -23,16 +23,31 @@ export const tasksApi = {
   update: (
     workspaceId: string,
     projectId: string,
-    id: Task['id'],
+    taskId: string,
     data: Omit<Task, 'id'>,
   ) =>
     api
-      .put<ApiResponse<Task>>(`${baseUrl(workspaceId, projectId)}/${id}`, data)
+      .put<
+        ApiResponse<Task>
+      >(`${baseUrl(workspaceId, projectId)}/${taskId}`, data)
       .then((res) => res.data),
 
-  delete: (workspaceId: string, projectId: string, id: Task['id']) =>
+  move: (
+    workspaceId: string,
+    projectId: string,
+    taskId: string,
+    data: { sectionId: string; previousTaskId?: string; nextTaskId?: string },
+  ) =>
     api
-      .delete<ApiResponse>(`${baseUrl(workspaceId, projectId)}/${id}`)
+      .patch<ApiResponse>(
+        `${baseUrl(workspaceId, projectId)}/${taskId}/move`,
+        data,
+      )
+      .then((res) => res.data),
+
+  delete: (workspaceId: string, projectId: string, taskId: string) =>
+    api
+      .delete<ApiResponse>(`${baseUrl(workspaceId, projectId)}/${taskId}`)
       .then((res) => res.data),
 };
 
