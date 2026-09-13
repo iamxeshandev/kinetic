@@ -92,6 +92,38 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
             await GetSectionByIdAsync(workspaceId, projectId, sectionId).TryGetDataAsync());
     }
 
+    public async Task<Response> MoveSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId, MoveSectionDto dto)
+    {
+        var newPosition = dto switch
+        {
+            { PreviousSectionId: null } => (await db.Sections
+                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                .Select(o => (long?)o.Position)
+                .MinAsync() ?? 2 * PositionStep) - PositionStep,
+
+            { NextSectionId: null } => (await db.Sections
+                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                .Select(o => (long?)o.Position)
+                .MaxAsync() ?? 0L) + PositionStep,
+
+            _ => await db.Sections
+                .Where(o =>
+                    (o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value) &&
+                    o.ProjectId == projectId &&
+                    o.Project.WorkspaceId == workspaceId)
+                .Select(o => o.Position)
+                .ToListAsync() is { Count: 2 } positions
+                ? positions.Sum() / 2
+                : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring sections.")
+        };
+
+        await db.Sections
+            .Where(o => o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+            .ExecuteUpdateAsync(s => s.SetProperty(o => o.Position, newPosition));
+
+        return new Response("Section moved.");
+    }
+
     public async Task<Response> DeleteSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId,
         Guid? moveTasksTo, bool deleteTasks)
     {
@@ -138,37 +170,5 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
                 throw;
             }
         });
-    }
-
-    public async Task<Response> MoveSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId, MoveSectionDto dto)
-    {
-        var newPosition = dto switch
-        {
-            { PreviousSectionId: null } => (await db.Sections
-                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-                .Select(o => (long?)o.Position)
-                .MinAsync() ?? 2 * PositionStep) - PositionStep,
-
-            { NextSectionId: null } => (await db.Sections
-                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-                .Select(o => (long?)o.Position)
-                .MaxAsync() ?? 0L) + PositionStep,
-
-            _ => await db.Sections
-                .Where(o =>
-                    (o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value) &&
-                    o.ProjectId == projectId &&
-                    o.Project.WorkspaceId == workspaceId)
-                .Select(o => o.Position)
-                .ToListAsync() is { Count: 2 } positions
-                ? positions.Sum() / 2
-                : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring sections.")
-        };
-
-        await db.Sections
-            .Where(o => o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(o => o.Position, newPosition));
-
-        return new Response("Section moved.");
     }
 }
