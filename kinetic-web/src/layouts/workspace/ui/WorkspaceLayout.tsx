@@ -3,16 +3,46 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useLocation, useOutlet, useParams } from 'react-router';
 import { useAuthContext } from '../../../features/auth/context';
 import { paths } from '../../../routes';
+import { useResizeObserver } from '../../../shared/hooks';
 import {
   CalendarIcon,
   DashboardIcon,
   ProjectsIcon,
   UsersIcon,
 } from '../../../shared/icons';
-import { useResizeObserver } from '../../../shared/hooks';
 import { Header } from './Header';
 import { NavbarDesktop, type NavbarDesktopProps } from './NavbarDesktop';
 import { NavbarMobile } from './NavbarMobile';
+
+const createNavLinks = (
+  workspaceId: string,
+  isPersonal: boolean,
+): NavbarDesktopProps['navLinks'] => [
+  {
+    label: 'Dashboard',
+    icon: <DashboardIcon />,
+    path: paths.workspaces.dashboard(workspaceId),
+  },
+  {
+    label: 'Projects',
+    icon: <ProjectsIcon />,
+    path: paths.workspaces.projects.root(workspaceId),
+  },
+  {
+    label: 'Calendar',
+    icon: <CalendarIcon />,
+    path: paths.workspaces.calendar(workspaceId),
+  },
+  ...(isPersonal
+    ? []
+    : [
+        {
+          label: 'Users',
+          icon: <UsersIcon />,
+          path: paths.workspaces.users(workspaceId),
+        },
+      ]),
+];
 
 export function WorkspaceLayout() {
   const { workspaceId } = useParams();
@@ -26,32 +56,10 @@ export function WorkspaceLayout() {
   const { ref: navbarDesktopRef, width } = useResizeObserver();
   const { ref: navbarMobileRef, height } = useResizeObserver();
 
-  const navLinks: NavbarDesktopProps['navLinks'] = [
-    {
-      label: 'Dashboard',
-      icon: <DashboardIcon />,
-      path: paths.workspaces.dashboard(workspaceId ?? 'undefined'),
-    },
-    {
-      label: 'Projects',
-      icon: <ProjectsIcon />,
-      path: paths.workspaces.projects.root(workspaceId ?? 'undefined'),
-    },
-    {
-      label: 'Calendar',
-      icon: <CalendarIcon />,
-      path: paths.workspaces.calendar(workspaceId ?? 'undefined'),
-    },
-    ...(!user?.currentWorkspace?.isPersonal
-      ? [
-          {
-            label: 'Users',
-            icon: <UsersIcon />,
-            path: paths.workspaces.users(workspaceId ?? 'undefined'),
-          },
-        ]
-      : []),
-  ];
+  const navLinks = createNavLinks(
+    workspaceId!,
+    user!.currentWorkspace!.isPersonal,
+  );
 
   return (
     <>

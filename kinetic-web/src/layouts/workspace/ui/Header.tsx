@@ -8,11 +8,7 @@ import {
 import { LuBell, LuSearch } from 'react-icons/lu';
 import { CONFIG } from '../../../config';
 import { WorkspaceSwitcher } from '../../../features/workspaces/ui';
-import {
-  AccountAvatar,
-  Logo,
-  ThemeSwitcher,
-} from '../../../shared/ui';
+import { AccountAvatar, Logo, ThemeSwitcher } from '../../../shared/ui';
 
 export function Header({ sx, ...props }: BoxProps) {
   return (
@@ -32,7 +28,10 @@ export function Header({ sx, ...props }: BoxProps) {
       }}
       {...props}
     >
-      <Logo isLink={false} sx={{ width: 32 }} />
+      <Logo
+        isLink={false}
+        sx={{ width: 32, display: { xs: 'inherit', sm: 'none' } }}
+      />
 
       <WorkspaceSwitcher />
 

@@ -1,8 +1,8 @@
 import { Box, Drawer, IconButton, Stack } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { MenuIcon } from '../../../shared/icons';
 import { varAlpha } from '../../../shared/helpers';
+import { Logo } from '../../../shared/ui';
 
 export type NavbarDesktopProps = {
   navLinks: Array<{
@@ -32,9 +32,7 @@ export const NavbarDesktop = forwardRef(
             gap: 2,
           }}
         >
-          <IconButton color='inherit'>
-            <MenuIcon />
-          </IconButton>
+          <Logo isLink={false} sx={{ width: 32, mb: 2 }} />
 
           {navLinks.map(({ icon, path }) => {
             const isActive = location.pathname.includes(path);
