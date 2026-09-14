@@ -3,16 +3,18 @@ import {
   DragDropProvider,
   type DragEndEvent,
   type DragOverEvent,
+  type DragStartEvent,
 } from '@dnd-kit/react';
 import { isSortable } from '@dnd-kit/react/sortable';
 import { Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { useBoolean } from '../../../../../shared/hooks/useBoolean.js';
 import { TrashIcon } from '../../../../../shared/icons/index.js';
 import { toast } from '../../../../../shared/toast/toast.js';
 import { ActionMenu } from '../../../../../shared/ui/ActionMenu.js';
 import { sectionsApi } from '../../api/sectionsApi.js';
+import { tasksApi } from '../../api/tasksApi.js';
 import { useSections } from '../../hooks/useSections.js';
 import { useTasks } from '../../hooks/useTasks.js';
 import type { Section, Task } from '../../types/index.js';
@@ -21,6 +23,8 @@ import { CreateSectionButton } from './CreateSectionButton.js';
 import { DeleteSectionDialog } from './DeleteSectionDialog.js';
 import { KanbanColumn } from './kanban-column/KanbanColumn.js';
 import { KanbanItem } from './kanban-item/KanbanItem.js';
+
+export type DraggableItem = 'column' | 'item';
 
 export default function KanbanView() {
   const { workspaceId, projectId } = useParams();
@@ -79,19 +83,39 @@ export default function KanbanView() {
     taskDetails.setTrue();
   };
 
+  const itemLastGroup = useRef<Section['id'] | undefined>(undefined);
+  const itemLastIndex = useRef<number | undefined>(undefined);
+
+  const onDragStart = (event: DragStartEvent) => {
+    const { source } = event.operation;
+    if (!source || !isSortable(source)) return;
+
+    const type = source.type as DraggableItem;
+
+    if (type === 'item') {
+      itemLastGroup.current = source.initialGroup as Section['id'];
+      itemLastIndex.current = source.initialIndex;
+    }
+  };
+
   const onDragOver = (event: DragOverEvent) => {
     const { source } = event.operation;
-    if (source?.type === 'section') return;
+    if (!source || !isSortable(source)) return;
+
+    const type = source.type as DraggableItem;
+
+    if (type === 'column') return;
+
     setItems((items) => move(items, event));
   };
 
   const onDragEnd = (event: DragEndEvent) => {
-    if (event.canceled) return;
     const { source } = event.operation;
+    if (!source || !isSortable(source)) return;
 
-    if (!isSortable(source)) return;
+    const type = source.type as DraggableItem;
 
-    if (source?.type === 'section' && source.initialIndex !== source.index) {
+    if (type === 'column' && source.initialIndex !== source.index) {
       const currentIndex = source.initialIndex;
       const newIndex = source.index;
 
@@ -116,14 +140,37 @@ export default function KanbanView() {
         });
     }
 
-    if (source?.type === 'task') {
-      console.log('Task moved');
+    if (
+      type === 'item' &&
+      (source.group !== itemLastGroup.current ||
+        source.index !== itemLastIndex.current)
+    ) {
+      const sectionId = source.group as Section['id'];
+      const sectionTaskIds = items[sectionId];
+
+      const previousTaskId = sectionTaskIds?.[source.index - 1];
+      const currentTaskId = source.id as Task['id'];
+      const nextTaskId = sectionTaskIds?.[source.index + 1];
+
+      tasksApi
+        .move(workspaceId!, projectId!, currentTaskId, {
+          sectionId,
+          previousTaskId,
+          nextTaskId,
+        })
+        .catch((err) => {
+          toast.error(err.message);
+        });
     }
   };
 
   return (
     <>
-      <DragDropProvider onDragOver={onDragOver} onDragEnd={onDragEnd}>
+      <DragDropProvider
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDragEnd={onDragEnd}
+      >
         <Stack direction='row' spacing={2} sx={{ p: 0.5, flex: 1 }}>
           {Object.entries(items).map(([sectionId, taskIds], index) => (
             <KanbanColumn

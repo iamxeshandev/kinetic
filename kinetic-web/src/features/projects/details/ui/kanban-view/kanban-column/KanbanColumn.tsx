@@ -11,6 +11,7 @@ import type { Callback } from '../../../../../../shared/types';
 import { InlineText } from '../../../../../../shared/ui';
 import { useUpdateSection } from '../../../hooks';
 import type { Section } from '../../../types';
+import type { DraggableItem } from '../KanbanView';
 import { NewTask } from './NewItem';
 
 export type KanbanColumnProps = {
@@ -35,9 +36,9 @@ export function KanbanColumn({
   const { ref } = useSortable({
     id,
     index,
-    type: 'section',
+    type: 'column' satisfies DraggableItem,
+    accept: ['item', 'column'] satisfies DraggableItem[],
     collisionPriority: CollisionPriority.Low,
-    accept: ['task', 'section'],
   });
   const { workspaceId, projectId } = useParams();
 

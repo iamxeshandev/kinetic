@@ -1,8 +1,9 @@
 import { useSortable } from '@dnd-kit/react/sortable';
 import { Box, Card, Typography } from '@mui/material';
-import { Label } from '../../../../../../shared/ui';
 import type { Callback } from '../../../../../../shared/types';
+import { Label } from '../../../../../../shared/ui';
 import type { Section, Task } from '../../../types';
+import type { DraggableItem } from '../KanbanView';
 
 export type KanbanItemProps = {
   index: number;
@@ -24,8 +25,8 @@ export function KanbanItem({
   const { ref, isDragging } = useSortable({
     id,
     index,
-    type: 'kanban-item',
-    accept: 'kanban-item',
+    type: 'item' satisfies DraggableItem,
+    accept: 'item' satisfies DraggableItem,
     group: sectionId,
   });
 
