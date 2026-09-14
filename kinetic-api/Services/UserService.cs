@@ -72,7 +72,7 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         var currentUserRole = (await db.WorkspaceMembers.FindAsync(workspaceId, accessor.GetUserId()))!.Role;
         var targetRole = dto.Role;
         if (currentUserRole <= targetRole)
-            throw new ApiException(HttpStatusCode.Forbidden, "You cannot create a user with equal or higher role.");
+            throw new ApiException(HttpStatusCode.Forbidden, "Cannot create a user with equal or higher role.");
 
         var member = new WorkspaceMember
         {
@@ -84,7 +84,7 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         db.Add(member);
 
         await db.SaveChangesAsync();
-        return new Response<UserDto>("Member created.",
+        return new Response<UserDto>("User created.",
             await GetUserByIdAsync(member.WorkspaceId, member.UserId).TryGetDataAsync());
     }
 
@@ -107,7 +107,7 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         member.UpdatedBy = accessor.GetUserId();
 
         await db.SaveChangesAsync();
-        return new Response<UserDto>("Member updated.",
+        return new Response<UserDto>("User updated.",
             await GetUserByIdAsync(member.WorkspaceId, member.UserId).TryGetDataAsync());
     }
 
@@ -122,11 +122,11 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         var currentUserRole = (await db.WorkspaceMembers.FindAsync(workspaceId, accessor.GetUserId()))!.Role;
         var targetRole = member.Role;
         if (currentUserRole <= targetRole)
-            throw new ApiException(HttpStatusCode.Forbidden, "You cannot remove a user having equal or higher role.");
+            throw new ApiException(HttpStatusCode.Forbidden, "Cannot remove a user with equal or higher role.");
 
         db.Remove(member);
 
         await db.SaveChangesAsync();
-        return new Response("Member removed.");
+        return new Response("User removed.");
     }
 }

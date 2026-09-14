@@ -18,6 +18,7 @@ public class StorageService(IOptions<StorageOptions> options, IWebHostEnvironmen
         return Path.GetFullPath(root);
     }
 
+
     public string GetPublicPath(string storageKey = "")
     {
         return Path.Combine(GetStorageRootPath(), _storage.Public, storageKey);

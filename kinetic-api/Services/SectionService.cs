@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
 using kinetic_api.Data;
 using kinetic_api.Dtos.Common;
 using kinetic_api.Dtos.Section;
@@ -6,30 +7,29 @@ using kinetic_api.Exceptions;
 using kinetic_api.Extensions;
 using kinetic_api.Models;
 using Microsoft.EntityFrameworkCore;
-using Task = System.Threading.Tasks.Task;
 
 namespace kinetic_api.Services;
 
 public class SectionService(AppDbContext db, IHttpContextAccessor accessor, TaskService taskService)
 {
-    private const long PositionStep = 1000000;
+    private const long SectionPositionStep = 1000000;
 
-    private async Task NormalizePositionsAsync(Guid workspaceId, Guid projectId)
+    private async Task<List<Section>> NormalizeSectionPositionsAsync(Guid workspaceId, Guid projectId)
     {
         var sections = await db.Sections
             .Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
             .OrderBy(o => o.Position)
             .ToListAsync();
 
-        var position = PositionStep;
+        var position = 0L;
+
         foreach (var section in sections)
-        {
-            section.Position = position;
-            position += PositionStep;
-        }
+            section.Position = position += SectionPositionStep;
 
         await db.SaveChangesAsync();
+        return sections;
     }
+
 
     public async Task<Response<List<SectionDto>>> GetAllSectionsAsync(Guid workspaceId, Guid projectId)
     {
@@ -66,7 +66,7 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
         {
             ProjectId = projectId,
             Name = dto.Name,
-            Position = lastPosition + PositionStep,
+            Position = lastPosition + SectionPositionStep,
             CreatedBy = accessor.GetUserId()
         };
         db.Sections.Add(section);
@@ -94,34 +94,48 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
 
     public async Task<Response> MoveSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId, MoveSectionDto dto)
     {
-        var newPosition = dto switch
+        var strategy = db.Database.CreateExecutionStrategy();
+
+        return await strategy.ExecuteAsync(async () =>
         {
-            { PreviousSectionId: null } => (await db.Sections
-                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-                .Select(o => (long?)o.Position)
-                .MinAsync() ?? 2 * PositionStep) - PositionStep,
+            await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
-            { NextSectionId: null } => (await db.Sections
-                .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-                .Select(o => (long?)o.Position)
-                .MaxAsync() ?? 0L) + PositionStep,
+            var newPosition = dto switch
+            {
+                { PreviousSectionId: null } => (await db.Sections
+                    .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                    .Select(o => (long?)o.Position)
+                    .MinAsync() ?? 2 * SectionPositionStep) - SectionPositionStep,
 
-            _ => await db.Sections
-                .Where(o =>
-                    (o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value) &&
-                    o.ProjectId == projectId &&
-                    o.Project.WorkspaceId == workspaceId)
-                .Select(o => o.Position)
-                .ToListAsync() is { Count: 2 } positions
-                ? positions.Sum() / 2
-                : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring sections.")
-        };
+                { NextSectionId: null } => (await db.Sections
+                    .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                    .Select(o => (long?)o.Position)
+                    .MaxAsync() ?? 0L) + SectionPositionStep,
 
-        await db.Sections
-            .Where(o => o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(o => o.Position, newPosition));
+                _ => await db.Sections
+                    .Where(o =>
+                        (o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value) &&
+                        o.ProjectId == projectId &&
+                        o.Project.WorkspaceId == workspaceId)
+                    .OrderBy(o => o.Position)
+                    .Select(o => o.Position)
+                    .ToListAsync() is { Count: 2 } positions
+                    ? positions[1] - positions[0] <= 1
+                        ? (await NormalizeSectionPositionsAsync(workspaceId, projectId))
+                        .Where(o => o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value)
+                        .Select(o => o.Position).Sum() / 2
+                        : positions.Sum() / 2
+                    : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring sections.")
+            };
 
-        return new Response("Section moved.");
+            await db.Sections
+                .Where(o => o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(o => o.Position, newPosition));
+
+            await transaction.CommitAsync();
+
+            return new Response("Section moved.");
+        });
     }
 
     public async Task<Response> DeleteSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId,
