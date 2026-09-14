@@ -102,7 +102,7 @@ public static class DbSeeder
             {
                 WorkspaceId = workspace.Id,
                 UserId = users[2].Id,
-                Role = EWorkspaceRole.Member,
+                Role = EWorkspaceRole.Manager,
                 CreatedBy = userId
             },
             new()
