@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet } from 'react-router';
+import { WorkspaceLayout } from '../layouts/workspace';
+import { AuthGuard, GuestGuard, WorkspaceGuard } from '../shared/guards';
 import { SplashScreen } from '../shared/ui';
-import { AuthGuard, GuestGuard } from '../shared/guards';
 
 export const router = createBrowserRouter([
   {
@@ -54,13 +55,17 @@ export const router = createBrowserRouter([
             path: '',
             lazy: () => import('../layouts/account'),
             children: [
-              { path: 'workspaces', lazy: () => import('../pages/workspaces') },
               { path: 'account', lazy: () => import('../pages/account') },
+              { path: 'workspaces', lazy: () => import('../pages/workspaces') },
             ],
           },
           {
             path: 'workspaces/:workspaceId',
-            lazy: () => import('../layouts/workspace'),
+            element: (
+              <WorkspaceGuard>
+                <WorkspaceLayout />
+              </WorkspaceGuard>
+            ),
             children: [
               { path: 'dashboard', lazy: () => import('../pages/dashboard') },
               {
