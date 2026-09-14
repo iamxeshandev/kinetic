@@ -8,23 +8,26 @@ import {
   type SelectChangeEvent,
 } from '@mui/material';
 import { LuBuilding } from 'react-icons/lu';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { paths } from '../../../routes';
+import { useBoolean } from '../../../shared/hooks';
 import { ArrowRightIcon } from '../../../shared/icons';
 import { StyledIcon } from '../../../shared/icons/StyledIcon';
-import { useBoolean } from '../../../shared/hooks';
+import { toast } from '../../../shared/toast';
 import { authApi } from '../../auth/api';
 import { useAuthContext } from '../../auth/context';
 import { useWorkspaces } from '../../workspaces/hooks';
 
 export function WorkspaceSwitcher() {
-  const { user, setUser } = useAuthContext();
+  const { workspaceId } = useParams();
+
+  const { setUser } = useAuthContext();
 
   const navigate = useNavigate();
 
   const isSubmitting = useBoolean();
 
-  const { data: workspaces = [], isValidating } = useWorkspaces();
+  const { data: workspaces = [], isLoading } = useWorkspaces();
 
   const handleChange = (event: SelectChangeEvent) => {
     const workspaceId = event.target.value;
@@ -38,32 +41,17 @@ export function WorkspaceSwitcher() {
 
     authApi
       .switch(workspaceId)
-      .then((res) => {
-        if (!res.data) return;
-        setUser((prev) =>
-          prev
-            ? {
-                ...prev,
-                currentWorkspace: res.data?.currentWorkspace,
-              }
-            : undefined,
-        );
-        if (res.data?.currentWorkspace) {
-          navigate(paths.workspaces.dashboard(res.data.currentWorkspace.id), {
-            replace: true,
-          });
-        }
-      })
+      .then((res) => setUser(res.data))
+      .catch((err) => toast.error(err.message))
       .finally(() => isSubmitting.setFalse());
   };
 
-  const currentId = user?.currentWorkspace?.id ?? '';
-  const hasValidWorkspace = workspaces.some((w) => w.id === currentId);
+  const isValidWorkspace = workspaces.some((w) => w.id === workspaceId);
 
   return (
     <Select
       size='small'
-      value={isValidating || !hasValidWorkspace ? '' : currentId}
+      value={isLoading || !isValidWorkspace ? '' : workspaceId}
       onChange={handleChange}
       startAdornment={
         <InputAdornment position='start'>
