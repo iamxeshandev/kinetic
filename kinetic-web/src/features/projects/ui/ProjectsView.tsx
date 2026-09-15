@@ -8,16 +8,16 @@ import {
   StarOffIcon,
   TrashIcon,
 } from '../../../shared/icons';
+import { toast } from '../../../shared/toast';
 import {
   ActionMenu,
   ConfirmDialog,
   type ActionMenuButtonProps,
 } from '../../../shared/ui';
-import { hasProjectRole } from '../../../shared/permissions/hasProjectRole';
-import { hasWorkspaceRole } from '../../../shared/permissions/hasWorkspaceRole';
-import { toast } from '../../../shared/toast';
 import { useAuthContext } from '../../auth/context';
 import { favoritesApi } from '../../favorites/api';
+import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
+import { hasProjectRole } from '../helpers';
 import { useDeleteProject, useProjects } from '../hooks';
 import type { Project } from '../types';
 import { AllProjectsSection } from './AllProjectsSection';
@@ -100,12 +100,12 @@ export function ProjectsView() {
     ?.team.find((t) => t.id === user?.id)?.role;
 
   const canEdit =
-    hasWorkspaceRole(user?.currentWorkspace?.role ?? 'Member', 'Admin') ||
-    hasProjectRole(userProjectRole ?? 'Member', 'Owner');
+    hasWorkspaceRole(user?.currentWorkspace?.role, 'Admin') ||
+    hasProjectRole(userProjectRole, 'Owner');
 
   const canDelete =
-    hasWorkspaceRole(user?.currentWorkspace?.role ?? 'Member', 'Admin') ||
-    hasProjectRole(userProjectRole ?? 'Member', 'Owner');
+    hasWorkspaceRole(user?.currentWorkspace?.role, 'Admin') ||
+    hasProjectRole(userProjectRole, 'Owner');
 
   const actions: ActionMenuButtonProps['actions'] = [
     {

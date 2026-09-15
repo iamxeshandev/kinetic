@@ -19,11 +19,13 @@ import {
 } from '../../../../../shared/form';
 import { CancelIcon, CheckIcon } from '../../../../../shared/icons';
 import { toast } from '../../../../../shared/toast';
-import { useLookups } from '../../../../lookups/hooks';
+import { priorityOptions } from '../../../../../shared/types';
+import { projectsApi } from '../../../api';
+import type { ProjectMember } from '../../../types';
 import { sectionsApi } from '../../api';
 import { useUpdateTask } from '../../hooks';
 import {
-  TaskFormSchema,
+  taskFormSchema,
   type Section,
   type Task,
   type TaskForm,
@@ -43,26 +45,33 @@ const defaultValues: TaskForm = {
 export function FormSection({ open, task }: { open: boolean; task: Task }) {
   const { workspaceId, projectId } = useParams();
 
-  const { data: priorities = [] } = useLookups('priorities');
-
-  const [sections, setSections] = useState<Section[]>([]);
-
   const { trigger: update } = useUpdateTask(workspaceId!, projectId!);
 
+  const [sections, setSections] = useState<Section[]>([]);
+  const [members, setMembers] = useState<ProjectMember[]>([]);
+
   const methods = useForm<TaskForm>({
-    resolver: zodResolver(TaskFormSchema),
+    resolver: zodResolver(taskFormSchema),
     defaultValues,
   });
 
   useEffect(() => {
     if (!open) return;
+
     const fetchSections = () =>
       sectionsApi
         .getAll(workspaceId!, projectId!)
         .then((res) => setSections(res.data ?? []))
         .catch((err) => console.error(err));
 
+    const fetchProjectMembers = () =>
+      projectsApi
+        .getProjectMembers(workspaceId!, projectId!)
+        .then((res) => setMembers(res.data ?? []))
+        .catch((err) => console.error(err));
+
     fetchSections();
+    fetchProjectMembers();
   }, [open, projectId, workspaceId]);
 
   useEffect(() => {
@@ -81,8 +90,6 @@ export function FormSection({ open, task }: { open: boolean; task: Task }) {
     update({ ...task, ...data })
       .then((res) => toast.success(res.message))
       .catch((err) => toast.error(err.message));
-
-  console.log(methods.formState.isDirty);
 
   return (
     <Form
@@ -124,7 +131,7 @@ export function FormSection({ open, task }: { open: boolean; task: Task }) {
           size='small'
           sx={{ backgroundColor: 'background.paper' }}
         >
-          {priorities.map(({ value, label }) => (
+          {priorityOptions.map(({ value, label }) => (
             <MenuItem key={value} value={value}>
               {label}
             </MenuItem>
@@ -137,7 +144,11 @@ export function FormSection({ open, task }: { open: boolean; task: Task }) {
           size='small'
           sx={{ borderRadius: 4, backgroundColor: 'background.paper' }}
         >
-          <MenuItem value=''>High</MenuItem>
+          {members.map(({ id, firstName, lastName }) => (
+            <MenuItem key={id} value={id}>
+              {`${firstName} ${lastName}`}
+            </MenuItem>
+          ))}
         </FormSelect>
 
         <GridFieldLabel icon={LuCalendar} label='Due Date' />

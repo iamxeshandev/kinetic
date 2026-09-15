@@ -22,12 +22,17 @@ import {
   FormTextField,
 } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import type { Callback, ProjectRole } from '../../../shared/types';
-import { useLookups } from '../../lookups/hooks';
+import { priorityOptions } from '../../../shared/types';
 import { usersApi } from '../../users/api';
 import type { User } from '../../users/types';
 import { useCreateProject, useUpdateProject } from '../hooks';
-import { ProjectFormSchema, type Project, type ProjectForm } from '../types';
+import {
+  projectFormSchema,
+  type Project,
+  type ProjectForm,
+  type ProjectRole,
+} from '../types';
+import { projectStatusOptions } from '../types/project-status';
 
 const defaultValues: ProjectForm = {
   name: '',
@@ -41,7 +46,7 @@ const defaultValues: ProjectForm = {
 
 export type ProjectFormProps = {
   open: boolean;
-  onClose: Callback;
+  onClose: () => void;
   project?: Project;
 };
 
@@ -50,14 +55,12 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
   const { workspaceId } = useParams();
   const { trigger: createProject } = useCreateProject(workspaceId!);
   const { trigger: updateProject } = useUpdateProject(workspaceId!);
-  const { data: statuses } = useLookups('project-statuses');
-  const { data: priorities } = useLookups('priorities');
 
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const methods = useForm<ProjectForm>({
-    resolver: zodResolver(ProjectFormSchema),
+    resolver: zodResolver(projectFormSchema),
     defaultValues,
   });
 
@@ -172,7 +175,7 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
 
             <Stack direction='row' spacing={2}>
               <FormSelect name='status' label='Status' required>
-                {statuses?.map(({ value, label }) => (
+                {projectStatusOptions.map(({ value, label }) => (
                   <MenuItem key={value} value={value}>
                     {label}
                   </MenuItem>
@@ -180,7 +183,7 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
               </FormSelect>
 
               <FormSelect name='priority' label='Priority' required>
-                {priorities?.map(({ value, label }) => (
+                {priorityOptions.map(({ value, label }) => (
                   <MenuItem key={value} value={value}>
                     {label}
                   </MenuItem>

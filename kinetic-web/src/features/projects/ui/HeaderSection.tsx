@@ -2,12 +2,16 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { LuPlus } from 'react-icons/lu';
 import { Can } from '../../../shared/permissions';
 import type { Callback } from '../../../shared/types';
+import { useAuthContext } from '../../auth/context';
+import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
 
 export type HeaderSectionProps = {
   onCreateClick: Callback;
 };
 
 export function HeaderSection({ onCreateClick }: HeaderSectionProps) {
+  const { user } = useAuthContext();
+
   return (
     <Stack
       direction='row'
@@ -21,7 +25,7 @@ export function HeaderSection({ onCreateClick }: HeaderSectionProps) {
         </Typography>
       </Box>
 
-      <Can role='Manager'>
+      <Can allowed={hasWorkspaceRole(user?.currentWorkspace?.role, 'Manager')}>
         <Button
           startIcon={<LuPlus />}
           sx={{ display: { xs: 'none', sm: 'inherit' } }}

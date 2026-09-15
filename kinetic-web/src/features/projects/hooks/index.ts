@@ -1,25 +1,40 @@
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { projectsApi, projectsUrl, projectUrl } from '../api';
+import { projectsApi, projectsKey } from '../api';
 import type { Project } from '../types';
 
 export const useProjects = (workspaceId: string) =>
-  useSWR(
-    projectsUrl(workspaceId),
-    () => projectsApi.getAll(workspaceId).then((res) => res.data),
-    {
-      fallbackData: [],
-    },
+  useSWR<Project[]>(projectsKey(workspaceId), () =>
+    projectsApi.getAll(workspaceId).then((res) => res.data ?? []),
   );
 
-export const useProject = (workspaceId: string, projectId: Project['id']) =>
-  useSWR(projectUrl(workspaceId, projectId), () =>
-    projectsApi.getById(workspaceId, projectId).then((res) => res.data),
+export const useProject = (workspaceId: string, projectId: string) => {
+  const { cache } = useSWRConfig();
+
+  const key = projectsKey(workspaceId);
+
+  const cachedProjects = cache.get(key)?.data as Project[] | undefined;
+
+  const {
+    data: fetchedProjects,
+    isLoading,
+    error,
+  } = useSWR<Project[]>(cachedProjects ? null : key, () =>
+    projectsApi.getAll(workspaceId).then((res) => res.data ?? []),
   );
+
+  const projects = cachedProjects ?? fetchedProjects;
+
+  return {
+    data: projects?.find((p) => p.id === projectId),
+    isLoading,
+    error,
+  };
+};
 
 export const useCreateProject = (workspaceId: string) =>
   useSWRMutation(
-    projectsUrl(workspaceId),
+    projectsKey(workspaceId),
     (_, { arg }: { arg: Omit<Project, 'id'> }) =>
       projectsApi.create(workspaceId, arg),
     {
@@ -31,7 +46,7 @@ export const useCreateProject = (workspaceId: string) =>
 
 export const useUpdateProject = (workspaceId: string) =>
   useSWRMutation(
-    projectsUrl(workspaceId),
+    projectsKey(workspaceId),
     (_, { arg: { id, ...data } }: { arg: Project }) =>
       projectsApi.update(workspaceId, id, data),
     {
@@ -45,7 +60,7 @@ export const useUpdateProject = (workspaceId: string) =>
 
 export const useDeleteProject = (workspaceId: string) =>
   useSWRMutation(
-    projectsUrl(workspaceId),
+    projectsKey(workspaceId),
     (_, { arg: projectId }: { arg: Project['id'] }) =>
       projectsApi
         .delete(workspaceId, projectId)

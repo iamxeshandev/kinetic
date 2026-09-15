@@ -1,35 +1,45 @@
 import { api, type ApiResponse } from '../../../shared/api';
 import type { Project } from '../types';
 
-export const projectsUrl = (workspaceId: string) =>
+const baseUrl = (workspaceId: string) =>
   `api/workspaces/${workspaceId}/projects`;
-
-export const projectUrl = (workspaceId: string, id: Project['id']) =>
-  `api/workspaces/${workspaceId}/projects/${id}`;
 
 export const projectsApi = {
   getAll: (workspaceId: string) =>
     api
-      .get<ApiResponse<Project[]>>(projectsUrl(workspaceId))
+      .get<ApiResponse<Project[]>>(baseUrl(workspaceId))
       .then((res) => res.data),
 
-  getById: (workspaceId: string, id: Project['id']) =>
+  getById: (workspaceId: string, projectId: Project['id']) =>
     api
-      .get<ApiResponse<Project>>(projectUrl(workspaceId, id))
+      .get<ApiResponse<Project>>(`${baseUrl(workspaceId)}/${projectId}`)
       .then((res) => res.data),
 
   create: (workspaceId: string, data: Omit<Project, 'id'>) =>
     api
-      .post<ApiResponse<Project>>(`${projectsUrl(workspaceId)}`, data)
+      .post<ApiResponse<Project>>(`${baseUrl(workspaceId)}`, data)
       .then((res) => res.data),
 
-  update: (workspaceId: string, id: Project['id'], data: Omit<Project, 'id'>) =>
+  update: (
+    workspaceId: string,
+    projectId: Project['id'],
+    data: Omit<Project, 'id'>,
+  ) =>
     api
-      .put<ApiResponse<Project>>(projectUrl(workspaceId, id), data)
+      .put<ApiResponse<Project>>(`${baseUrl(workspaceId)}/${projectId}`, data)
       .then((res) => res.data),
 
-  delete: (workspaceId: string, id: Project['id']) =>
+  delete: (workspaceId: string, projectId: Project['id']) =>
     api
-      .delete<ApiResponse>(projectUrl(workspaceId, id))
+      .delete<ApiResponse>(`${baseUrl(workspaceId)}/${projectId}`)
+      .then((res) => res.data),
+
+  getProjectMembers: (workspaceId: string, projectId: Project['id']) =>
+    api
+      .get<
+        ApiResponse<Project['team']>
+      >(`${`${baseUrl(workspaceId)}/${projectId}`}/members`)
       .then((res) => res.data),
 };
+
+export { baseUrl as projectsKey };

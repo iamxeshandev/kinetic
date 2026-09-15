@@ -1,5 +1,5 @@
 import { api, type ApiResponse } from '../../../../shared/api';
-import type { Workspace } from '../../../workspaces/types';
+import type { Workspace } from '../../../workspaces/types/workspace';
 import type { Project } from '../../types';
 import type { Section } from '../types';
 
