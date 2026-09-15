@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { paths } from '../../../routes';
 import { AddIcon } from '../../../shared/icons';
+import { toast } from '../../../shared/toast';
 import { ConfirmDialog } from '../../../shared/ui/ConfirmDialog';
 import { PageHeader } from '../../../shared/ui/PageHeader';
-import { toast } from '../../../shared/toast';
 import { authApi } from '../../auth/api';
 import { useAuthContext } from '../../auth/context';
 import { useDeleteWorkspace, useWorkspaces } from '../hooks';
-import type { Workspace } from '../types';
+import type { Workspace } from '../types/workspace';
 import { WorkspaceForm } from './WorkspaceForm';
 import { WorkspaceGrid } from './WorkspaceGrid';
 

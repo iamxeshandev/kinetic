@@ -15,9 +15,9 @@ import {
   UsersIcon,
 } from '../../../shared/icons';
 import { StyledIcon } from '../../../shared/icons/StyledIcon';
-import { Label } from '../../../shared/ui';
 import type { Callback } from '../../../shared/types';
-import type { Workspace } from '../types';
+import { Label } from '../../../shared/ui';
+import type { Workspace } from '../types/workspace';
 
 export type WorkspaceGridProps = {
   workspaces: Workspace[];

@@ -14,7 +14,7 @@ import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
 import { useCreateWorkspace, useUpdateWorkspace } from '../hooks';
 import {
-  WorkspaceFormSchema,
+  workspaceFormSchema,
   type Workspace,
   type WorkspaceForm,
 } from '../types';
@@ -44,7 +44,7 @@ export function WorkspaceForm({
   const { trigger: update } = useUpdateWorkspace();
 
   const methods = useForm({
-    resolver: zodResolver(WorkspaceFormSchema),
+    resolver: zodResolver(workspaceFormSchema),
     defaultValues,
   });
 
