@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace kinetic_api.Enums;
+﻿namespace kinetic_api.Enums;
 
 public enum EProjectStatus
 {
     Planning,
     Active,
-    [Display(Name = "On hold")] OnHold,
+    OnHold,
     Archived
 }
