@@ -1,7 +1,7 @@
 import { createBrowserRouter, Outlet } from 'react-router';
 import { WorkspaceLayout } from '../layouts/workspace';
-import { AuthGuard, GuestGuard, WorkspaceGuard } from '../shared/guards';
 import { SplashScreen } from '../shared/ui';
+import { AuthGuard, GuestGuard, WorkspaceGuard } from './guards';
 
 export const router = createBrowserRouter([
   {
