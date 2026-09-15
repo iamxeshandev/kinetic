@@ -1,5 +1,5 @@
 import z from 'zod';
-import { WorkspaceSchema } from '../../workspaces/types';
+import { workspaceSchema } from '../../workspaces/types/workspace';
 
 export const MeSchema = z.object({
   id: z.uuid(),
@@ -7,7 +7,7 @@ export const MeSchema = z.object({
   firstName: z.string(),
   lastName: z.string().nullish(),
   fullName: z.string(),
-  currentWorkspace: WorkspaceSchema.optional(),
+  currentWorkspace: workspaceSchema.optional(),
 });
 
 export type Me = z.infer<typeof MeSchema>;
