@@ -1,8 +1,9 @@
 import { Box, Button, Typography } from '@mui/material';
 import { AddIcon } from '../../../shared/icons';
+import { Can } from '../../../shared/permissions';
 import type { Callback } from '../../../shared/types';
-import { WORKSPACE_RANKS } from '../../../shared/types';
 import { useAuthContext } from '../../auth/context';
+import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
 
 export type HeaderSectionProps = {
   onCreateClick: Callback;
@@ -25,11 +26,11 @@ export const HeaderSection = ({ onCreateClick }: HeaderSectionProps) => {
         <Typography variant='subtitle1'>Manage your users here</Typography>
       </Box>
 
-      {WORKSPACE_RANKS[user?.currentWorkspace?.role ?? 'Member'] > 0 && (
+      <Can allowed={hasWorkspaceRole(user?.currentWorkspace?.role, 'Manager')}>
         <Button startIcon={<AddIcon />} onClick={onCreateClick}>
           Create User
         </Button>
-      )}
+      </Can>
     </Box>
   );
 };

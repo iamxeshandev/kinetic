@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { WorkspaceRoleSchema } from '../../../shared/types';
+import { workspaceRoleSchema } from '../../workspaces/types';
 
 export const UserSchema = z.object({
   id: z.uuid(),
   firstName: z.string(),
   lastName: z.string().optional(),
   email: z.string(),
-  role: WorkspaceRoleSchema,
+  role: workspaceRoleSchema,
   joinedAt: z.date(),
 });
 export type User = z.infer<typeof UserSchema>;

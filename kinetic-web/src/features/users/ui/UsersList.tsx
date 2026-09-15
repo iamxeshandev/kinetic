@@ -8,11 +8,14 @@ import {
   TableRow,
 } from '@mui/material';
 import type React from 'react';
-import { MoreIcon } from '../../../shared/icons';
 import { formatDate } from '../../../shared/helpers';
+import { MoreIcon } from '../../../shared/icons';
 import type { Callback } from '../../../shared/types';
-import { WORKSPACE_RANKS, type WorkspaceRole } from '../../../shared/types';
 import { useAuthContext } from '../../auth/context';
+import {
+  workspaceRoleRankMap,
+  type WorkspaceRole,
+} from '../../workspaces/types';
 import type { User } from '../types';
 
 const columns = ['Name', 'Email', 'Role', 'Joined', ''];
@@ -54,9 +57,9 @@ export const UsersList = ({ users, onMenuClick }: UsersListProps) => {
               <TableCell>{formatDate(user.joinedAt)}</TableCell>
               <TableCell align='right'>
                 {isAllowed &&
-                  WORKSPACE_RANKS[
+                  workspaceRoleRankMap[
                     currentUser?.currentWorkspace?.role ?? 'Member'
-                  ] > WORKSPACE_RANKS[user.role] && (
+                  ] > workspaceRoleRankMap[user.role] && (
                     <IconButton
                       size='small'
                       onClick={(e) => onMenuClick(e, user.id)}

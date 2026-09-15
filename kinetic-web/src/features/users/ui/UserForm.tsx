@@ -14,7 +14,7 @@ import { useParams } from 'react-router';
 import { Form, FormSelect, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
-import { useLookups } from '../../lookups/hooks';
+import { workspaceRoleOptions } from '../../workspaces/types';
 import { useCreateUser, useUpdateUser } from '../hooks';
 import { UserFormSchema, type User, type UserForm } from '../types';
 
@@ -31,8 +31,6 @@ export type UserFormProps = {
 
 export function UserForm({ open, onClose, user }: UserFormProps) {
   const isNew = !user;
-
-  const { data: roles } = useLookups('workspace-roles');
 
   const { workspaceId } = useParams();
 
@@ -79,7 +77,7 @@ export function UserForm({ open, onClose, user }: UserFormProps) {
             />
 
             <FormSelect name='role' label='Role' required>
-              {roles?.map(({ value, label }) => (
+              {workspaceRoleOptions.map(({ value, label }) => (
                 <MenuItem key={value} value={value}>
                   {label}
                 </MenuItem>
