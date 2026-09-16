@@ -46,11 +46,11 @@ public class WorkspaceService(AppDbContext db, IHttpContextAccessor accessor)
         return new Response<WorkspaceDto>(record);
     }
 
-    public async Task<Response<WorkspaceDto>> CreateWorkspaceAsync(WorkspaceDto workspaceDto)
+    public async Task<Response<WorkspaceDto>> CreateWorkspaceAsync(WorkspaceRequest request)
     {
         var workspace = new Workspace
         {
-            Name = workspaceDto.Name,
+            Name = request.Name,
             CreatedBy = accessor.GetUserId()
         };
         db.Workspaces.Add(workspace);
@@ -66,23 +66,23 @@ public class WorkspaceService(AppDbContext db, IHttpContextAccessor accessor)
 
         await db.SaveChangesAsync();
         return new Response<WorkspaceDto>("Workspace created.",
-            await GetWorkspaceByIdAsync(workspace.Id).TryGetDataAsync());
+            await GetWorkspaceByIdAsync(workspace.Id).GetDataAsync());
     }
 
-    public async Task<Response<WorkspaceDto>> UpdateWorkspaceAsync(Guid workspaceId, WorkspaceDto workspaceDto)
+    public async Task<Response<WorkspaceDto>> UpdateWorkspaceAsync(Guid workspaceId, WorkspaceRequest request)
     {
         var workspace = await db.WorkspaceMembers
                             .Where(o => o.WorkspaceId == workspaceId && o.UserId == accessor.GetUserId())
                             .Select(o => o.Workspace).SingleOrDefaultAsync() ??
                         throw new ApiException(HttpStatusCode.NotFound, "Workspace not found.");
 
-        workspace.Name = workspaceDto.Name;
+        workspace.Name = request.Name;
         workspace.UpdatedAt = DateTime.UtcNow;
         workspace.UpdatedBy = accessor.GetUserId();
 
         await db.SaveChangesAsync();
         return new Response<WorkspaceDto>("Workspace updated.",
-            await GetWorkspaceByIdAsync(workspace.Id).TryGetDataAsync());
+            await GetWorkspaceByIdAsync(workspace.Id).GetDataAsync());
     }
 
     public async Task<Response> DeleteWorkspaceAsync(Guid workspaceId)

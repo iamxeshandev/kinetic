@@ -26,9 +26,9 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
             .ThenBy(o => o.User.LastName)
             .Select(o => new UserDto(
                 o.UserId,
+                o.User.Email!,
                 o.User.FirstName,
                 o.User.LastName,
-                o.User.Email!,
                 o.User.AvatarKey.ToPublicUrl(),
                 o.Role,
                 o.CreatedAt
@@ -44,9 +44,9 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
             .Where(o => o.WorkspaceId == workspaceId && o.UserId == userId)
             .Select(o => new UserDto(
                 o.UserId,
+                o.User.Email!,
                 o.User.FirstName,
                 o.User.LastName,
-                o.User.Email!,
                 o.User.AvatarKey.ToPublicUrl(),
                 o.Role,
                 o.CreatedAt
@@ -56,9 +56,9 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         return new Response<UserDto>(record);
     }
 
-    public async Task<Response<UserDto>> CreateUserAsync(Guid workspaceId, UserDto dto)
+    public async Task<Response<UserDto>> CreateUserAsync(Guid workspaceId, UserRequest request)
     {
-        var user = await userManager.FindByEmailAsync(dto.Email) ??
+        var user = await userManager.FindByEmailAsync(request.Email) ??
                    throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
         var alreadyJoined = await db.WorkspaceMembers
@@ -66,11 +66,11 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         if (alreadyJoined)
             throw new ApiException(HttpStatusCode.Conflict, "User already exists.");
 
-        if (dto.Role == EWorkspaceRole.Owner)
+        if (request.Role == EWorkspaceRole.Owner)
             throw new ApiException(HttpStatusCode.Forbidden, "Cannot create an owner.");
 
         var currentUserRole = (await db.WorkspaceMembers.FindAsync(workspaceId, accessor.GetUserId()))!.Role;
-        var targetRole = dto.Role;
+        var targetRole = request.Role;
         if (currentUserRole <= targetRole)
             throw new ApiException(HttpStatusCode.Forbidden, "Cannot create a user with equal or higher role.");
 
@@ -85,10 +85,10 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
 
         await db.SaveChangesAsync();
         return new Response<UserDto>("User created.",
-            await GetUserByIdAsync(member.WorkspaceId, member.UserId).TryGetDataAsync());
+            await GetUserByIdAsync(member.WorkspaceId, member.UserId).GetDataAsync());
     }
 
-    public async Task<Response<UserDto>> UpdateUserAsync(Guid workspaceId, Guid userId, UserDto dto)
+    public async Task<Response<UserDto>> UpdateUserAsync(Guid workspaceId, Guid userId, UserRequest request)
     {
         var member = await db.WorkspaceMembers.FindAsync(workspaceId, userId)
                      ?? throw new ApiException(HttpStatusCode.NotFound,
@@ -96,7 +96,7 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
 
         var currentUserRole = (await db.WorkspaceMembers.FindAsync(workspaceId, accessor.GetUserId()))!.Role;
         var existingRole = member.Role;
-        var targetRole = dto.Role;
+        var targetRole = request.Role;
         if (currentUserRole <= existingRole)
             throw new ApiException(HttpStatusCode.Forbidden, "Cannot modify a user with equal or higher role.");
         if (currentUserRole <= targetRole)
@@ -108,7 +108,7 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
 
         await db.SaveChangesAsync();
         return new Response<UserDto>("User updated.",
-            await GetUserByIdAsync(member.WorkspaceId, member.UserId).TryGetDataAsync());
+            await GetUserByIdAsync(member.WorkspaceId, member.UserId).GetDataAsync());
     }
 
     public async Task<Response> DeleteUserAsync(Guid workspaceId, Guid userId)

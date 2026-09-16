@@ -20,19 +20,19 @@ public class AuthService(
     AppDbContext db,
     IHttpContextAccessor accessor)
 {
-    public async Task<Response> RegisterAsync(RegisterDto registerDto)
+    public async Task<Response> RegisterAsync(RegisterRequest request)
     {
-        var existedUser = await userManager.FindByEmailAsync(registerDto.Email);
+        var existedUser = await userManager.FindByEmailAsync(request.Email);
         if (existedUser is not null)
             throw new ApiException(HttpStatusCode.BadRequest, "Email already exists.");
 
         var user = new ApplicationUser
         {
             Id = Guid.NewGuid(),
-            UserName = registerDto.Email.ToLower(),
-            Email = registerDto.Email.ToLower(),
-            FirstName = registerDto.FirstName,
-            LastName = registerDto.LastName
+            UserName = request.Email.ToLower(),
+            Email = request.Email.ToLower(),
+            FirstName = request.FirstName,
+            LastName = request.LastName
         };
 
         var workspace = new Workspace
@@ -54,7 +54,7 @@ public class AuthService(
 
         user.CurrentWorkspaceId = workspace.Id;
 
-        var result = await userManager.CreateAsync(user, registerDto.Password);
+        var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
             throw new ApiException(HttpStatusCode.BadRequest, "User creation failed.");
 
@@ -62,16 +62,16 @@ public class AuthService(
         return new Response("Registered successfully.");
     }
 
-    public async Task<Response<MeDto>> LoginAsync(LoginDto loginDto)
+    public async Task<Response<MeDto>> LoginAsync(LoginRequest request)
     {
-        var user = await userManager.FindByEmailAsync(loginDto.Email);
+        var user = await userManager.FindByEmailAsync(request.Email);
         if (user is null)
             throw new ApiException(HttpStatusCode.BadRequest, "Invalid credentials.");
 
         var result = await signInManager.PasswordSignInAsync(
-            loginDto.Email,
-            loginDto.Password,
-            loginDto.RememberMe,
+            request.Email,
+            request.Password,
+            request.RememberMe,
             false
         );
         if (!result.Succeeded)
@@ -179,13 +179,13 @@ public class AuthService(
         return new Response<MeDto?>(dto);
     }
 
-    public async Task<Response<MeDto>> UpdateMeAsync(MeDto dto)
+    public async Task<Response<MeDto>> UpdateMeAsync(MeRequest request)
     {
         var userId = accessor.GetUserId();
 
         var user = await userManager.FindByIdAsync(userId.ToString()) ?? throw new UnauthorizedAccessException();
-        user.FirstName = dto.FirstName;
-        user.LastName = dto.LastName;
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
 
         var result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -206,7 +206,7 @@ public class AuthService(
 
         return new Response<MeDto>("User updated.", new MeDto(
             user.Id,
-            user.Email,
+            user.Email!,
             user.FirstName,
             user.LastName,
             user.AvatarKey.ToPublicUrl(),

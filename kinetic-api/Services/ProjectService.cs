@@ -30,9 +30,9 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
                 o.Description,
                 o.Status,
                 o.Priority,
+                db.ProjectMembers.Single(pm => pm.ProjectId == o.Id && pm.UserId == userId).Role,
+                db.UserFavorites.Any(uf => uf.UserId == userId && uf.EntityId == o.Id),
                 o.DueDate,
-                db.UserFavorites.Any(uf =>
-                    uf.UserId == userId && uf.EntityType == EFavoriteEntityType.Project && uf.EntityId == o.Id),
                 db.ProjectMembers
                     .Where(pm => pm.ProjectId == o.Id && pm.Project.WorkspaceId == workspaceId)
                     .OrderBy(pm => pm.Role)
@@ -40,9 +40,9 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
                     .ThenBy(pm => pm.User.LastName)
                     .Select(pm => new ProjectMemberDto(
                         pm.UserId,
+                        pm.User.Email!,
                         pm.User.FirstName,
                         pm.User.LastName,
-                        pm.User.Email,
                         pm.User.AvatarKey.ToPublicUrl(),
                         pm.Role
                     ))
@@ -65,16 +65,16 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
                 o.Description,
                 o.Status,
                 o.Priority,
+                db.ProjectMembers.Single(pm => pm.ProjectId == o.Id && pm.UserId == userId).Role,
+                db.UserFavorites.Any(uf => uf.UserId == userId && uf.EntityId == o.Id),
                 o.DueDate,
-                db.UserFavorites.Any(uf =>
-                    uf.UserId == userId && uf.EntityType == EFavoriteEntityType.Project && uf.EntityId == o.Id),
                 db.ProjectMembers
                     .Where(pm => pm.ProjectId == o.Id && pm.Project.WorkspaceId == workspaceId)
                     .Select(pm => new ProjectMemberDto(
                         pm.UserId,
+                        pm.User.Email!,
                         pm.User.FirstName,
                         pm.User.LastName,
-                        pm.User.Email,
                         pm.User.AvatarKey.ToPublicUrl(),
                         pm.Role
                     ))
@@ -85,55 +85,60 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
         return new Response<ProjectDto>(record);
     }
 
-    public async Task<Response<ProjectDto>> CreateProjectAsync(Guid workspaceId, ProjectDto dto)
+    public async Task<Response<ProjectDto>> CreateProjectAsync(Guid workspaceId, ProjectRequest request)
     {
         var project = new Project
         {
             WorkspaceId = workspaceId,
-            Name = dto.Name,
-            Description = dto.Description,
-            Status = dto.Status,
-            Priority = dto.Priority,
-            DueDate = dto.DueDate,
+            Name = request.Name,
+            Description = request.Description,
+            Status = request.Status,
+            Priority = request.Priority,
+            DueDate = request.DueDate,
             CreatedBy = accessor.GetUserId()
         };
         db.Projects.Add(project);
 
-        if (dto.Team is not null && dto.Team.Count > 0)
-        {
-            var workspaceMemberIds = await db.WorkspaceMembers
-                .Where(o => o.WorkspaceId == workspaceId)
-                .Select(o => o.UserId)
-                .ToHashSetAsync();
-
-            var membersToAdd = dto.Team
-                .Where(member => workspaceMemberIds.Contains(member.Id))
-                .Select(member => new ProjectMember
+        var projectLeads = request.LeadIds?.Count > 0
+            ? await db.WorkspaceMembers.Where(o => o.WorkspaceId == workspaceId && request.LeadIds.Contains(o.UserId))
+                .Select(o => new ProjectMember
                 {
                     ProjectId = project.Id,
-                    UserId = member.Id,
-                    Role = member.Role
-                });
+                    UserId = o.UserId,
+                    Role = EProjectRole.Lead
+                })
+                .ToListAsync()
+            : [];
 
-            db.ProjectMembers.AddRange(membersToAdd);
-        }
+        var projectMembers = request.MemberIds?.Count > 0
+            ? await db.WorkspaceMembers.Where(o => o.WorkspaceId == workspaceId && request.MemberIds.Contains(o.UserId))
+                .Select(o => new ProjectMember
+                {
+                    ProjectId = project.Id,
+                    UserId = o.UserId,
+                    Role = EProjectRole.Member
+                })
+                .ToListAsync()
+            : [];
+
+        db.ProjectMembers.AddRange([.. projectLeads, .. projectMembers]);
 
         await db.SaveChangesAsync();
         return new Response<ProjectDto>("Project created.",
-            await GetProjectByIdAsync(workspaceId, project.Id).TryGetDataAsync());
+            await GetProjectByIdAsync(workspaceId, project.Id).GetDataAsync());
     }
 
-    public async Task<Response<ProjectDto>> UpdateProjectAsync(Guid workspaceId, Guid projectId, ProjectDto dto)
+    public async Task<Response<ProjectDto>> UpdateProjectAsync(Guid workspaceId, Guid projectId, ProjectRequest request)
     {
         var project =
             await db.Projects.SingleOrDefaultAsync(o => o.WorkspaceId == workspaceId && o.Id == projectId) ??
             throw new ApiException(HttpStatusCode.NotFound, "Project not found.");
 
-        project.Name = dto.Name;
-        project.Description = dto.Description;
-        project.Status = dto.Status;
-        project.Priority = dto.Priority;
-        project.DueDate = dto.DueDate;
+        project.Name = request.Name;
+        project.Description = request.Description;
+        project.Status = request.Status;
+        project.Priority = request.Priority;
+        project.DueDate = request.DueDate;
         project.UpdatedAt = DateTimeOffset.UtcNow;
         project.UpdatedBy = accessor.GetUserId();
 
@@ -141,28 +146,33 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
             db.ProjectMembers.Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
         db.ProjectMembers.RemoveRange(existingMembers);
 
-        if (dto.Team is not null && dto.Team.Count > 0)
-        {
-            var workspaceMembers = await db.WorkspaceMembers
-                .Where(o => o.WorkspaceId == workspaceId)
-                .Select(o => o.UserId)
-                .ToHashSetAsync();
-
-            var membersToAdd = dto.Team
-                .Where(o => workspaceMembers.Contains(o.Id))
+        var projectLeads = request.LeadIds?.Count > 0
+            ? await db.WorkspaceMembers.Where(o => o.WorkspaceId == workspaceId && request.LeadIds.Contains(o.UserId))
                 .Select(o => new ProjectMember
                 {
                     ProjectId = project.Id,
-                    UserId = o.Id,
-                    Role = o.Role
-                });
+                    UserId = o.UserId,
+                    Role = EProjectRole.Lead
+                })
+                .ToListAsync()
+            : [];
 
-            db.ProjectMembers.AddRange(membersToAdd);
-        }
+        var projectMembers = request.MemberIds?.Count > 0
+            ? await db.WorkspaceMembers.Where(o => o.WorkspaceId == workspaceId && request.MemberIds.Contains(o.UserId))
+                .Select(o => new ProjectMember
+                {
+                    ProjectId = project.Id,
+                    UserId = o.UserId,
+                    Role = EProjectRole.Member
+                })
+                .ToListAsync()
+            : [];
+
+        db.ProjectMembers.AddRange([.. projectLeads, .. projectMembers]);
 
         await db.SaveChangesAsync();
         return new Response<ProjectDto>("Project updated.",
-            await GetProjectByIdAsync(workspaceId, projectId).TryGetDataAsync());
+            await GetProjectByIdAsync(workspaceId, projectId).GetDataAsync());
     }
 
     public async Task<Response> DeleteProjectAsync(Guid workspaceId, Guid projectId)
@@ -187,9 +197,9 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
             .ThenBy(o => o.User.LastName)
             .Select(o => new ProjectMemberDto(
                 o.UserId,
+                o.User.Email!,
                 o.User.FirstName,
                 o.User.LastName,
-                o.User.Email,
                 o.User.AvatarKey.ToPublicUrl(),
                 o.Role)
             )

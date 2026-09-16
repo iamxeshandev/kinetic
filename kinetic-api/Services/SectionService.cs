@@ -52,7 +52,7 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
         return new Response<SectionDto>(record);
     }
 
-    public async Task<Response<SectionDto>> CreateSectionAsync(Guid workspaceId, Guid projectId, SectionDto dto)
+    public async Task<Response<SectionDto>> CreateSectionAsync(Guid workspaceId, Guid projectId, SectionRequest request)
     {
         var projectExists = await db.Projects.AnyAsync(o => o.Id == projectId && o.WorkspaceId == workspaceId);
         if (!projectExists)
@@ -65,7 +65,7 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
         var section = new Section
         {
             ProjectId = projectId,
-            Name = dto.Name,
+            Name = request.Name,
             Position = lastPosition + SectionPositionStep,
             CreatedBy = accessor.GetUserId()
         };
@@ -73,26 +73,27 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
 
         await db.SaveChangesAsync();
         return new Response<SectionDto>("Section created.",
-            await GetSectionByIdAsync(workspaceId, projectId, section.Id).TryGetDataAsync());
+            await GetSectionByIdAsync(workspaceId, projectId, section.Id).GetDataAsync());
     }
 
     public async Task<Response<SectionDto>> UpdateSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId,
-        SectionDto dto)
+        SectionRequest request)
     {
         var section = await db.Sections.SingleOrDefaultAsync(o =>
                           o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId) ??
                       throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
-        section.Name = dto.Name;
+        section.Name = request.Name;
         section.UpdatedAt = DateTimeOffset.UtcNow;
         section.UpdatedBy = accessor.GetUserId();
 
         await db.SaveChangesAsync();
         return new Response<SectionDto>("Section updated.",
-            await GetSectionByIdAsync(workspaceId, projectId, sectionId).TryGetDataAsync());
+            await GetSectionByIdAsync(workspaceId, projectId, sectionId).GetDataAsync());
     }
 
-    public async Task<Response> MoveSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId, MoveSectionDto dto)
+    public async Task<Response> MoveSectionAsync(Guid workspaceId, Guid projectId, Guid sectionId,
+        MoveSectionRequest request)
     {
         var strategy = db.Database.CreateExecutionStrategy();
 
@@ -100,7 +101,7 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
         {
             await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
-            var newPosition = dto switch
+            var newPosition = request switch
             {
                 { PreviousSectionId: null } => (await db.Sections
                     .Where(o => o.Id != sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
@@ -114,7 +115,7 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
 
                 _ => await db.Sections
                     .Where(o =>
-                        (o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value) &&
+                        (o.Id == request.PreviousSectionId.Value || o.Id == request.NextSectionId.Value) &&
                         o.ProjectId == projectId &&
                         o.Project.WorkspaceId == workspaceId)
                     .OrderBy(o => o.Position)
@@ -122,7 +123,7 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
                     .ToListAsync() is { Count: 2 } positions
                     ? positions[1] - positions[0] <= 1
                         ? (await NormalizeSectionPositionsAsync(workspaceId, projectId))
-                        .Where(o => o.Id == dto.PreviousSectionId.Value || o.Id == dto.NextSectionId.Value)
+                        .Where(o => o.Id == request.PreviousSectionId.Value || o.Id == request.NextSectionId.Value)
                         .Select(o => o.Position).Sum() / 2
                         : positions.Sum() / 2
                     : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring sections.")
