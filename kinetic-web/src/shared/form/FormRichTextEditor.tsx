@@ -1,3 +1,4 @@
+import { FormControl, FormHelperText } from '@mui/material';
 import { StarterKit } from '@tiptap/starter-kit';
 import {
   MenuButtonBold,
@@ -23,6 +24,8 @@ export type FormRichTextEditorProps = Omit<
 export function FormRichTextEditor({
   name,
   extensions = [StarterKit],
+  onUpdate,
+  RichTextFieldProps,
   ...props
 }: FormRichTextEditorProps) {
   const { control } = useFormContext();
@@ -31,22 +34,30 @@ export function FormRichTextEditor({
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
-        <RichTextEditor
-          extensions={extensions}
-          content={field.value}
-          renderControls={() => (
-            <MenuControlsContainer>
-              <MenuButtonBold />
-              <MenuButtonItalic />
-              <MenuButtonUnderline />
-              <MenuDivider />
-              <MenuButtonBulletedList />
-              <MenuButtonOrderedList />
-            </MenuControlsContainer>
-          )}
-          {...props}
-        />
+      render={({ field, fieldState }) => (
+        <FormControl fullWidth error={!!fieldState.error}>
+          <RichTextEditor
+            {...props}
+            extensions={extensions}
+            content={field.value}
+            onUpdate={(updateProps) => {
+              field.onChange(updateProps.editor.getJSON());
+              onUpdate?.(updateProps);
+            }}
+            RichTextFieldProps={RichTextFieldProps}
+            renderControls={() => (
+              <MenuControlsContainer>
+                <MenuButtonBold />
+                <MenuButtonItalic />
+                <MenuButtonUnderline />
+                <MenuDivider />
+                <MenuButtonBulletedList />
+                <MenuButtonOrderedList />
+              </MenuControlsContainer>
+            )}
+          />
+          <FormHelperText>{fieldState.error?.message}</FormHelperText>
+        </FormControl>
       )}
     />
   );

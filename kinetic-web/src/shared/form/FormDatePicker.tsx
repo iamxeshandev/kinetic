@@ -25,9 +25,9 @@ export function FormDatePicker({ name, ...props }: FormDatePickerProps) {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             {...props}
-            value={field.value}
+            value={field.value ?? null}
             onChange={(newValue) => {
-              field.onChange(newValue);
+              field.onChange(newValue ?? undefined);
             }}
             inputRef={field.ref}
             slotProps={{
