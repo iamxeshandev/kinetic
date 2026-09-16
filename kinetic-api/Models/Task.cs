@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using kinetic_api.Enums;
 using kinetic_api.Interfaces;
 
@@ -11,7 +12,7 @@ public class Task : ITrackable
     public virtual Section Section { get; set; } = null!;
 
     [Required] [MaxLength(100)] public required string Name { get; set; }
-    [MaxLength(1000)] public string? Description { get; set; }
+    public JsonElement? Description { get; set; }
     public EPriority Priority { get; set; }
     public required long Position { get; set; }
     public DateTimeOffset? DueDate { get; set; }
