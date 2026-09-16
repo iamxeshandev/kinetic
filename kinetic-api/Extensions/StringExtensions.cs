@@ -2,8 +2,8 @@
 
 public static class StringExtensions
 {
-    public static string ToPublicUrl(this string? value)
+    public static string? ToPublicUrl(this string? value)
     {
-        return string.IsNullOrEmpty(value) ? string.Empty : $"storage/public/{value}";
+        return string.IsNullOrEmpty(value) ? null : $"storage/public/{value}";
     }
 }
