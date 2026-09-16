@@ -1,7 +1,6 @@
-import axios, { AxiosError, type AxiosResponse } from 'axios';
+import axios from 'axios';
 import { CONFIG } from '../../config';
 import { paths, router } from '../../routes';
-import type { ApiResponse } from './types';
 
 export const api = axios.create({
   baseURL: import.meta.env.DEV ? 'http://localhost:5197' : '/',
@@ -9,8 +8,8 @@ export const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response: AxiosResponse<ApiResponse>) => response,
-  (error: AxiosError<ApiResponse>) => {
+  (response) => response,
+  (error) => {
     if (!error.response) {
       return Promise.reject(error);
     }
