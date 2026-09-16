@@ -1,30 +1,38 @@
-import { api, type ApiResponse } from '../../../shared/api';
-import type { Workspace, WorkspaceForm } from '../types';
+import { api } from '../../../shared/api';
+import type { components } from '../../../shared/api/types';
+import type { WorkspaceForm } from '../types';
 
 const baseUrl = 'api/workspaces';
 
 export const workspacesApi = {
   getAll: () =>
-    api.get<ApiResponse<Workspace[]>>(baseUrl).then((res) => res.data),
+    api
+      .get<components['schemas']['ResponseOfListOfWorkspaceDto']>(baseUrl)
+      .then((res) => res.data),
 
   getById: (workspaceId: string) =>
     api
-      .get<ApiResponse<Workspace>>(`${baseUrl}/${workspaceId}`)
+      .get<components['schemas']['ResponseOfWorkspaceDto']>(
+        `${baseUrl}/${workspaceId}`,
+      )
       .then((res) => res.data),
 
   create: (workspace: WorkspaceForm) =>
     api
-      .post<ApiResponse<Workspace>>(baseUrl, workspace)
+      .post<components['schemas']['ResponseOfWorkspaceDto']>(baseUrl, workspace)
       .then((res) => res.data),
 
   update: (workspaceId: string, workspace: WorkspaceForm) =>
     api
-      .put<ApiResponse<Workspace>>(`${baseUrl}/${workspaceId}`, workspace)
+      .put<components['schemas']['ResponseOfWorkspaceDto']>(
+        `${baseUrl}/${workspaceId}`,
+        workspace,
+      )
       .then((res) => res.data),
 
   delete: (workspaceId: string) =>
     api
-      .delete<ApiResponse>(`${baseUrl}/${workspaceId}`)
+      .delete<components['schemas']['Response']>(`${baseUrl}/${workspaceId}`)
       .then((res) => res.data),
 };
 

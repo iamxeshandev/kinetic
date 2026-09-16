@@ -1,13 +1,6 @@
-import z from 'zod';
+import type { components } from '../../../shared/api/types';
 
-export const workspaceRoleSchema = z.enum([
-  'Member',
-  'Manager',
-  'Admin',
-  'Owner',
-]);
-
-export type WorkspaceRole = z.infer<typeof workspaceRoleSchema>;
+export type WorkspaceRole = components['schemas']['EWorkspaceRole'];
 
 export const workspaceRoleLabelMap: Record<WorkspaceRole, string> = {
   Member: 'Member',

@@ -9,17 +9,23 @@ import {
 } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import z from 'zod';
 import { Form, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
 import { useCreateWorkspace, useUpdateWorkspace } from '../hooks';
-import {
-  workspaceFormSchema,
-  type Workspace,
-  type WorkspaceForm,
-} from '../types';
+import { type Workspace } from '../types';
 
-const defaultValues: WorkspaceForm = {
+const schema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Max 100 characters allowed'),
+});
+
+type Schema = z.infer<typeof schema>;
+
+const defaultValues: Schema = {
   name: '',
 };
 
@@ -44,7 +50,7 @@ export function WorkspaceForm({
   const { trigger: update } = useUpdateWorkspace();
 
   const methods = useForm({
-    resolver: zodResolver(workspaceFormSchema),
+    resolver: zodResolver(schema),
     defaultValues,
   });
 
@@ -58,7 +64,7 @@ export function WorkspaceForm({
     return () => clearTimeout(timeout);
   }, [methods, open, workspace?.name]);
 
-  const handleSubmit = (data: WorkspaceForm) =>
+  const handleSubmit = (data: Schema) =>
     isNew
       ? create(data)
           .then((res) => {

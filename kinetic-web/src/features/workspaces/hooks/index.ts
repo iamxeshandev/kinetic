@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { workspacesApi, workspacesKey } from '../api';
-import type { Workspace, WorkspaceForm } from '../types';
+import type { Workspace } from '../types';
 
 export const useWorkspaces = () =>
   useSWR<Workspace[]>(
@@ -15,7 +15,7 @@ export const useWorkspaces = () =>
 export const useCreateWorkspace = () =>
   useSWRMutation(
     workspacesKey,
-    (_, { arg }: { arg: WorkspaceForm }) => workspacesApi.create(arg),
+    (_, { arg }: { arg: Omit<Workspace, 'id'> }) => workspacesApi.create(arg),
     {
       revalidate: false,
       populateCache: (res, currentData: Workspace[] = []) =>
@@ -26,7 +26,7 @@ export const useCreateWorkspace = () =>
 export const useUpdateWorkspace = () =>
   useSWRMutation(
     workspacesKey,
-    (_, { arg: { id, ...data } }: { arg: { id: string } & WorkspaceForm }) =>
+    (_, { arg: { id, ...data } }: { arg: Workspace }) =>
       workspacesApi.update(id, data),
     {
       revalidate: false,
