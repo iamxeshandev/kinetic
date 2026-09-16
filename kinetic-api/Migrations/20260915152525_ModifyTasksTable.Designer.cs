@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using kinetic_api.Data;
 
@@ -11,9 +12,11 @@ using kinetic_api.Data;
 namespace kinetic_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260915152525_ModifyTasksTable")]
+    partial class ModifyTasksTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -522,12 +525,7 @@ namespace kinetic_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("WorkspaceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("UserId", "EntityId");
-
-                    b.HasIndex("WorkspaceId");
 
                     b.ToTable("UserFavorites");
                 });
@@ -743,15 +741,7 @@ namespace kinetic_api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("kinetic_api.Models.Workspace", "Workspace")
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("User");
-
-                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("kinetic_api.Models.WorkspaceMember", b =>
