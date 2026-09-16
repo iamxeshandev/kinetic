@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using kinetic_api.Authorization;
 using kinetic_api.Configuration;
 using kinetic_api.Data;
@@ -45,9 +44,7 @@ builder.Services.AddScoped<TaskService>();
 
 
 // Controllers Config
-builder
-    .Services.AddControllers()
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+builder.Services.AddControllers();
 
 
 // Identity Config
@@ -140,6 +137,7 @@ builder
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
 
 var app = builder.Build();
 
