@@ -27,17 +27,17 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
 
     [Authorize(Policy = "WorkspaceManager")]
     [HttpPost("")]
-    public async Task<ActionResult<Response<ProjectDto>>> CreateProjectAsync(Guid workspaceId, ProjectDto dto)
+    public async Task<ActionResult<Response<ProjectDto>>> CreateProjectAsync(Guid workspaceId, ProjectRequest request)
     {
-        return Created("", await projectService.CreateProjectAsync(workspaceId, dto));
+        return Created("", await projectService.CreateProjectAsync(workspaceId, request));
     }
 
     [Authorize(Policy = "WorkspaceAdminOrProjectLead")]
     [HttpPut("{projectId:guid}")]
     public async Task<ActionResult<Response<ProjectDto>>> UpdateProjectAsync(Guid workspaceId, Guid projectId,
-        ProjectDto dto)
+        ProjectRequest request)
     {
-        return await projectService.UpdateProjectAsync(workspaceId, projectId, dto);
+        return await projectService.UpdateProjectAsync(workspaceId, projectId, request);
     }
 
     [Authorize(Policy = "WorkspaceAdminOrProjectOwner")]

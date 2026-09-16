@@ -25,23 +25,24 @@ public class TasksController(TaskService service) : ControllerBase
     }
 
     [HttpPost("")]
-    public async Task<ActionResult<Response<TaskDto>>> CreateTaskAsync(Guid workspaceId, Guid projectId, TaskDto dto)
+    public async Task<ActionResult<Response<TaskDto>>> CreateTaskAsync(Guid workspaceId, Guid projectId,
+        TaskRequest request)
     {
-        return Created("", await service.CreateTaskAsync(workspaceId, projectId, dto));
+        return Created("", await service.CreateTaskAsync(workspaceId, projectId, request));
     }
 
     [HttpPut("{taskId:guid}")]
     public async Task<ActionResult<Response<TaskDto>>> UpdateTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
-        TaskDto dto)
+        TaskRequest request)
     {
-        return await service.UpdateTaskAsync(workspaceId, projectId, taskId, dto);
+        return await service.UpdateTaskAsync(workspaceId, projectId, taskId, request);
     }
 
     [HttpPatch("{taskId:guid}/move")]
     public async Task<ActionResult<Response>> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
-        MoveTaskDto dto)
+        MoveTaskRequest request)
     {
-        return await service.MoveTaskAsync(workspaceId, projectId, taskId, dto);
+        return await service.MoveTaskAsync(workspaceId, projectId, taskId, request);
     }
 
     [HttpDelete("{taskId:guid}")]
@@ -107,16 +108,16 @@ public class TasksController(TaskService service) : ControllerBase
 
     [HttpPost("{taskId:guid}/subtasks")]
     public async Task<ActionResult<Response<SubtaskDto>>> CreateSubtaskAsync(Guid workspaceId, Guid projectId,
-        Guid taskId, SubtaskDto dto)
+        Guid taskId, SubtaskRequest request)
     {
-        return Created("", await service.CreateSubtaskAsync(workspaceId, projectId, taskId, dto));
+        return Created("", await service.CreateSubtaskAsync(workspaceId, projectId, taskId, request));
     }
 
     [HttpPut("{taskId:guid}/subtasks/{subtaskId:guid}")]
     public async Task<ActionResult<Response<SubtaskDto>>> UpdateSubtaskAsync(Guid workspaceId, Guid projectId,
-        Guid taskId, Guid subtaskId, SubtaskDto dto)
+        Guid taskId, Guid subtaskId, SubtaskRequest request)
     {
-        return await service.UpdateSubtaskAsync(workspaceId, projectId, taskId, subtaskId, dto);
+        return await service.UpdateSubtaskAsync(workspaceId, projectId, taskId, subtaskId, request);
     }
 
     [HttpDelete("{taskId:guid}/subtasks/{subtaskId:guid}")]

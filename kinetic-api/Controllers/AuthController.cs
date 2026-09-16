@@ -11,15 +11,15 @@ namespace kinetic_api.Controllers;
 public class AuthController(AuthService authService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<ActionResult<Response>> RegisterAsync(RegisterDto registerDto)
+    public async Task<ActionResult<Response>> RegisterAsync(RegisterRequest request)
     {
-        return Created("", await authService.RegisterAsync(registerDto));
+        return Created("", await authService.RegisterAsync(request));
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<Response<MeDto>>> LoginAsync(LoginDto loginDto)
+    public async Task<ActionResult<Response<MeDto>>> LoginAsync(LoginRequest request)
     {
-        return await authService.LoginAsync(loginDto);
+        return await authService.LoginAsync(request);
     }
 
     [HttpPost("logout")]
@@ -43,9 +43,9 @@ public class AuthController(AuthService authService) : ControllerBase
 
     [HttpPost("me")]
     [Authorize]
-    public async Task<ActionResult<Response<MeDto>>> UpdateMeAsync(MeDto dto)
+    public async Task<ActionResult<Response<MeDto>>> UpdateMeAsync(MeRequest request)
     {
-        return await authService.UpdateMeAsync(dto);
+        return await authService.UpdateMeAsync(request);
     }
 
     [HttpPost("me/avatar")]

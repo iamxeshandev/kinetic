@@ -26,23 +26,23 @@ public class SectionsController(SectionService service) : ControllerBase
 
     [HttpPost("")]
     public async Task<ActionResult<Response<SectionDto>>> CreateSectionAsync(Guid workspaceId, Guid projectId,
-        SectionDto dto)
+        SectionRequest request)
     {
-        return Created("", await service.CreateSectionAsync(workspaceId, projectId, dto));
+        return Created("", await service.CreateSectionAsync(workspaceId, projectId, request));
     }
 
     [HttpPut("{sectionId:guid}")]
     public async Task<ActionResult<Response<SectionDto>>> UpdateSectionAsync(Guid workspaceId, Guid projectId,
-        Guid sectionId, SectionDto dto)
+        Guid sectionId, SectionRequest request)
     {
-        return Ok(await service.UpdateSectionAsync(workspaceId, projectId, sectionId, dto));
+        return Ok(await service.UpdateSectionAsync(workspaceId, projectId, sectionId, request));
     }
 
     [HttpPatch("{sectionId:guid}/move")]
     public async Task<ActionResult<Response>> MoveSectionAsync(Guid workspaceId, Guid projectId,
-        Guid sectionId, MoveSectionDto dto)
+        Guid sectionId, MoveSectionRequest request)
     {
-        return Ok(await service.MoveSectionAsync(workspaceId, projectId, sectionId, dto));
+        return Ok(await service.MoveSectionAsync(workspaceId, projectId, sectionId, request));
     }
 
     [HttpDelete("{sectionId:guid}")]

@@ -25,16 +25,17 @@ public class UsersController(UserService service) : ControllerBase
 
     [Authorize(Policy = "WorkspaceManager")]
     [HttpPost("")]
-    public async Task<ActionResult<Response<UserDto>>> CreateUserAsync(Guid workspaceId, UserDto dto)
+    public async Task<ActionResult<Response<UserDto>>> CreateUserAsync(Guid workspaceId, UserRequest request)
     {
-        return Created("", await service.CreateUserAsync(workspaceId, dto));
+        return Created("", await service.CreateUserAsync(workspaceId, request));
     }
 
     [Authorize(Policy = "WorkspaceManager")]
     [HttpPut("{userId:guid}")]
-    public async Task<ActionResult<Response<UserDto>>> UpdateUserAsync(Guid workspaceId, Guid userId, UserDto dto)
+    public async Task<ActionResult<Response<UserDto>>> UpdateUserAsync(Guid workspaceId, Guid userId,
+        UserRequest request)
     {
-        return await service.UpdateUserAsync(workspaceId, userId, dto);
+        return await service.UpdateUserAsync(workspaceId, userId, request);
     }
 
     [Authorize(Policy = "WorkspaceManager")]

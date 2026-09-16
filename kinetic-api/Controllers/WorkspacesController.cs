@@ -25,16 +25,17 @@ public class WorkspacesController(WorkspaceService workspaceService) : Controlle
     }
 
     [HttpPost("")]
-    public async Task<ActionResult<Response<WorkspaceDto>>> CreateWorkspaceAsync(WorkspaceDto dto)
+    public async Task<ActionResult<Response<WorkspaceDto>>> CreateWorkspaceAsync(WorkspaceRequest request)
     {
-        return Created("", await workspaceService.CreateWorkspaceAsync(dto));
+        return Created("", await workspaceService.CreateWorkspaceAsync(request));
     }
 
     [Authorize(Policy = "WorkspaceAdmin")]
     [HttpPut("{workspaceId:guid}")]
-    public async Task<ActionResult<Response<WorkspaceDto>>> UpdateWorkspaceAsync(Guid workspaceId, WorkspaceDto dto)
+    public async Task<ActionResult<Response<WorkspaceDto>>> UpdateWorkspaceAsync(Guid workspaceId,
+        WorkspaceRequest request)
     {
-        return await workspaceService.UpdateWorkspaceAsync(workspaceId, dto);
+        return await workspaceService.UpdateWorkspaceAsync(workspaceId, request);
     }
 
     [Authorize(Policy = "WorkspaceOwner")]
