@@ -61,7 +61,7 @@ export function KanbanItem({
 
       <Typography sx={{ fontWeight: 'bold' }}>{task?.name}</Typography>
 
-      <Typography
+      {/* <Typography
         variant='subtitle2'
         sx={{
           display: '-webkit-box',
@@ -70,8 +70,8 @@ export function KanbanItem({
           WebkitLineClamp: 3,
         }}
       >
-        {task?.description}
-      </Typography>
+        <div dangerouslySetInnerHTML={{__html: generateHtml}}/>
+      </Typography> */}
     </Card>
   );
 }

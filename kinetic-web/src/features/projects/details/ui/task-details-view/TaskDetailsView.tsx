@@ -11,7 +11,7 @@ export type TaskFormProps = {
   task: Task;
 };
 
-export function TaskDetails({ open, onClose, task }: TaskFormProps) {
+export function TaskDetailsView({ open, onClose, task }: TaskFormProps) {
   return (
     <Drawer
       open={open}

@@ -1,3 +1,3 @@
 import type { components } from '../../../shared/api/types';
 
-export type Project = components['schemas']['ProjectDto'];
+export type User = components['schemas']['UserDto'];

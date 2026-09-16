@@ -36,9 +36,9 @@ import { GridFieldLabel } from './GridFieldLabel';
 const defaultValues: TaskForm = {
   sectionId: '',
   name: '',
-  description: '',
+  description: null,
   priority: 'None',
-  dueDate: undefined,
+  dueDate: null,
   assigneeId: '',
 };
 
@@ -76,20 +76,35 @@ export function FormSection({ open, task }: { open: boolean; task: Task }) {
 
   useEffect(() => {
     if (!open) return;
-    methods.reset({
-      sectionId: task.sectionId,
+    const data: TaskForm = {
+      sectionId: sections.find((s) => s.id === task.sectionId)?.id ?? '',
       name: task.name,
-      description: task.description,
+      description: task.description ?? defaultValues.description,
       priority: task.priority,
-      dueDate: task.dueDate,
-      assigneeId: task.assignee?.id ?? '',
-    });
-  }, [methods, open, sections, task]);
+      dueDate: task.dueDate ?? defaultValues.dueDate,
+      assigneeId:
+        members.find((m) => m.id === task.assignee?.id)?.id ??
+        defaultValues.assigneeId,
+    };
+    console.log(data);
 
-  const handleSubmit = (data: TaskForm) =>
-    update({ ...task, ...data })
+    methods.reset(data);
+  }, [members, methods, open, sections, task]);
+
+  const handleSubmit = (data: TaskForm) => {
+    const payload: Task = {
+      id: task.id,
+      sectionId: data.sectionId,
+      name: data.name,
+      description: data.description,
+      priority: data.priority,
+      dueDate: data.dueDate,
+      assignee: data.assigneeId ? { id: data.assigneeId } : null,
+    };
+    update(payload)
       .then((res) => toast.success(res.message))
       .catch((err) => toast.error(err.message));
+  };
 
   return (
     <Form

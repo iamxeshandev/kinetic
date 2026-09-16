@@ -9,16 +9,14 @@ import { isSortable } from '@dnd-kit/react/sortable';
 import { Stack } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import { useBoolean } from '../../../../../shared/hooks/useBoolean.js';
-import { TrashIcon } from '../../../../../shared/icons/index.js';
-import { toast } from '../../../../../shared/toast/toast.js';
-import { ActionMenu } from '../../../../../shared/ui/ActionMenu.js';
-import { sectionsApi } from '../../api/sectionsApi.js';
-import { tasksApi } from '../../api/tasksApi.js';
-import { useSections } from '../../hooks/useSections.js';
-import { useTasks } from '../../hooks/useTasks.js';
-import type { Section, Task } from '../../types/index.js';
-import { TaskDetails } from '../task-details/TaskDetails.js';
+import { useBoolean } from '../../../../../shared/hooks';
+import { TrashIcon } from '../../../../../shared/icons';
+import { toast } from '../../../../../shared/toast';
+import { ActionMenu } from '../../../../../shared/ui';
+import { sectionsApi, tasksApi } from '../../api';
+import { useSections, useTasks } from '../../hooks';
+import type { Section, Task } from '../../types';
+import { TaskDetailsView } from '../task-details-view';
 import { CreateSectionButton } from './CreateSectionButton.js';
 import { DeleteSectionDialog } from './DeleteSectionDialog.js';
 import { KanbanColumn } from './kanban-column/KanbanColumn.js';
@@ -200,7 +198,7 @@ export default function KanbanView() {
         </Stack>
       </DragDropProvider>
 
-      <TaskDetails
+      <TaskDetailsView
         open={taskDetails.value}
         onClose={taskDetails.setFalse}
         task={tasksMap[taskId!]}

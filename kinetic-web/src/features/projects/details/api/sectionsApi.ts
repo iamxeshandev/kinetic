@@ -1,4 +1,5 @@
-import { api, type ApiResponse } from '../../../../shared/api';
+import { api } from '../../../../shared/api';
+import type { components } from '../../../../shared/api/types';
 import type { Workspace } from '../../../workspaces/types/workspace';
 import type { Project } from '../../types';
 import type { Section } from '../types';
@@ -9,7 +10,9 @@ const baseUrl = (workspaceId: Workspace['id'], projectId: Project['id']) =>
 export const sectionsApi = {
   getAll: (workspaceId: Workspace['id'], projectId: Project['id']) =>
     api
-      .get<ApiResponse<Section[]>>(baseUrl(workspaceId, projectId))
+      .get<components['schemas']['ResponseOfListOfSectionDto']>(
+        baseUrl(workspaceId, projectId),
+      )
       .then((res) => res.data),
 
   getById: (
@@ -18,9 +21,9 @@ export const sectionsApi = {
     sectionId: Section['id'],
   ) =>
     api
-      .get<
-        ApiResponse<Section>
-      >(`${baseUrl(workspaceId, projectId)}/${sectionId}`)
+      .get<components['schemas']['ResponseOfSectionDto']>(
+        `${baseUrl(workspaceId, projectId)}/${sectionId}`,
+      )
       .then((res) => res.data),
 
   create: (
@@ -29,7 +32,10 @@ export const sectionsApi = {
     data: Omit<Section, Section['id']>,
   ) =>
     api
-      .post<ApiResponse<Section>>(`${baseUrl(workspaceId, projectId)}`, data)
+      .post<components['schemas']['ResponseOfSectionDto']>(
+        `${baseUrl(workspaceId, projectId)}`,
+        data,
+      )
       .then((res) => res.data),
 
   update: (
@@ -39,9 +45,10 @@ export const sectionsApi = {
     data: Omit<Section, Section['id']>,
   ) =>
     api
-      .put<
-        ApiResponse<Section>
-      >(`${baseUrl(workspaceId, projectId)}/${sectionId}`, data)
+      .put<components['schemas']['ResponseOfSectionDto']>(
+        `${baseUrl(workspaceId, projectId)}/${sectionId}`,
+        data,
+      )
       .then((res) => res.data),
 
   move: (
@@ -51,7 +58,7 @@ export const sectionsApi = {
     data: { previousSectionId?: Section['id']; nextSectionId?: Section['id'] },
   ) =>
     api
-      .patch<ApiResponse>(
+      .patch<components['schemas']['Response']>(
         `${baseUrl(workspaceId, projectId)}/${sectionId}/move`,
         data,
       )
@@ -65,8 +72,14 @@ export const sectionsApi = {
     deleteTasks?: boolean,
   ) =>
     api
-      .delete<ApiResponse>(
-        `${baseUrl(workspaceId, projectId)}/${sectionId}${moveTasksTo ? `?moveTasksTo=${moveTasksTo}` : deleteTasks ? '?deleteTasks=true' : ''}`,
+      .delete<components['schemas']['Response']>(
+        `${baseUrl(workspaceId, projectId)}/${sectionId}${
+          moveTasksTo
+            ? `?moveTasksTo=${moveTasksTo}`
+            : deleteTasks
+            ? '?deleteTasks=true'
+            : ''
+        }`,
       )
       .then((res) => res.data),
 };

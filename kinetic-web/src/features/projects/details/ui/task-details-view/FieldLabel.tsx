@@ -22,7 +22,7 @@ export const FieldLabel = ({
   >
     <Icon />
     {label}
-    <Box sx={{ flex: 1 }} aria-hidden />
+    <Box component='span' sx={{ flex: 1 }} aria-hidden />
     {action}
   </Typography>
 );

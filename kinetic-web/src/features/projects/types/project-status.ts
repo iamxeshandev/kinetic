@@ -1,13 +1,6 @@
-import z from 'zod';
+import type { components } from '../../../shared/api/types';
 
-export const projectStatusSchema = z.enum([
-  'Planning',
-  'Active',
-  'OnHold',
-  'Archived',
-]);
-
-export type ProjectStatus = z.infer<typeof projectStatusSchema>;
+export type ProjectStatus = components['schemas']['EProjectStatus'];
 
 export const projectStatusLabelMap: Record<ProjectStatus, string> = {
   Planning: 'Planning',

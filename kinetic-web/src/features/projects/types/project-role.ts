@@ -1,8 +1,6 @@
-import z from 'zod';
+import type { components } from '../../../shared/api/types';
 
-export const projectRoleSchema = z.enum(['Member', 'Lead', 'Owner']);
-
-export type ProjectRole = z.infer<typeof projectRoleSchema>;
+export type ProjectRole = components['schemas']['EProjectRole'];
 
 export const projectRoleLabelMap: Record<ProjectRole, string> = {
   Member: 'Member',

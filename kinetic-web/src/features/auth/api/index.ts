@@ -1,15 +1,17 @@
-import { api, type ApiResponse } from '../../../shared/api';
+import { api } from '../../../shared/api';
+import type { components } from '../../../shared/api/types';
 import type { Workspace } from '../../workspaces/types/workspace';
-import { type Me } from '../types';
 
 const baseUrl = 'api/auth';
 
 export const authApi = {
   login: (email: string, password: string, rememberMe: boolean) =>
     api
-      .post<
-        ApiResponse<Me>
-      >(`${baseUrl}/login`, { email, password, rememberMe })
+      .post<components['schemas']['ResponseOfMeDto']>(`${baseUrl}/login`, {
+        email,
+        password,
+        rememberMe,
+      })
       .then((res) => res.data),
 
   register: (
@@ -19,7 +21,7 @@ export const authApi = {
     lastName: string,
   ) =>
     api
-      .post<ApiResponse>(`${baseUrl}/register`, {
+      .post<components['schemas']['Response']>(`${baseUrl}/register`, {
         email,
         password,
         firstName,
@@ -28,12 +30,19 @@ export const authApi = {
       .then((res) => res.data),
 
   logout: () =>
-    api.post<ApiResponse>(`${baseUrl}/logout`).then((res) => res.data),
+    api
+      .post<components['schemas']['Response']>(`${baseUrl}/logout`)
+      .then((res) => res.data),
 
   switch: (workspaceId: Workspace['id']) =>
     api
-      .patch<ApiResponse<Me>>(`${baseUrl}/switch/${workspaceId}`)
+      .patch<components['schemas']['ResponseOfMeDto']>(
+        `${baseUrl}/switch/${workspaceId}`,
+      )
       .then((res) => res.data),
 
-  me: () => api.get<ApiResponse<Me>>(`${baseUrl}/me`).then((res) => res.data),
+  me: () =>
+    api
+      .get<components['schemas']['ResponseOfMeDto']>(`${baseUrl}/me`)
+      .then((res) => res.data),
 };

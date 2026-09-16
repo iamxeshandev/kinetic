@@ -1,4 +1,5 @@
-import { api, type ApiResponse } from '../../../shared/api';
+import { api } from '../../../shared/api';
+import type { components } from '../../../shared/api/types';
 import type { Project } from '../types';
 
 const baseUrl = (workspaceId: string) =>
@@ -7,17 +8,24 @@ const baseUrl = (workspaceId: string) =>
 export const projectsApi = {
   getAll: (workspaceId: string) =>
     api
-      .get<ApiResponse<Project[]>>(baseUrl(workspaceId))
+      .get<components['schemas']['ResponseOfListOfProjectDto']>(
+        baseUrl(workspaceId),
+      )
       .then((res) => res.data),
 
   getById: (workspaceId: string, projectId: Project['id']) =>
     api
-      .get<ApiResponse<Project>>(`${baseUrl(workspaceId)}/${projectId}`)
+      .get<components['schemas']['ResponseOfProjectDto']>(
+        `${baseUrl(workspaceId)}/${projectId}`,
+      )
       .then((res) => res.data),
 
   create: (workspaceId: string, data: Omit<Project, 'id'>) =>
     api
-      .post<ApiResponse<Project>>(`${baseUrl(workspaceId)}`, data)
+      .post<components['schemas']['ResponseOfProjectDto']>(
+        `${baseUrl(workspaceId)}`,
+        data,
+      )
       .then((res) => res.data),
 
   update: (
@@ -26,19 +34,24 @@ export const projectsApi = {
     data: Omit<Project, 'id'>,
   ) =>
     api
-      .put<ApiResponse<Project>>(`${baseUrl(workspaceId)}/${projectId}`, data)
+      .put<components['schemas']['ResponseOfProjectDto']>(
+        `${baseUrl(workspaceId)}/${projectId}`,
+        data,
+      )
       .then((res) => res.data),
 
   delete: (workspaceId: string, projectId: Project['id']) =>
     api
-      .delete<ApiResponse>(`${baseUrl(workspaceId)}/${projectId}`)
+      .delete<components['schemas']['Response']>(
+        `${baseUrl(workspaceId)}/${projectId}`,
+      )
       .then((res) => res.data),
 
   getProjectMembers: (workspaceId: string, projectId: Project['id']) =>
     api
-      .get<
-        ApiResponse<Project['team']>
-      >(`${`${baseUrl(workspaceId)}/${projectId}`}/members`)
+      .get<components['schemas']['ResponseOfListOfProjectMemberDto']>(
+        `${baseUrl(workspaceId)}/${projectId}/members`,
+      )
       .then((res) => res.data),
 };
 

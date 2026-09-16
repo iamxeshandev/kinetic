@@ -1,21 +1,2 @@
-import { z } from 'zod';
-import { workspaceRoleSchema } from '../../workspaces/types';
-
-export const UserSchema = z.object({
-  id: z.uuid(),
-  firstName: z.string(),
-  lastName: z.string().optional(),
-  email: z.string(),
-  role: workspaceRoleSchema,
-  joinedAt: z.date(),
-});
-export type User = z.infer<typeof UserSchema>;
-
-export const UserFormSchema = z.object({
-  email: z
-    .email()
-    .min(1, 'Email is required')
-    .max(100, 'Max 100 characters allowed'),
-  role: z.string().min(1, 'Role is required'),
-});
-export type UserForm = z.infer<typeof UserFormSchema>;
+export * from './user';
+export * from './user-form';

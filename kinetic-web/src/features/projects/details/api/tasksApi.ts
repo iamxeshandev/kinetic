@@ -1,4 +1,5 @@
-import { api, type ApiResponse } from '../../../../shared/api';
+import { api } from '../../../../shared/api';
+import type { components } from '../../../../shared/api/types';
 import type { Task } from '../types';
 
 const baseUrl = (workspaceId: string, projectId: string) =>
@@ -7,17 +8,24 @@ const baseUrl = (workspaceId: string, projectId: string) =>
 export const tasksApi = {
   getAll: (workspaceId: string, projectId: string) =>
     api
-      .get<ApiResponse<Task[]>>(baseUrl(workspaceId, projectId))
+      .get<components['schemas']['ResponseOfListOfTaskDto']>(
+        baseUrl(workspaceId, projectId),
+      )
       .then((res) => res.data),
 
   getById: (workspaceId: string, projectId: string, taskId: string) =>
     api
-      .get<ApiResponse<Task>>(`${baseUrl(workspaceId, projectId)}/${taskId}`)
+      .get<components['schemas']['ResponseOfTaskDto']>(
+        `${baseUrl(workspaceId, projectId)}/${taskId}`,
+      )
       .then((res) => res.data),
 
   create: (workspaceId: string, projectId: string, data: Omit<Task, 'id'>) =>
     api
-      .post<ApiResponse<Task>>(`${baseUrl(workspaceId, projectId)}`, data)
+      .post<components['schemas']['ResponseOfTaskDto']>(
+        `${baseUrl(workspaceId, projectId)}`,
+        data,
+      )
       .then((res) => res.data),
 
   update: (
@@ -27,9 +35,10 @@ export const tasksApi = {
     data: Omit<Task, 'id'>,
   ) =>
     api
-      .put<
-        ApiResponse<Task>
-      >(`${baseUrl(workspaceId, projectId)}/${taskId}`, data)
+      .put<components['schemas']['ResponseOfTaskDto']>(
+        `${baseUrl(workspaceId, projectId)}/${taskId}`,
+        data,
+      )
       .then((res) => res.data),
 
   move: (
@@ -39,7 +48,7 @@ export const tasksApi = {
     data: { sectionId: string; previousTaskId?: string; nextTaskId?: string },
   ) =>
     api
-      .patch<ApiResponse>(
+      .patch<components['schemas']['Response']>(
         `${baseUrl(workspaceId, projectId)}/${taskId}/move`,
         data,
       )
@@ -47,7 +56,9 @@ export const tasksApi = {
 
   delete: (workspaceId: string, projectId: string, taskId: string) =>
     api
-      .delete<ApiResponse>(`${baseUrl(workspaceId, projectId)}/${taskId}`)
+      .delete<components['schemas']['Response']>(
+        `${baseUrl(workspaceId, projectId)}/${taskId}`,
+      )
       .then((res) => res.data),
 };
 

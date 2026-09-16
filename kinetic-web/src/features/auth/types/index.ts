@@ -1,13 +1,3 @@
-import z from 'zod';
-import { workspaceSchema } from '../../workspaces/types/workspace';
+import type { components } from '../../../shared/api/types';
 
-export const MeSchema = z.object({
-  id: z.uuid(),
-  email: z.string(),
-  firstName: z.string(),
-  lastName: z.string().nullish(),
-  fullName: z.string(),
-  currentWorkspace: workspaceSchema.optional(),
-});
-
-export type Me = z.infer<typeof MeSchema>;
+export type Me = components['schemas']['MeDto'];

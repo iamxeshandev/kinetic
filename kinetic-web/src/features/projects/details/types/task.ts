@@ -8,14 +8,14 @@ export const taskSchema = z.object({
   id: z.uuid(),
   sectionId: z.uuid(),
   name: z.string(),
-  description: z.string().optional(),
+  description: z.record(z.string(), z.unknown()).nullish(),
   priority: prioritySchema,
-  dueDate: z.date().optional(),
-  completedAt: z.date().optional(),
-  assignedAt: z.date().optional(),
-  assignee: projectMemberSchema.optional(),
-  subtasks: z.array(subtaskSchema).optional(),
-  attachments: z.array(taskAttachmentSchema).optional(),
+  dueDate: z.date().nullish(),
+  completedAt: z.date().nullish(),
+  assignedAt: z.date().nullish(),
+  assignee: projectMemberSchema.nullish(),
+  subtasks: z.array(subtaskSchema).nullish(),
+  attachments: z.array(taskAttachmentSchema).nullish(),
 });
 
 export type Task = z.infer<typeof taskSchema>;
