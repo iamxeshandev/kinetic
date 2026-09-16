@@ -3,8 +3,8 @@
 namespace kinetic_api.Dtos.Auth;
 
 public record MeDto(
-    Guid? Id,
-    string? Email,
+    Guid Id,
+    string Email,
     string FirstName,
     string? LastName,
     string? AvatarUrl,

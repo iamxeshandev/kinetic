@@ -2,14 +2,13 @@
 
 namespace kinetic_api.Dtos.Project;
 
-public record ProjectDto(
-    Guid Id,
+public record ProjectRequest(
     string Name,
     string? Description,
     EProjectStatus Status,
     EPriority Priority,
-    EProjectRole Role,
     bool IsFavorite,
     DateTimeOffset? DueDate,
-    List<ProjectMemberDto>? Team
+    List<Guid>? LeadIds,
+    List<Guid>? MemberIds
 );

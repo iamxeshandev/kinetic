@@ -3,11 +3,11 @@
 namespace kinetic_api.Dtos.User;
 
 public record UserDto(
-    Guid? Id,
-    string? FirstName,
-    string? LastName,
+    Guid Id,
     string Email,
+    string FirstName,
+    string? LastName,
     string? AvatarUrl,
     EWorkspaceRole Role,
-    DateTimeOffset? JoinedAt
+    DateTimeOffset JoinedAt
 );

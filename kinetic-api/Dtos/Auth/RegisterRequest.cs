@@ -1,7 +1,8 @@
 ﻿namespace kinetic_api.Dtos.Auth;
 
-public record LoginDto(
+public record RegisterRequest(
     string Email,
     string Password,
-    bool RememberMe
+    string FirstName,
+    string? LastName
 );
