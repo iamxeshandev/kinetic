@@ -20,20 +20,24 @@ import { NavLink } from 'react-router';
 import z from 'zod';
 import { CONFIG } from '../../../config';
 import { paths } from '../../../routes/paths';
-import { Logo } from '../../../shared/ui';
+import { login } from '../../../shared/api';
 import { Form, FormCheckbox, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import { authApi } from '../api';
+import { Logo } from '../../../shared/ui';
 import { useAuthContext } from '../context';
 
-const SignInFormSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+const loginFormSchema = z.object({
+  email: z.email('Enter a valid email address.'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters.')
+    .max(100, 'Password must be at most 100 characters.'),
   rememberMe: z.boolean(),
 });
-type SignInForm = z.infer<typeof SignInFormSchema>;
 
-const defaultValues: SignInForm = {
+type LoginForm = z.infer<typeof loginFormSchema>;
+
+const defaultValues: LoginForm = {
   email: 'johndoe@example.com',
   password: 'Password@123',
   rememberMe: false,
@@ -44,15 +48,14 @@ export function SignInView() {
 
   const [password, setPassword] = useState<boolean>(true);
 
-  const methods = useForm<SignInForm>({
-    resolver: zodResolver(SignInFormSchema),
+  const methods = useForm<LoginForm>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues,
   });
 
-  const handleSubmit = (data: SignInForm) =>
-    authApi
-      .login(data.email, data.password, data.rememberMe)
-      .then((res) => setUser(res.data))
+  const handleSubmit = (data: LoginForm) =>
+    login({ body: data })
+      .then((res) => setUser(res.data?.data ?? null))
       .catch((error) => toast.error(error.message));
 
   return (

@@ -10,22 +10,22 @@ import {
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import type { WorkspaceDto } from '../../../shared/api';
 import { Form, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
 import { useCreateWorkspace, useUpdateWorkspace } from '../hooks';
-import { type Workspace } from '../types';
 
-const schema = z.object({
+const workspaceFromSchema = z.object({
   name: z
     .string()
     .min(1, 'Name is required')
     .max(100, 'Max 100 characters allowed'),
 });
 
-type Schema = z.infer<typeof schema>;
+type WorkspaceForm = z.infer<typeof workspaceFromSchema>;
 
-const defaultValues: Schema = {
+const defaultValues: WorkspaceForm = {
   name: '',
 };
 
@@ -33,7 +33,7 @@ export type WorkspaceFormProps = {
   open: boolean;
   onClose: Callback;
   onExited?: Callback;
-  workspace?: Workspace;
+  workspace?: WorkspaceDto;
 };
 
 export function WorkspaceForm({
@@ -47,10 +47,10 @@ export function WorkspaceForm({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { trigger: create } = useCreateWorkspace();
-  const { trigger: update } = useUpdateWorkspace();
+  const { trigger: update } = useUpdateWorkspace(workspace?.id ?? '');
 
   const methods = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(workspaceFromSchema),
     defaultValues,
   });
 
@@ -64,7 +64,7 @@ export function WorkspaceForm({
     return () => clearTimeout(timeout);
   }, [methods, open, workspace?.name]);
 
-  const handleSubmit = (data: Schema) =>
+  const handleSubmit = (data: WorkspaceForm) =>
     isNew
       ? create(data)
           .then((res) => {
@@ -72,10 +72,7 @@ export function WorkspaceForm({
             onClose();
           })
           .catch((err) => toast.error(err.message))
-      : update({
-          id: workspace!.id,
-          ...data,
-        })
+      : update(data)
           .then((res) => toast.success(res.message))
           .catch((err) => toast.error(err.message));
 

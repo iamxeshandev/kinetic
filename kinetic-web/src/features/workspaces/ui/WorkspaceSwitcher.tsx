@@ -5,16 +5,15 @@ import {
   ListItemText,
   MenuItem,
   Select,
-  type SelectChangeEvent,
 } from '@mui/material';
 import { LuBuilding } from 'react-icons/lu';
 import { useNavigate, useParams } from 'react-router';
 import { paths } from '../../../routes';
+import { switch_ } from '../../../shared/api';
 import { useBoolean } from '../../../shared/hooks';
 import { ArrowRightIcon } from '../../../shared/icons';
 import { StyledIcon } from '../../../shared/icons/StyledIcon';
 import { toast } from '../../../shared/toast';
-import { authApi } from '../../auth/api';
 import { useAuthContext } from '../../auth/context';
 import { useWorkspaces } from '../../workspaces/hooks';
 
@@ -29,22 +28,12 @@ export function WorkspaceSwitcher() {
 
   const { data: workspaces = [], isLoading } = useWorkspaces();
 
-  const handleChange = (event: SelectChangeEvent) => {
-    const workspaceId = event.target.value;
-
-    if (workspaceId === 'view-all') {
-      navigate(paths.workspaces.root);
-      return;
-    }
-
-    isSubmitting.setTrue();
-
-    authApi
-      .switch(workspaceId)
-      .then((res) => setUser(res.data))
-      .catch((err) => toast.error(err.message))
-      .finally(() => isSubmitting.setFalse());
-  };
+  const handleChange = (workspaceId: string) =>
+    workspaceId === 'view-all'
+      ? navigate(paths.workspaces.root)
+      : switch_({ path: { workspaceId } })
+          .then((res) => setUser(res.data.data ?? null))
+          .catch((err) => toast.error(err.message));
 
   const isValidWorkspace = workspaces.some((w) => w.id === workspaceId);
 
@@ -52,7 +41,7 @@ export function WorkspaceSwitcher() {
     <Select
       size='small'
       value={isLoading || !isValidWorkspace ? '' : workspaceId}
-      onChange={handleChange}
+      onChange={(e) => handleChange(e.target.value)}
       startAdornment={
         <InputAdornment position='start'>
           <LuBuilding />

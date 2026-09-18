@@ -6,8 +6,8 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+import type { ProjectDto } from '../../../shared/api';
 import { ArrowRightIcon, MoreIcon } from '../../../shared/icons';
-import type { Project } from '../types';
 import type { AllProjectSectionProps } from './AllProjectsSection';
 import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
@@ -46,12 +46,10 @@ function ProjectCard({
   onOpenProjectClick,
   onMoreClick,
 }: {
-  project: Project;
+  project: ProjectDto;
   onOpenProjectClick: AllProjectSectionProps['onOpenProjectClick'];
   onMoreClick: AllProjectSectionProps['onMoreClick'];
 }) {
-  const isCompleted = project.status === 'Completed';
-
   return (
     <Card key={project.id} sx={{ p: 2 }} aria-label={`Project ${project.name}`}>
       <Box
@@ -103,7 +101,10 @@ function ProjectCard({
             gap: 1,
           }}
         >
-          <ProjectHealth dueDate={project.dueDate} isCompleted={isCompleted} />
+          <ProjectHealth
+            dueDate={project.dueDate ?? undefined}
+            isCompleted={false}
+          />
 
           <AvatarGroup max={3}>
             {['A', 'B', 'C', 'D', 'E', 'F'].map((member) => (

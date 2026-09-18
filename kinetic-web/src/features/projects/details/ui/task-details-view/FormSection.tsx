@@ -21,7 +21,7 @@ import { CancelIcon, CheckIcon } from '../../../../../shared/icons';
 import { toast } from '../../../../../shared/toast';
 import { priorityOptions } from '../../../../../shared/types';
 import { projectsApi } from '../../../api';
-import type { ProjectMember } from '../../../types';
+import type { ProjectMember } from '../../../constants';
 import { sectionsApi } from '../../api';
 import { useUpdateTask } from '../../hooks';
 import {

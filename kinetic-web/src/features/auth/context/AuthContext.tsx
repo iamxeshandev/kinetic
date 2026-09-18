@@ -1,11 +1,9 @@
 import { createContext, type Dispatch, type SetStateAction } from 'react';
-import type { Me } from '../types';
+import type { MeDto } from '../../../shared/api';
 
 export type AuthContextValue = {
-  user: Me | undefined;
-  setUser: Dispatch<SetStateAction<Me | undefined>>;
+  user: MeDto | null;
+  setUser: Dispatch<SetStateAction<MeDto | null>>;
 };
 
-export const AuthContext = createContext<AuthContextValue | undefined>(
-  undefined,
-);
+export const AuthContext = createContext<AuthContextValue | null>(null);

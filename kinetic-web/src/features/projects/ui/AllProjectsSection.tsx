@@ -9,19 +9,19 @@ import {
 } from '@mui/material';
 import { lazy, Suspense } from 'react';
 import { LuGrid2X2, LuList } from 'react-icons/lu';
-import { LoadingScreen } from '../../../shared/ui';
+import type { ProjectDto } from '../../../shared/api';
 import { useLocalStorage } from '../../../shared/hooks';
-import type { Project } from '../types';
+import { LoadingScreen } from '../../../shared/ui';
 
 const ProjectGrid = lazy(() => import('./ProjectGridView'));
 const ProjectList = lazy(() => import('./ProjectListView'));
 
 export type AllProjectSectionProps = {
-  projects: Project[];
-  onOpenProjectClick: (projectId: Project['id']) => void;
+  projects: ProjectDto[];
+  onOpenProjectClick: (projectId: string) => void;
   onMoreClick: (
     event: React.MouseEvent<HTMLButtonElement>,
-    projectId: Project['id'],
+    projectId: string,
   ) => void;
 };
 

@@ -1,15 +1,15 @@
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
+import type { ProjectDto } from '../../../shared/api';
 import {
   ActionMenuIconButton,
   type ActionMenuIconButtonProps,
 } from '../../../shared/ui';
-import type { Project } from '../types';
 
 export type FavoriteSectionProps = {
-  favoriteProjects: Project[];
-  onFavoriteClick: (projectId: Project['id']) => void;
-  onProjectClick: (projectId: Project['id']) => void;
+  favoriteProjects: ProjectDto[];
+  onFavoriteClick: (projectId: string) => void;
+  onProjectClick: (projectId: string) => void;
   actions: ActionMenuIconButtonProps['actions'];
 };
 
@@ -52,8 +52,8 @@ function ProjectCard({
   onProjectClick,
   actions,
 }: {
-  project: Project;
-  onProjectClick: (projectId: Project['id']) => void;
+  project: ProjectDto;
+  onProjectClick: (projectId: string) => void;
   actions: ActionMenuIconButtonProps['actions'];
 }) {
   // const isCompleted = project.completedTasks === project.tasks;

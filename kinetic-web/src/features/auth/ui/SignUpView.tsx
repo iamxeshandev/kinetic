@@ -12,13 +12,13 @@ import { useForm } from 'react-hook-form';
 import { NavLink, useNavigate } from 'react-router';
 import z from 'zod';
 import { paths } from '../../../routes/paths';
-import { Logo } from '../../../shared/ui';
+import { register } from '../../../shared/api';
 import { Form, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import { authApi } from '../api';
+import { Logo } from '../../../shared/ui';
 
-const SignUpFormSchema = z.object({
-  email: z.email().max(256),
+const registerFromSchema = z.object({
+  email: z.email('Enter a valid email address.'),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -26,9 +26,10 @@ const SignUpFormSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().max(50),
 });
-type SignUpForm = z.infer<typeof SignUpFormSchema>;
 
-const defaultValues: SignUpForm = {
+type RegisterForm = z.infer<typeof registerFromSchema>;
+
+const defaultValues: RegisterForm = {
   email: 'johndoe@example.com',
   password: 'Password@123',
   firstName: 'John',
@@ -38,16 +39,15 @@ const defaultValues: SignUpForm = {
 export function SignUpView() {
   const navigate = useNavigate();
 
-  const methods = useForm<SignUpForm>({
-    resolver: zodResolver(SignUpFormSchema),
+  const methods = useForm<RegisterForm>({
+    resolver: zodResolver(registerFromSchema),
     defaultValues,
   });
 
-  const handleSubmit = (data: SignUpForm) =>
-    authApi
-      .register(data.email, data.password, data.firstName, data.lastName)
+  const handleSubmit = (data: RegisterForm) =>
+    register({ body: data })
       .then((res) => {
-        toast.success(res.message);
+        toast.success(res.data.message);
         navigate(paths.auth.signIn, { replace: true });
       })
       .catch((err) => toast.error(err.message));

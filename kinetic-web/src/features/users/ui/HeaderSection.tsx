@@ -1,12 +1,11 @@
 import { Box, Button, Typography } from '@mui/material';
 import { AddIcon } from '../../../shared/icons';
 import { Can } from '../../../shared/permissions';
-import type { Callback } from '../../../shared/types';
 import { useAuthContext } from '../../auth/context';
 import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
 
 export type HeaderSectionProps = {
-  onCreateClick: Callback;
+  onCreateClick: () => void;
 };
 
 export const HeaderSection = ({ onCreateClick }: HeaderSectionProps) => {

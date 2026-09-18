@@ -1,27 +1,21 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
 import { CONFIG } from '../../../config';
+import { getMe, type MeDto } from '../../../shared/api';
 import { useLocalStorage } from '../../../shared/hooks';
-import { toast } from '../../../shared/toast';
 import { SplashScreen } from '../../../shared/ui';
-import { authApi } from '../api';
-import type { Me } from '../types';
 import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useLocalStorage<Me | undefined>(
+  const [user, setUser] = useLocalStorage<MeDto | null>(
     CONFIG.STORAGE_KEYS.USER,
-    undefined,
+    null,
   );
   const [isLoading, setIsLoading] = useState(!user);
 
   useEffect(() => {
-    authApi
-      .me()
-      .then((res) => setUser(res.data))
-      .catch((err) => {
-        setUser(undefined);
-        toast.error(err.message);
-      })
+    getMe({ throwOnError: true })
+      .then((res) => setUser(res.data?.data ?? null))
+      .catch(() => setUser(null))
       .finally(() => setIsLoading(false));
   }, [setUser]);
 

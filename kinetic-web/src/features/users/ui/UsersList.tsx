@@ -8,32 +8,28 @@ import {
   TableRow,
 } from '@mui/material';
 import type React from 'react';
+import type { EWorkspaceRole, UserDto } from '../../../shared/api';
 import { formatDate } from '../../../shared/helpers';
 import { MoreIcon } from '../../../shared/icons';
-import type { Callback } from '../../../shared/types';
 import { useAuthContext } from '../../auth/context';
-import {
-  workspaceRoleRankMap,
-  type WorkspaceRole,
-} from '../../workspaces/types';
-import type { User } from '../types';
+import { workspaceRoleRankMap } from '../../workspaces/constants';
 
-const columns = ['Name', 'Email', 'Role', 'Joined', ''];
+const COLUMNS = ['Name', 'Email', 'Role', 'Joined', ''];
+
+const ALLOWED_ROLES: EWorkspaceRole[] = ['Owner', 'Admin', 'Manager'];
 
 export type UsersListProps = {
-  users: User[];
-  onMenuClick: Callback<
-    [React.MouseEvent<HTMLButtonElement>, User['id']],
-    void
-  >;
+  users: UserDto[];
+  onMenuClick: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    userId: string,
+  ) => void;
 };
 
 export const UsersList = ({ users, onMenuClick }: UsersListProps) => {
   const { user: currentUser } = useAuthContext();
 
-  const allowedRoles: WorkspaceRole[] = ['Owner', 'Admin', 'Manager'];
-
-  const isAllowed = allowedRoles.includes(
+  const isAllowed = ALLOWED_ROLES.includes(
     currentUser?.currentWorkspace?.role ?? 'Member',
   );
 
@@ -42,7 +38,7 @@ export const UsersList = ({ users, onMenuClick }: UsersListProps) => {
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            {columns.map((column, index) => (
+            {COLUMNS.map((column, index) => (
               <TableCell key={index}>{column}</TableCell>
             ))}
           </TableRow>

@@ -12,6 +12,7 @@ import {
 import type { IconType } from 'react-icons/lib';
 import { NavLink, useParams, useSearchParams } from 'react-router';
 import { paths } from '../../../../routes';
+import { varAlpha } from '../../../../shared/helpers';
 import {
   AddIcon,
   AnalyticsIcon,
@@ -21,8 +22,7 @@ import {
   TimelineIcon,
 } from '../../../../shared/icons';
 import { StyledIcon } from '../../../../shared/icons/StyledIcon';
-import { varAlpha } from '../../../../shared/helpers';
-import type { Project } from '../../types';
+import type { Project } from '../../constants';
 import { AnalyticsView } from './analytics-view/AnalyticsView';
 import { FilesView } from './files-view/FilesView';
 import KanbanView from './kanban-view/KanbanView';

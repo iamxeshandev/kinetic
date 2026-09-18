@@ -1,4 +1,4 @@
-import { workspaceRoleRankMap, type WorkspaceRole } from '../types';
+import { workspaceRoleRankMap, type WorkspaceRole } from '../constants';
 
 export const hasWorkspaceRole = (
   currentRole: WorkspaceRole | undefined = 'Member',

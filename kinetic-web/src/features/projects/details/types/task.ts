@@ -1,6 +1,6 @@
 import z from 'zod';
 import { prioritySchema } from '../../../../shared/types';
-import { projectMemberSchema } from '../../types';
+import { projectMemberSchema } from '../../constants';
 import { subtaskSchema } from './subtask';
 import { taskAttachmentSchema } from './task-attachment';
 

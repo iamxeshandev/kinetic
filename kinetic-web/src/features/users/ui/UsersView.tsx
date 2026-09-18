@@ -2,12 +2,9 @@ import { Button, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useParams } from 'react-router';
 import { PencilIcon, TrashIcon } from '../../../shared/icons';
-import {
-  ActionMenu,
-  type ActionMenuProps,
-} from '../../../shared/ui';
-import { ConfirmDialog } from '../../../shared/ui/ConfirmDialog';
 import { toast } from '../../../shared/toast';
+import { ActionMenu, type ActionMenuProps } from '../../../shared/ui';
+import { ConfirmDialog } from '../../../shared/ui/ConfirmDialog';
 import { useDeleteUser, useUsers } from '../hooks';
 import { HeaderSection } from './HeaderSection';
 import { UserForm } from './UserForm';
@@ -18,11 +15,13 @@ export function UsersView() {
 
   const { data: users = [] } = useUsers(workspaceId!);
 
+  const [userId, setUserId] = useState<string | null>(null);
+
   const { trigger: deleteUser, isMutating: isDeleting } = useDeleteUser(
     workspaceId!,
+    userId ?? '',
   );
 
-  const [userId, setUserId] = useState<string | null>(null);
   const [userForm, setUserForm] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
 
@@ -41,16 +40,13 @@ export function UsersView() {
     id: string,
   ) => setMenu({ anchorEl: event.currentTarget, id });
 
-  const handleDeleteUser = () => {
-    if (userId) {
-      deleteUser(userId)
-        .then((res) => {
-          toast.success(res.message);
-          setConfirm(false);
-        })
-        .catch((err) => toast.error(err.message));
-    }
-  };
+  const handleDeleteUser = () =>
+    deleteUser()
+      .then((res) => {
+        toast.success(res.message);
+        setConfirm(false);
+      })
+      .catch((err) => toast.error(err.message));
 
   const actions: ActionMenuProps['actions'] = [
     {

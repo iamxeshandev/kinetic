@@ -1,12 +1,11 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { LuPlus } from 'react-icons/lu';
 import { Can } from '../../../shared/permissions';
-import type { Callback } from '../../../shared/types';
 import { useAuthContext } from '../../auth/context';
 import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
 
 export type HeaderSectionProps = {
-  onCreateClick: Callback;
+  onCreateClick: () => void;
 };
 
 export function HeaderSection({ onCreateClick }: HeaderSectionProps) {

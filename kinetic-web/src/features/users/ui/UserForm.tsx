@@ -11,12 +11,21 @@ import {
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
+import z from 'zod';
+import type { UserDto } from '../../../shared/api';
+import { zEWorkspaceRole } from '../../../shared/api/zod.gen';
 import { Form, FormSelect, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import type { Callback } from '../../../shared/types';
-import { workspaceRoleOptions } from '../../workspaces/types';
+import { workspaceRoleOptions } from '../../workspaces/constants';
 import { useCreateUser, useUpdateUser } from '../hooks';
-import { UserFormSchema, type User, type UserForm } from '../types';
+
+const userFormSchema = z.object({
+  email: z.email('Enter a valid email address.'),
+  role: zEWorkspaceRole,
+});
+
+type UserForm = z.infer<typeof userFormSchema>;
 
 const defaultValues: UserForm = {
   email: '',
@@ -26,7 +35,7 @@ const defaultValues: UserForm = {
 export type UserFormProps = {
   open: boolean;
   onClose: Callback;
-  user?: User;
+  user?: UserDto;
 };
 
 export function UserForm({ open, onClose, user }: UserFormProps) {
@@ -35,10 +44,10 @@ export function UserForm({ open, onClose, user }: UserFormProps) {
   const { workspaceId } = useParams();
 
   const { trigger: createUser } = useCreateUser(workspaceId!);
-  const { trigger: updateUser } = useUpdateUser(workspaceId!);
+  const { trigger: updateUser } = useUpdateUser(workspaceId!, user?.id ?? '');
 
   const methods = useForm({
-    resolver: zodResolver(UserFormSchema),
+    resolver: zodResolver(userFormSchema),
     defaultValues,
   });
 
@@ -58,7 +67,7 @@ export function UserForm({ open, onClose, user }: UserFormProps) {
             onClose();
           })
           .catch((err) => toast.error(err.message))
-      : updateUser({ id: user!.id, ...data })
+      : updateUser(data)
           .then((res) => toast.success(res.message))
           .catch((err) => toast.error(err.message));
 

@@ -19,18 +19,19 @@ import { favoritesApi } from '../../favorites/api';
 import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
 import { hasProjectRole } from '../helpers';
 import { useDeleteProject, useProjects } from '../hooks';
-import type { Project } from '../types';
 import { AllProjectsSection } from './AllProjectsSection';
 import { FavoriteSection } from './FavoriteSection';
 import { HeaderSection } from './HeaderSection';
 import { ProjectForm } from './ProjectForm';
 
 export function ProjectsView() {
-  const { user } = useAuthContext();
-
   const { workspaceId } = useParams();
 
   const navigate = useNavigate();
+
+  const { user } = useAuthContext();
+
+  const [projectId, setProjectId] = useState<string | null>(null);
 
   const { data: projects = [], mutate: mutateProjects } = useProjects(
     workspaceId!,
@@ -38,9 +39,9 @@ export function ProjectsView() {
 
   const { trigger: deleteProject, isMutating: isDeleting } = useDeleteProject(
     workspaceId!,
+    projectId ?? '',
   );
 
-  const [projectId, setProjectId] = useState<string | null>(null);
   const [projectForm, setProjectForm] = useState<boolean>(false);
   const [confirmDialog, setConfirmDialog] = useState<boolean>(false);
 

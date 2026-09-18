@@ -1,52 +1,56 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { workspacesApi, workspacesKey } from '../api';
-import type { Workspace } from '../types';
+import {
+  createWorkspace,
+  deleteWorkspace,
+  getWorkspaces,
+  updateWorkspace,
+  type WorkspaceDto,
+  type WorkspaceRequest,
+} from '../../../shared/api';
+
+const KEY = 'workspaces';
 
 export const useWorkspaces = () =>
-  useSWR<Workspace[]>(
-    workspacesKey,
-    () => workspacesApi.getAll().then((res) => res.data ?? []),
-    {
-      fallbackData: [],
-    },
+  useSWR<WorkspaceDto[]>(KEY, () =>
+    getWorkspaces().then((res) => res.data.data ?? []),
   );
 
 export const useCreateWorkspace = () =>
   useSWRMutation(
-    workspacesKey,
-    (_, { arg }: { arg: Omit<Workspace, 'id'> }) => workspacesApi.create(arg),
+    KEY,
+    (_, { arg }: { arg: WorkspaceRequest }) =>
+      createWorkspace({ body: arg }).then((res) => res.data),
     {
       revalidate: false,
-      populateCache: (res, currentData: Workspace[] = []) =>
+      populateCache: (res, currentData: WorkspaceDto[] = []) =>
         res.data ? [res.data, ...currentData] : currentData,
     },
   );
 
-export const useUpdateWorkspace = () =>
+export const useUpdateWorkspace = (workspaceId: string) =>
   useSWRMutation(
-    workspacesKey,
-    (_, { arg: { id, ...data } }: { arg: Workspace }) =>
-      workspacesApi.update(id, data),
+    KEY,
+    (_, { arg }: { arg: WorkspaceRequest }) =>
+      updateWorkspace({ path: { workspaceId }, body: arg }).then(
+        (res) => res.data,
+      ),
     {
       revalidate: false,
-      populateCache: (res, currentData: Workspace[] = []) =>
+      populateCache: (res, currentData: WorkspaceDto[] = []) =>
         currentData.map((workspace) =>
           workspace.id === res.data?.id ? res.data : workspace,
         ),
     },
   );
 
-export const useDeleteWorkspace = () =>
+export const useDeleteWorkspace = (workspaceId: string) =>
   useSWRMutation(
-    workspacesKey,
-    (_, { arg: workspaceId }: { arg: Workspace['id'] }) =>
-      workspacesApi
-        .delete(workspaceId)
-        .then((res) => ({ ...res, data: workspaceId })),
+    KEY,
+    () => deleteWorkspace({ path: { workspaceId } }).then((res) => res.data),
     {
       revalidate: false,
-      populateCache: (res, currentData: Workspace[] = []) =>
-        currentData.filter((workspace) => workspace.id !== res.data),
+      populateCache: (_, currentData: WorkspaceDto[] = []) =>
+        currentData.filter((workspace) => workspace.id !== workspaceId),
     },
   );

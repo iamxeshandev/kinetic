@@ -2,73 +2,55 @@ import { Button, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { paths } from '../../../routes';
+import { switch_ } from '../../../shared/api';
 import { AddIcon } from '../../../shared/icons';
 import { toast } from '../../../shared/toast';
 import { ConfirmDialog } from '../../../shared/ui/ConfirmDialog';
 import { PageHeader } from '../../../shared/ui/PageHeader';
-import { authApi } from '../../auth/api';
 import { useAuthContext } from '../../auth/context';
 import { useDeleteWorkspace, useWorkspaces } from '../hooks';
-import type { Workspace } from '../types/workspace';
 import { WorkspaceForm } from './WorkspaceForm';
 import { WorkspaceGrid } from './WorkspaceGrid';
 
 export function WorkspacesView() {
   const { user, setUser } = useAuthContext();
+
   const navigate = useNavigate();
 
   const { data: workspaces = [] } = useWorkspaces();
-  const { trigger: deleteWorkspace, isMutating: isDeleting } =
-    useDeleteWorkspace();
 
-  const [workspaceId, setWorkspaceId] = useState<Workspace['id'] | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+
+  const { trigger: deleteWorkspace, isMutating: isDeleting } =
+    useDeleteWorkspace(workspaceId ?? '');
+
   const [form, setForm] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
 
-  const handleOpenClick = (workspaceId: Workspace['id']) => {
-    if (user?.currentWorkspace?.id === workspaceId) {
-      navigate(paths.workspaces.dashboard(workspaceId), { replace: true });
-      return;
-    }
+  const handleOpenClick = (workspaceId: string) =>
+    user?.currentWorkspace?.id === workspaceId
+      ? navigate(paths.workspaces.dashboard(workspaceId), { replace: true })
+      : switch_({ path: { workspaceId } })
+          .then((res) => setUser(res.data.data ?? null))
+          .catch((err) => toast.error(err.message));
 
-    authApi.switch(workspaceId).then((res) => {
-      if (!res.data) return;
-      setUser((prev) =>
-        prev
-          ? {
-              ...prev,
-              currentWorkspace: res.data!.currentWorkspace,
-            }
-          : undefined,
-      );
-      if (res.data!.currentWorkspace) {
-        navigate(paths.workspaces.dashboard(res.data.currentWorkspace.id), {
-          replace: true,
-        });
-      }
-    });
-  };
-
-  const handleEditClick = (workspaceId: Workspace['id']) => {
+  const handleEditClick = (workspaceId: string) => {
     setWorkspaceId(workspaceId);
     setForm(true);
   };
 
-  const handleDeleteClick = (workspaceId: Workspace['id']) => {
+  const handleDeleteClick = (workspaceId: string) => {
     setWorkspaceId(workspaceId);
     setConfirm(true);
   };
 
-  const handleDeleteWorkspace = () => {
-    if (workspaceId) {
-      deleteWorkspace(workspaceId)
-        .then((res) => {
-          toast.success(res.message);
-          setConfirm(false);
-        })
-        .catch((err) => toast.error(err.message));
-    }
-  };
+  const handleDeleteWorkspace = () =>
+    deleteWorkspace()
+      .then((res) => {
+        toast.success(res.message);
+        setConfirm(false);
+      })
+      .catch((err) => toast.error(err.message));
 
   return (
     <>

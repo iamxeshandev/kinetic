@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { LuBuilding } from 'react-icons/lu';
+import type { WorkspaceDto } from '../../../shared/api';
 import {
   ArrowRightIcon,
   PencilIcon,
@@ -17,13 +18,12 @@ import {
 import { StyledIcon } from '../../../shared/icons/StyledIcon';
 import type { Callback } from '../../../shared/types';
 import { Label } from '../../../shared/ui';
-import type { Workspace } from '../types/workspace';
 
 export type WorkspaceGridProps = {
-  workspaces: Workspace[];
-  onOpenClick?: Callback<[Workspace['id']], void>;
-  onEditClick?: Callback<[Workspace['id']], void>;
-  onDeleteClick?: Callback<[Workspace['id']], void>;
+  workspaces: WorkspaceDto[];
+  onOpenClick?: Callback<[string], void>;
+  onEditClick?: Callback<[string], void>;
+  onDeleteClick?: Callback<[string], void>;
 };
 
 export function WorkspaceGrid({
@@ -116,8 +116,8 @@ export function WorkspaceGrid({
                   >
                     <UsersIcon />{' '}
                     <span>
-                      {workspace.members}{' '}
-                      {workspace.members > 1 ? 'Members' : 'Member'}
+                      {workspace.memberCount}{' '}
+                      {Number(workspace.memberCount) > 1 ? 'Members' : 'Member'}
                     </span>
                   </Typography>
                 </Box>

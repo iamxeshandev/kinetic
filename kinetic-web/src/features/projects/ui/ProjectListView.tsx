@@ -9,8 +9,8 @@ import {
   TableRow,
 } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
-import { MoreIcon } from '../../../shared/icons';
 import { formatDate } from '../../../shared/helpers';
+import { MoreIcon } from '../../../shared/icons';
 import type { AllProjectSectionProps } from './AllProjectsSection';
 import { ProjectHealth } from './ProjectHealth';
 
@@ -43,14 +43,13 @@ export default function ProjectList({
         </TableHead>
         <TableBody>
           {projects.map((project) => {
-            const isCompleted = project.status === 'Completed';
             return (
               <TableRow key={project.id}>
                 <TableCell>{project.name}</TableCell>
                 <TableCell>
                   <ProjectHealth
-                    dueDate={project.dueDate}
-                    isCompleted={isCompleted}
+                    dueDate={project.dueDate ?? undefined}
+                    isCompleted={false}
                   />
                 </TableCell>
                 <TableCell>

@@ -1,4 +1,4 @@
-import { projectRoleRankMap, type ProjectRole } from '../types';
+import { projectRoleRankMap, type ProjectRole } from '../constants';
 
 export const hasProjectRole = (
   currentRole: ProjectRole | undefined = 'Member',

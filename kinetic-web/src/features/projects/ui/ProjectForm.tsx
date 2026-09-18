@@ -10,10 +10,12 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router';
+import z from 'zod';
+import { getUsers, type ProjectDto, type UserDto } from '../../../shared/api';
+import { zEPriority, zEProjectStatus } from '../../../shared/api/zod.gen';
 import {
   Form,
   FormAutocomplete,
@@ -23,40 +25,54 @@ import {
 } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
 import { priorityOptions } from '../../../shared/types';
-import { usersApi } from '../../users/api';
-import type { User } from '../../users/types';
+import { projectStatusOptions } from '../constants/project-status';
 import { useCreateProject, useUpdateProject } from '../hooks';
-import {
-  projectFormSchema,
-  type Project,
-  type ProjectForm,
-  type ProjectRole,
-} from '../types';
-import { projectStatusOptions } from '../types/project-status';
+
+const projectFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Enter project name.')
+    .max(100, 'Project name cannot exceed 100 characters.'),
+  description: z
+    .string()
+    .max(1000, 'Description cannot exceed 1000 characters.'),
+  status: zEProjectStatus,
+  priority: zEPriority,
+  dueDate: z.date().nullable(),
+  leadIds: z.array(z.uuid()),
+  memberIds: z.array(z.uuid()),
+});
+
+type ProjectForm = z.infer<typeof projectFormSchema>;
 
 const defaultValues: ProjectForm = {
   name: '',
   description: '',
   status: 'Active',
   priority: 'None',
-  dueDate: undefined,
-  leads: [],
-  members: [],
+  dueDate: null,
+  leadIds: [],
+  memberIds: [],
 };
 
 export type ProjectFormProps = {
   open: boolean;
   onClose: () => void;
-  project?: Project;
+  project?: ProjectDto;
 };
 
 export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
   const isNew = !project;
-  const { workspaceId } = useParams();
-  const { trigger: createProject } = useCreateProject(workspaceId!);
-  const { trigger: updateProject } = useUpdateProject(workspaceId!);
 
-  const [users, setUsers] = useState<User[]>([]);
+  const { workspaceId } = useParams();
+
+  const { trigger: createProject } = useCreateProject(workspaceId!);
+  const { trigger: updateProject } = useUpdateProject(
+    workspaceId!,
+    project?.id ?? '',
+  );
+
+  const [users, setUsers] = useState<UserDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const methods = useForm<ProjectForm>({
@@ -64,49 +80,36 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
     defaultValues,
   });
 
-  const initialLeads =
-    project?.team
-      .filter((pm) => pm.role === 'Lead')
-      .map((pm) => ({
-        id: pm.id,
-        firstName: pm.firstName,
-        lastName: pm.lastName,
-      })) ?? defaultValues.leads;
+  const initialLeadIds =
+    project?.team?.filter((pm) => pm.role === 'Lead').map((pm) => pm.id) ??
+    defaultValues.leadIds;
 
-  const initialMembers =
-    project?.team
-      .filter((pm) => pm.role === 'Member')
-      .map((pm) => ({
-        id: pm.id,
-        firstName: pm.firstName,
-        lastName: pm.lastName,
-      })) ?? defaultValues.members;
+  const initialMemberIds =
+    project?.team?.filter((pm) => pm.role === 'Member').map((pm) => pm.id) ??
+    defaultValues.memberIds;
 
-  const watchedLeads = useWatch({
+  const watchedLeadIds = useWatch({
     control: methods.control,
-    name: 'leads',
-    defaultValue: initialLeads,
+    name: 'leadIds',
+    defaultValue: initialLeadIds,
   });
 
-  const watchedMembers = useWatch({
+  const watchedMemberIds = useWatch({
     control: methods.control,
-    name: 'members',
-    defaultValue: initialMembers,
+    name: 'memberIds',
+    defaultValue: initialMemberIds,
   });
 
   // * Fetch users on dialog open
   useEffect(() => {
     if (!open) return;
-
     const fetchUsers = () => {
       setIsLoading(true);
-      usersApi
-        .getAll(workspaceId!)
-        .then((res) => setUsers((prev) => (res.data ? res.data : prev)))
+      getUsers({ path: { workspaceId: workspaceId! } })
+        .then((res) => setUsers(res.data.data ?? []))
         .catch((err) => console.error(err))
         .finally(() => setIsLoading(false));
     };
-
     fetchUsers();
   }, [open, workspaceId]);
 
@@ -114,17 +117,20 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
   useEffect(() => {
     if (!open) return;
     methods.reset({
-      ...(project ?? defaultValues),
+      name: project?.name ?? defaultValues.name,
+      description: project?.description ?? defaultValues.description,
+      status: project?.status ?? defaultValues.status,
+      priority: project?.priority ?? defaultValues.priority,
       dueDate: project?.dueDate
-        ? parseISO(project.dueDate.toString())
+        ? new Date(project.dueDate)
         : defaultValues.dueDate,
-      leads: initialLeads,
-      members: initialMembers,
+      leadIds: initialLeadIds,
+      memberIds: initialMemberIds,
     });
-  }, [open, project, initialLeads, initialMembers, methods]);
+  }, [open, project, initialLeadIds, initialMemberIds, methods]);
 
-  const selectedLeadIds = new Set(watchedLeads.map((l) => l.id));
-  const selectedMemberIds = new Set(watchedMembers.map((m) => m.id));
+  const selectedLeadIds = new Set(watchedLeadIds);
+  const selectedMemberIds = new Set(watchedMemberIds);
 
   const leadOptions = users
     .filter((u) => !selectedMemberIds.has(u.id))
@@ -133,35 +139,17 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
     .filter((u) => !selectedLeadIds.has(u.id))
     .map((u) => ({ id: u.id, firstName: u.firstName, lastName: u.lastName }));
 
-  const handleSubmit = async ({ leads, members, ...data }: ProjectForm) => {
-    const team: Project['team'] = [
-      ...leads.map((l) => ({
-        id: l.id,
-        firstName: l.firstName,
-        lastName: l.lastName,
-        email: '',
-        role: 'Lead' as ProjectRole,
-      })),
-      ...members.map((m) => ({
-        id: m.id,
-        firstName: m.firstName,
-        lastName: m.lastName,
-        email: '',
-        role: 'Member' as ProjectRole,
-      })),
-    ];
-
-    return isNew
-      ? createProject({ ...data, team, isFavorite: false })
+  const handleSubmit = async (data: ProjectForm) =>
+    isNew
+      ? createProject({ ...data, dueDate: data.dueDate?.toISOString() ?? null })
           .then((res) => {
             toast.success(res.message);
             onClose();
           })
           .catch((err) => toast.error(err.message))
-      : updateProject({ ...project, ...data, team })
+      : updateProject({ ...data, dueDate: data.dueDate?.toISOString() ?? null })
           .then((res) => toast.success(res.message))
           .catch((err) => toast.error(err.message));
-  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth='sm'>
