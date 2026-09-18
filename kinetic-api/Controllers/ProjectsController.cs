@@ -8,11 +8,12 @@ namespace kinetic_api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/workspaces/{workspaceId:guid}/[controller]")]
+[Route("api/workspaces/{workspaceId:guid}/projects")]
 public class ProjectsController(ProjectService projectService) : ControllerBase
 {
     [Authorize(Policy = "WorkspaceMember")]
-    [HttpGet("")]
+    [HttpGet]
+    [EndpointName("GetProjects")]
     public async Task<ActionResult<Response<List<ProjectDto>>>> GetAllProjectsAsync(Guid workspaceId)
     {
         return await projectService.GetAllProjectsAsync(workspaceId);
@@ -20,13 +21,15 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
 
     [Authorize(Policy = "WorkspaceMember")]
     [HttpGet("{projectId:guid}")]
+    [EndpointName("GetProject")]
     public async Task<ActionResult<Response<ProjectDto>>> GetProjectByIdAsync(Guid workspaceId, Guid projectId)
     {
         return await projectService.GetProjectByIdAsync(workspaceId, projectId);
     }
 
     [Authorize(Policy = "WorkspaceManager")]
-    [HttpPost("")]
+    [HttpPost]
+    [EndpointName("CreateProject")]
     public async Task<ActionResult<Response<ProjectDto>>> CreateProjectAsync(Guid workspaceId, ProjectRequest request)
     {
         return Created("", await projectService.CreateProjectAsync(workspaceId, request));
@@ -34,6 +37,7 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
 
     [Authorize(Policy = "WorkspaceAdminOrProjectLead")]
     [HttpPut("{projectId:guid}")]
+    [EndpointName("UpdateProject")]
     public async Task<ActionResult<Response<ProjectDto>>> UpdateProjectAsync(Guid workspaceId, Guid projectId,
         ProjectRequest request)
     {
@@ -42,6 +46,7 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
 
     [Authorize(Policy = "WorkspaceAdminOrProjectOwner")]
     [HttpDelete("{projectId:guid}")]
+    [EndpointName("DeleteProject")]
     public async Task<ActionResult<Response>> DeleteProjectAsync(Guid workspaceId, Guid projectId)
     {
         return await projectService.DeleteProjectAsync(workspaceId, projectId);
@@ -49,6 +54,7 @@ public class ProjectsController(ProjectService projectService) : ControllerBase
 
     [Authorize(Policy = "WorkspaceManagerOrProjectLead")]
     [HttpGet("{projectId:guid}/members")]
+    [EndpointName("GetProjectMembers")]
     public async Task<ActionResult<Response<List<ProjectMemberDto>>>> GetProjectMembersAsync(Guid workspaceId,
         Guid projectId)
     {

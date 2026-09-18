@@ -8,23 +8,26 @@ namespace kinetic_api.Controllers;
 
 [ApiController]
 [Authorize(Policy = "NonPersonalWorkspaceMember")]
-[Route("api/workspaces/{workspaceId:guid}/[controller]")]
+[Route("api/workspaces/{workspaceId:guid}/users")]
 public class UsersController(UserService service) : ControllerBase
 {
-    [HttpGet("")]
+    [HttpGet]
+    [EndpointName("GetUsers")]
     public async Task<ActionResult<Response<List<UserDto>>>> GetAllUsersAsync(Guid workspaceId)
     {
         return await service.GetAllUsersAsync(workspaceId);
     }
 
     [HttpGet("{userId:guid}")]
+    [EndpointName("GetUser")]
     public async Task<ActionResult<Response<UserDto>>> GetUserByIdAsync(Guid workspaceId, Guid userId)
     {
         return await service.GetUserByIdAsync(workspaceId, userId);
     }
 
     [Authorize(Policy = "WorkspaceManager")]
-    [HttpPost("")]
+    [HttpPost]
+    [EndpointName("CreateUser")]
     public async Task<ActionResult<Response<UserDto>>> CreateUserAsync(Guid workspaceId, UserRequest request)
     {
         return Created("", await service.CreateUserAsync(workspaceId, request));
@@ -32,6 +35,7 @@ public class UsersController(UserService service) : ControllerBase
 
     [Authorize(Policy = "WorkspaceManager")]
     [HttpPut("{userId:guid}")]
+    [EndpointName("UpdateUser")]
     public async Task<ActionResult<Response<UserDto>>> UpdateUserAsync(Guid workspaceId, Guid userId,
         UserRequest request)
     {
@@ -40,6 +44,7 @@ public class UsersController(UserService service) : ControllerBase
 
     [Authorize(Policy = "WorkspaceManager")]
     [HttpDelete("{userId:guid}")]
+    [EndpointName("DeleteUser")]
     public async Task<ActionResult<Response>> DeleteUserAsync(Guid workspaceId, Guid userId)
     {
         return await service.DeleteUserAsync(workspaceId, userId);

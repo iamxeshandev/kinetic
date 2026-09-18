@@ -9,10 +9,11 @@ namespace kinetic_api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/workspaces/{workspaceId:guid}/[controller]")]
+[Route("api/workspaces/{workspaceId:guid}/favorites")]
 public class FavoritesController(FavoriteService service) : ControllerBase
 {
     [HttpPost("{entityId:guid}")]
+    [EndpointName("AddFavorite")]
     public async Task<ActionResult<Response>> AddFavorite(Guid workspaceId, Guid entityId,
         [Required] EFavoriteEntityType? entityType)
     {
@@ -20,6 +21,7 @@ public class FavoritesController(FavoriteService service) : ControllerBase
     }
 
     [HttpDelete]
+    [EndpointName("RemoveFavorite")]
     public async Task<ActionResult<Response>> RemoveFavorite(Guid workspaceId, Guid entityId)
     {
         return await service.RemoveFavorite(workspaceId, entityId);

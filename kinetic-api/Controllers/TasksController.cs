@@ -8,23 +8,25 @@ namespace kinetic_api.Controllers;
 
 [ApiController]
 [Authorize(Policy = "WorkspaceMember")]
-[Route("api/workspaces/{workspaceId:guid}/projects/{projectId:guid}/[controller]")]
+[Route("api/workspaces/{workspaceId:guid}/projects/{projectId:guid}/tasks")]
 public class TasksController(TaskService service) : ControllerBase
 {
-    // Tasks
-    [HttpGet("")]
+    [HttpGet]
+    [EndpointName("GetTasks")]
     public async Task<ActionResult<Response<List<TaskDto>>>> GetAllTasksAsync(Guid workspaceId, Guid projectId)
     {
         return await service.GetAllTasksAsync(workspaceId, projectId);
     }
 
     [HttpGet("{taskId:guid}")]
+    [EndpointName("GetTask")]
     public async Task<ActionResult<Response<TaskDto>>> GetTaskByIdAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         return await service.GetTaskByIdAsync(workspaceId, projectId, taskId);
     }
 
-    [HttpPost("")]
+    [HttpPost]
+    [EndpointName("CreateTask")]
     public async Task<ActionResult<Response<TaskDto>>> CreateTaskAsync(Guid workspaceId, Guid projectId,
         TaskRequest request)
     {
@@ -32,6 +34,7 @@ public class TasksController(TaskService service) : ControllerBase
     }
 
     [HttpPut("{taskId:guid}")]
+    [EndpointName("UpdateTask")]
     public async Task<ActionResult<Response<TaskDto>>> UpdateTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
         TaskRequest request)
     {
@@ -39,6 +42,7 @@ public class TasksController(TaskService service) : ControllerBase
     }
 
     [HttpPatch("{taskId:guid}/move")]
+    [EndpointName("MoveTask")]
     public async Task<ActionResult<Response>> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
         MoveTaskRequest request)
     {
@@ -46,84 +50,9 @@ public class TasksController(TaskService service) : ControllerBase
     }
 
     [HttpDelete("{taskId:guid}")]
+    [EndpointName("DeleteTask")]
     public async Task<ActionResult<Response>> DeleteTaskAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         return await service.DeleteTaskAsync(workspaceId, projectId, taskId);
-    }
-
-
-    // Task Attachments
-    [HttpGet("{taskId:guid}/attachments")]
-    public async Task<ActionResult<Response<List<TaskAttachmentDto>>>> GetAllTaskAttachmentsAsync(Guid workspaceId,
-        Guid projectId, Guid taskId)
-    {
-        return await service.GetAllTaskAttachmentsAsync(workspaceId, projectId, taskId);
-    }
-
-    [HttpGet("{taskId:guid}/attachments/{attachmentId:guid}")]
-    public async Task<ActionResult<Response<TaskAttachmentDto>>> GetTaskAttachmentByIdAsync(Guid workspaceId,
-        Guid projectId, Guid taskId, Guid attachmentId)
-    {
-        return await service.GetTaskAttachmentByIdAsync(workspaceId, projectId, taskId, attachmentId);
-    }
-
-    [HttpPost("{taskId:guid}/attachments")]
-    public async Task<ActionResult<Response<TaskAttachmentDto>>> UploadTaskAttachmentAsync(Guid workspaceId,
-        Guid projectId, Guid taskId, [FromForm] IFormFile file)
-    {
-        return Created("", await service.UploadTaskAttachmentAsync(workspaceId, projectId, taskId, file));
-    }
-
-    [HttpGet("{taskId:guid}/attachments/{attachmentId:guid}/download")]
-    public async Task<ActionResult> DownloadTaskAttachmentAsync(Guid workspaceId, Guid projectId, Guid taskId,
-        Guid attachmentId)
-    {
-        var file = await service.DownloadTaskAttachmentAsync(workspaceId, projectId, taskId, attachmentId);
-
-        return File(file.Stream, file.ContentType, file.FileName, true);
-    }
-
-    [HttpDelete("{taskId:guid}/attachments/{attachmentId:guid}")]
-    public async Task<ActionResult<Response>> DeleteTaskAttachmentAsync(Guid workspaceId, Guid projectId, Guid taskId,
-        Guid attachmentId)
-    {
-        return await service.DeleteTaskAttachmentAsync(workspaceId, projectId, taskId, attachmentId);
-    }
-
-
-    // Subtasks
-    [HttpGet("{taskId:guid}/subtasks")]
-    public async Task<ActionResult<Response<List<SubtaskDto>>>> GetAllSubtasksAsync(Guid workspaceId, Guid projectId,
-        Guid taskId)
-    {
-        return await service.GetAllSubtasksAsync(workspaceId, projectId, taskId);
-    }
-
-    [HttpGet("{taskId:guid}/subtasks/{subtaskId:guid}")]
-    public async Task<ActionResult<Response<SubtaskDto>>> GetSubtaskByIdAsync(Guid workspaceId, Guid projectId,
-        Guid taskId, Guid subtaskId)
-    {
-        return await service.GetSubtaskByIdAsync(workspaceId, projectId, taskId, subtaskId);
-    }
-
-    [HttpPost("{taskId:guid}/subtasks")]
-    public async Task<ActionResult<Response<SubtaskDto>>> CreateSubtaskAsync(Guid workspaceId, Guid projectId,
-        Guid taskId, SubtaskRequest request)
-    {
-        return Created("", await service.CreateSubtaskAsync(workspaceId, projectId, taskId, request));
-    }
-
-    [HttpPut("{taskId:guid}/subtasks/{subtaskId:guid}")]
-    public async Task<ActionResult<Response<SubtaskDto>>> UpdateSubtaskAsync(Guid workspaceId, Guid projectId,
-        Guid taskId, Guid subtaskId, SubtaskRequest request)
-    {
-        return await service.UpdateSubtaskAsync(workspaceId, projectId, taskId, subtaskId, request);
-    }
-
-    [HttpDelete("{taskId:guid}/subtasks/{subtaskId:guid}")]
-    public async Task<ActionResult<Response>> DeleteSubtaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
-        Guid subtaskId)
-    {
-        return await service.DeleteSubtaskAsync(workspaceId, projectId, taskId, subtaskId);
     }
 }

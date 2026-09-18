@@ -11,7 +11,8 @@ namespace kinetic_api.Controllers;
 [Route("api/[controller]")]
 public class WorkspacesController(WorkspaceService workspaceService) : ControllerBase
 {
-    [HttpGet("")]
+    [HttpGet]
+    [EndpointName("GetWorkspaces")]
     public async Task<ActionResult<Response<List<WorkspaceDto>>>> GetAllWorkspacesAsync()
     {
         return await workspaceService.GetAllWorkspacesAsync();
@@ -19,12 +20,14 @@ public class WorkspacesController(WorkspaceService workspaceService) : Controlle
 
     [Authorize(Policy = "WorkspaceMember")]
     [HttpGet("{workspaceId:guid}")]
+    [EndpointName("GetWorkspace")]
     public async Task<ActionResult<Response<WorkspaceDto>>> GetWorkspaceByIdAsync(Guid workspaceId)
     {
         return await workspaceService.GetWorkspaceByIdAsync(workspaceId);
     }
 
-    [HttpPost("")]
+    [HttpPost]
+    [EndpointName("CreateWorkspace")]
     public async Task<ActionResult<Response<WorkspaceDto>>> CreateWorkspaceAsync(WorkspaceRequest request)
     {
         return Created("", await workspaceService.CreateWorkspaceAsync(request));
@@ -32,6 +35,7 @@ public class WorkspacesController(WorkspaceService workspaceService) : Controlle
 
     [Authorize(Policy = "WorkspaceAdmin")]
     [HttpPut("{workspaceId:guid}")]
+    [EndpointName("UpdateWorkspace")]
     public async Task<ActionResult<Response<WorkspaceDto>>> UpdateWorkspaceAsync(Guid workspaceId,
         WorkspaceRequest request)
     {
@@ -40,6 +44,7 @@ public class WorkspacesController(WorkspaceService workspaceService) : Controlle
 
     [Authorize(Policy = "WorkspaceOwner")]
     [HttpDelete("{workspaceId:guid}")]
+    [EndpointName("DeleteWorkspace")]
     public async Task<ActionResult<Response>> DeleteWorkspaceAsync(Guid workspaceId)
     {
         return await workspaceService.DeleteWorkspaceAsync(workspaceId);
