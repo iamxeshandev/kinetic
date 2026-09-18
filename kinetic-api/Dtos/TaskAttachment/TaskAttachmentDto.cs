@@ -1,4 +1,4 @@
-﻿namespace kinetic_api.Dtos.Task;
+﻿namespace kinetic_api.Dtos.TaskAttachment;
 
 public record TaskAttachmentDto(
     Guid Id,

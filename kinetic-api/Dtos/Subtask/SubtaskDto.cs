@@ -1,4 +1,4 @@
-﻿namespace kinetic_api.Dtos.Task;
+﻿namespace kinetic_api.Dtos.Subtask;
 
 public record SubtaskDto(
     Guid Id,

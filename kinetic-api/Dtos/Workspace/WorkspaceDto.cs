@@ -7,5 +7,5 @@ public record WorkspaceDto(
     string Name,
     EWorkspaceRole Role,
     bool IsPersonal,
-    int Members
+    int MemberCount
 );
