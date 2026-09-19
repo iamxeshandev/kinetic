@@ -8,7 +8,7 @@ public record ProjectDto(
     string? Description,
     EProjectStatus Status,
     EPriority Priority,
-    EProjectRole Role,
+    EProjectRole? Role,
     bool IsFavorite,
     DateTimeOffset? DueDate,
     List<ProjectMemberDto>? Team
