@@ -3,13 +3,10 @@ import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { varAlpha } from '../../../shared/helpers';
 import { Logo } from '../../../shared/ui';
+import type { NavLink } from '../types/nav-links';
 
 export type NavbarDesktopProps = {
-  navLinks: Array<{
-    label: string;
-    icon: React.ReactElement;
-    path: string;
-  }>;
+  navLinks: NavLink[];
 };
 
 export const NavbarDesktop = forwardRef(
@@ -34,11 +31,11 @@ export const NavbarDesktop = forwardRef(
         >
           <Logo isLink={false} sx={{ width: 32, mb: 2 }} />
 
-          {navLinks.map(({ icon, path }) => {
-            const isActive = location.pathname.includes(path);
+          {navLinks.map(({ icon: Icon, to }) => {
+            const isActive = location.pathname.includes(to);
             return (
               <Box
-                key={path}
+                key={to}
                 sx={{
                   bgcolor: isActive
                     ? (theme) =>
@@ -51,11 +48,11 @@ export const NavbarDesktop = forwardRef(
                 }}
               >
                 <IconButton
-                  key={path}
+                  key={to}
                   color={isActive ? 'primary' : undefined}
-                  onClick={() => navigate(path)}
+                  onClick={() => navigate(to)}
                 >
-                  {icon}
+                  <Icon />
                 </IconButton>
               </Box>
             );

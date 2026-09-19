@@ -1,1 +1,1 @@
-export * from './ui/WorkspaceLayout';
+export * from './WorkspaceLayout';

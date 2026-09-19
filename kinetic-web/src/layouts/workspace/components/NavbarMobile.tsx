@@ -2,13 +2,10 @@ import { Box, IconButton } from '@mui/material';
 import { forwardRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { varAlpha } from '../../../shared/helpers';
+import type { NavLink } from '../types/nav-links';
 
 export type NavbarMobileProps = {
-  navLinks: Array<{
-    label: string;
-    icon: React.ReactElement;
-    path: string;
-  }>;
+  navLinks: NavLink[];
 };
 
 export const NavbarMobile = forwardRef(
@@ -36,11 +33,11 @@ export const NavbarMobile = forwardRef(
           borderColor: 'divider',
         }}
       >
-        {navLinks.map(({ icon, path }) => {
-          const isActive = location.pathname === path;
+        {navLinks.map(({ icon: Icon, to }) => {
+          const isActive = location.pathname === to;
           return (
             <Box
-              key={path}
+              key={to}
               sx={{
                 width: 60,
                 textAlign: 'center',
@@ -56,9 +53,9 @@ export const NavbarMobile = forwardRef(
             >
               <IconButton
                 color={isActive ? 'primary' : undefined}
-                onClick={() => navigate(path)}
+                onClick={() => navigate(to)}
               >
-                {icon}
+                <Icon />
               </IconButton>
             </Box>
           );

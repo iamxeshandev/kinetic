@@ -1,11 +1,12 @@
 import { Container } from '@mui/material';
-import { Outlet } from 'react-router';
+import type { PropsWithChildren } from 'react';
 import { Header } from './components/Header';
 
-export function AccountLayout() {
+export function AccountLayout({ children }: PropsWithChildren) {
   return (
     <>
       <Header />
+
       <Container
         maxWidth='xl'
         component={'main'}
@@ -16,10 +17,8 @@ export function AccountLayout() {
           py: 2,
         }}
       >
-        <Outlet />
+        {children}
       </Container>
     </>
   );
 }
-
-export { AccountLayout as Component };

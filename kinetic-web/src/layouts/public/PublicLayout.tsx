@@ -1,12 +1,13 @@
 import { Container } from '@mui/material';
-import { Outlet } from 'react-router';
+import type { PropsWithChildren } from 'react';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 
-export function PublicLayout() {
+export function PublicLayout({ children }: PropsWithChildren) {
   return (
     <>
       <Header />
+
       <Container
         component={'main'}
         sx={{
@@ -16,11 +17,10 @@ export function PublicLayout() {
           p: 2,
         }}
       >
-        <Outlet />
+        {children}
       </Container>
+
       <Footer />
     </>
   );
 }
-
-export { PublicLayout as Component };
