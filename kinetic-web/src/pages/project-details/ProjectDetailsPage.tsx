@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
 import { CONFIG } from '../../config';
-import { useProject } from '../../features/projects/hooks';
+import { useProject } from '../../features/projects/hooks/use-projects';
 import { ProjectDetailsView } from '../../features/projects/ui';
 import { LoadingScreen } from '../../shared/ui';
 
