@@ -10,6 +10,7 @@ export default defineConfig({
     {
       name: '@hey-api/client-fetch',
       throwOnError: true,
+      runtimeConfigPath: './hey-api.config.ts',
     },
   ],
 });
