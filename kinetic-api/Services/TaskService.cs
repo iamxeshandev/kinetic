@@ -167,7 +167,6 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                        o.Section.Project.WorkspaceId == workspaceId) ??
                    throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
-        task.SectionId = request.SectionId;
         task.Name = request.Name;
         task.Description = request.Description;
         task.Priority = request.Priority;

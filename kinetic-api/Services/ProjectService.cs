@@ -30,7 +30,10 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
                 o.Description,
                 o.Status,
                 o.Priority,
-                db.ProjectMembers.Single(pm => pm.ProjectId == o.Id && pm.UserId == userId).Role,
+                db.ProjectMembers
+                    .Where(pm => pm.ProjectId == o.Id && pm.UserId == userId)
+                    .Select(pm => (EProjectRole?)pm.Role)
+                    .SingleOrDefault(),
                 db.UserFavorites.Any(uf => uf.UserId == userId && uf.EntityId == o.Id),
                 o.DueDate,
                 db.ProjectMembers
@@ -65,7 +68,10 @@ public class ProjectService(AppDbContext db, IHttpContextAccessor accessor)
                 o.Description,
                 o.Status,
                 o.Priority,
-                db.ProjectMembers.Single(pm => pm.ProjectId == o.Id && pm.UserId == userId).Role,
+                db.ProjectMembers
+                    .Where(pm => pm.ProjectId == o.Id && pm.UserId == userId)
+                    .Select(pm => (EProjectRole?)pm.Role)
+                    .SingleOrDefault(),
                 db.UserFavorites.Any(uf => uf.UserId == userId && uf.EntityId == o.Id),
                 o.DueDate,
                 db.ProjectMembers

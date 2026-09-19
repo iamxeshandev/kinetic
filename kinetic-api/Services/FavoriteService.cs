@@ -9,38 +9,39 @@ namespace kinetic_api.Services;
 
 public class FavoriteService(AppDbContext db, IHttpContextAccessor accessor)
 {
-    public async Task<Response> AddFavorite(Guid workspaceId, Guid entityId, EFavoriteEntityType entityType)
+    public async Task<Response> CreateFavoriteAsync(Guid workspaceId, Guid entityId,
+        EFavoriteEntityType entityType)
     {
         var userId = accessor.GetUserId();
 
         var exists = await db.UserFavorites
             .AnyAsync(o =>
                 o.WorkspaceId == workspaceId &&
-                o.UserId == userId && o.EntityType == entityType &&
+                o.UserId == userId &&
+                o.EntityType == entityType &&
                 o.EntityId == entityId
             );
 
         if (!exists)
         {
-            db.UserFavorites.Add(new UserFavorite
+            var favorite = new UserFavorite
             {
                 WorkspaceId = workspaceId,
                 UserId = userId,
                 EntityType = entityType,
                 EntityId = entityId
-            });
-            await db.SaveChangesAsync();
+            };
+            db.UserFavorites.Add(favorite);
         }
 
+        await db.SaveChangesAsync();
         return new Response("Added to favorites.");
     }
 
-    public async Task<Response> RemoveFavorite(Guid workspaceId, Guid entityId)
+    public async Task<Response> DeleteFavoriteAsync(Guid workspaceId, Guid entityId)
     {
-        var userId = accessor.GetUserId();
-
         await db.UserFavorites
-            .Where(o => o.WorkspaceId == workspaceId && o.UserId == userId && o.EntityId == entityId)
+            .Where(o => o.WorkspaceId == workspaceId && o.UserId == accessor.GetUserId() && o.EntityId == entityId)
             .ExecuteDeleteAsync();
 
         return new Response("Removed from favorites.");
