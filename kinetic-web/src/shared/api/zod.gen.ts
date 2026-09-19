@@ -325,32 +325,29 @@ export const zUploadAvatarBody = z.object({
  */
 export const zUploadAvatarResponse = zResponseOfstring;
 
-export const zAddFavoritePath = z.object({
+export const zDeleteFavoritePath = z.object({
     workspaceId: z.uuid(),
     entityId: z.uuid()
 });
 
-export const zAddFavoriteQuery = z.object({
+/**
+ * OK
+ */
+export const zDeleteFavoriteResponse = zResponse;
+
+export const zCreateFavoritePath = z.object({
+    workspaceId: z.uuid(),
+    entityId: z.uuid()
+});
+
+export const zCreateFavoriteQuery = z.object({
     entityType: zEFavoriteEntityType
 });
 
 /**
  * OK
  */
-export const zAddFavoriteResponse = zResponse;
-
-export const zRemoveFavoritePath = z.object({
-    workspaceId: z.uuid()
-});
-
-export const zRemoveFavoriteQuery = z.object({
-    entityId: z.uuid().optional()
-});
-
-/**
- * OK
- */
-export const zRemoveFavoriteResponse = zResponse;
+export const zCreateFavoriteResponse = zResponse;
 
 export const zGetProjectsPath = z.object({
     workspaceId: z.uuid()

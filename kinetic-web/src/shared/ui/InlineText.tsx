@@ -13,7 +13,7 @@ import { useBoolean } from '../hooks';
 
 export type InlineTextProps = BoxProps & {
   value: string;
-  onSave?: (value: string) => void | Promise<void>;
+  onSave?: (value: string) => unknown;
   loading?: boolean;
   slotProps?: {
     textField?: TextFieldProps;

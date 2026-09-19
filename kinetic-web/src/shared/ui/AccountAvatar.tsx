@@ -1,8 +1,9 @@
 import { Avatar } from '@mui/material';
-import { authApi } from '../../features/auth/api';
 import { useAuthContext } from '../../features/auth/context';
+import { logout } from '../api';
 import { getInitials } from '../helpers';
 import { LogoutIcon, SettingsIcon, UserIcon } from '../icons';
+import { toast } from '../toast';
 import { ActionMenuIconButton, type ActionMenuButtonProps } from './ActionMenu';
 
 export function AccountAvatar() {
@@ -13,10 +14,9 @@ export function AccountAvatar() {
   );
 
   const handleSignOut = () =>
-    authApi
-      .logout()
-      .then(() => setUser(undefined))
-      .catch((err) => console.error(err));
+    logout()
+      .then(() => setUser(null))
+      .catch((err) => toast.error(err.message));
 
   const actions: ActionMenuButtonProps['actions'] = [
     { label: 'Profile', icon: <UserIcon />, onClick: () => {} },

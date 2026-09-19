@@ -369,7 +369,26 @@ export type UploadAvatarResponses = {
 
 export type UploadAvatarResponse = UploadAvatarResponses[keyof UploadAvatarResponses];
 
-export type AddFavoriteData = {
+export type DeleteFavoriteData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        entityId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/favorites/{entityId}';
+};
+
+export type DeleteFavoriteResponses = {
+    /**
+     * OK
+     */
+    200: Response;
+};
+
+export type DeleteFavoriteResponse = DeleteFavoriteResponses[keyof DeleteFavoriteResponses];
+
+export type CreateFavoriteData = {
     body?: never;
     path: {
         workspaceId: string;
@@ -381,34 +400,14 @@ export type AddFavoriteData = {
     url: '/api/workspaces/{workspaceId}/favorites/{entityId}';
 };
 
-export type AddFavoriteResponses = {
+export type CreateFavoriteResponses = {
     /**
      * OK
      */
     200: Response;
 };
 
-export type AddFavoriteResponse = AddFavoriteResponses[keyof AddFavoriteResponses];
-
-export type RemoveFavoriteData = {
-    body?: never;
-    path: {
-        workspaceId: string;
-    };
-    query?: {
-        entityId?: string;
-    };
-    url: '/api/workspaces/{workspaceId}/favorites';
-};
-
-export type RemoveFavoriteResponses = {
-    /**
-     * OK
-     */
-    200: Response;
-};
-
-export type RemoveFavoriteResponse = RemoveFavoriteResponses[keyof RemoveFavoriteResponses];
+export type CreateFavoriteResponse = CreateFavoriteResponses[keyof CreateFavoriteResponses];
 
 export type GetProjectsData = {
     body?: never;
