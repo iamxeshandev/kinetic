@@ -2,6 +2,7 @@ import { Box, Button, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { paths } from '../../../routes';
+import { createFavorite, deleteFavorite } from '../../../shared/api';
 import {
   PencilIcon,
   StarIcon,
@@ -15,10 +16,9 @@ import {
   type ActionMenuButtonProps,
 } from '../../../shared/ui';
 import { useAuthContext } from '../../auth/context';
-import { favoritesApi } from '../../favorites/api';
 import { hasWorkspaceRole } from '../../workspaces/helpers/has-workspace-role';
 import { hasProjectRole } from '../helpers';
-import { useDeleteProject, useProjects } from '../hooks';
+import { useDeleteProject, useProjects } from '../hooks/use-projects';
 import { AllProjectsSection } from './AllProjectsSection';
 import { FavoriteSection } from './FavoriteSection';
 import { HeaderSection } from './HeaderSection';
@@ -50,43 +50,52 @@ export function ProjectsView() {
     id: string | null;
   }>({ anchorEl: null, id: null });
 
-  const handleToggleFavorite = async (projectId: Project['id']) => {
-    const project = projects.find((p) => p.id === projectId);
-    if (!project) return;
-    const callback = project.isFavorite
-      ? favoritesApi.delete
-      : favoritesApi.create;
-
-    callback('Project', project.id)
-      .then((res) => {
-        mutateProjects((prev) =>
-          prev?.map((p) =>
-            p.id === project.id ? { ...p, isFavorite: !project.isFavorite } : p,
-          ),
-        );
-        toast.success(res.data.message);
-      })
-      .catch((err) => toast.error(err.message));
+  const onCreateClick = () => {
+    setProjectId(null);
+    setProjectForm(true);
   };
 
-  const handleOpenProject = (projectId: Project['id']) => {
+  const onMoreClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+  ) => setMenu({ anchorEl: event.currentTarget, id });
+
+  const handleOpenProject = (projectId: string) => {
     navigate(
       `${paths.workspaces.projects.details(workspaceId!, projectId)}?view=board`,
     );
   };
 
-  const handleCreateClick = () => {
-    setProjectId(null);
-    setProjectForm(true);
-  };
-
-  const handleMoreClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    id: string,
-  ) => setMenu({ anchorEl: event.currentTarget, id });
+  const handleToggleFavorite = (projectId: string, isFavorite: boolean) =>
+    isFavorite
+      ? deleteFavorite({
+          path: { workspaceId: workspaceId!, entityId: projectId },
+        })
+          .then((res) => {
+            toast.success(res.data.message);
+            mutateProjects((prev) =>
+              prev?.map((p) =>
+                p.id === projectId ? { ...p, isFavorite: false } : p,
+              ),
+            );
+          })
+          .catch((err) => toast.error(err.message))
+      : createFavorite({
+          path: { workspaceId: workspaceId!, entityId: projectId },
+          query: { entityType: 'Project' },
+        })
+          .then((res) => {
+            toast.success(res.data.message);
+            mutateProjects((prev) =>
+              prev?.map((p) =>
+                p.id === projectId ? { ...p, isFavorite: true } : p,
+              ),
+            );
+          })
+          .catch((err) => toast.error(err.message));
 
   const handleDeleteProject = () =>
-    deleteProject(projectId!)
+    deleteProject()
       .then((res) => {
         toast.success(res.message);
         setProjectId(null);
@@ -94,11 +103,12 @@ export function ProjectsView() {
       })
       .catch((err) => toast.error(err.message));
 
-  const isFavorite = projects.find((p) => p.id === menu.id)?.isFavorite;
+  const isFavorite =
+    projects.find((p) => p.id === menu.id)?.isFavorite ?? false;
 
-  const userProjectRole = projects
-    .find((p) => p.id === menu.id)
-    ?.team.find((t) => t.id === user?.id)?.role;
+  const userProjectRole =
+    projects.find((p) => p.id === menu.id)?.team?.find((t) => t.id === user?.id)
+      ?.role ?? 'Member';
 
   const canEdit =
     hasWorkspaceRole(user?.currentWorkspace?.role, 'Admin') ||
@@ -112,7 +122,7 @@ export function ProjectsView() {
     {
       icon: <Box component={isFavorite ? StarOffIcon : StarIcon} />,
       label: isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
-      onClick: () => handleToggleFavorite(menu.id!),
+      onClick: () => handleToggleFavorite(menu.id!, isFavorite),
     },
     ...(canEdit
       ? [
@@ -143,7 +153,7 @@ export function ProjectsView() {
 
   return (
     <Stack spacing={3} sx={{ flex: 1 }}>
-      <HeaderSection onCreateClick={handleCreateClick} />
+      <HeaderSection onCreateClick={onCreateClick} />
 
       <FavoriteSection
         favoriteProjects={projects.filter((p) => p.isFavorite)}
@@ -154,7 +164,7 @@ export function ProjectsView() {
       <AllProjectsSection
         projects={projects}
         onOpenProjectClick={handleOpenProject}
-        onMoreClick={handleMoreClick}
+        onMoreClick={onMoreClick}
       />
 
       <ProjectForm

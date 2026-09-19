@@ -12,6 +12,7 @@ import {
 import type { IconType } from 'react-icons/lib';
 import { NavLink, useParams, useSearchParams } from 'react-router';
 import { paths } from '../../../../routes';
+import type { ProjectDto } from '../../../../shared/api';
 import { varAlpha } from '../../../../shared/helpers';
 import {
   AddIcon,
@@ -22,7 +23,6 @@ import {
   TimelineIcon,
 } from '../../../../shared/icons';
 import { StyledIcon } from '../../../../shared/icons/StyledIcon';
-import type { Project } from '../../constants';
 import { AnalyticsView } from './analytics-view/AnalyticsView';
 import { FilesView } from './files-view/FilesView';
 import KanbanView from './kanban-view/KanbanView';
@@ -44,7 +44,7 @@ const TABS: Array<Tab> = [
 ] as const;
 
 export type ProjectDetailsViewProps = {
-  project: Project;
+  project: ProjectDto;
 };
 
 export function ProjectDetailsView({ project }: ProjectDetailsViewProps) {

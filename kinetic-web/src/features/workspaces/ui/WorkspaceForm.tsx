@@ -13,7 +13,6 @@ import z from 'zod';
 import type { WorkspaceDto } from '../../../shared/api';
 import { Form, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import type { Callback } from '../../../shared/types';
 import { useCreateWorkspace, useUpdateWorkspace } from '../hooks';
 
 const workspaceFromSchema = z.object({
@@ -31,8 +30,8 @@ const defaultValues: WorkspaceForm = {
 
 export type WorkspaceFormProps = {
   open: boolean;
-  onClose: Callback;
-  onExited?: Callback;
+  onClose: () => void;
+  onExited?: () => void;
   workspace?: WorkspaceDto;
 };
 

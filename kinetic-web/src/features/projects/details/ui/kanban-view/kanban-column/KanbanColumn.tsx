@@ -3,25 +3,25 @@ import { useSortable } from '@dnd-kit/react/sortable';
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { useParams } from 'react-router';
+import type { SectionDto } from '../../../../../../shared/api';
 import { varAlpha } from '../../../../../../shared/helpers';
 import { useBoolean } from '../../../../../../shared/hooks';
 import { AddIcon, MoreIcon } from '../../../../../../shared/icons';
 import { toast } from '../../../../../../shared/toast';
-import type { Callback } from '../../../../../../shared/types';
 import { InlineText } from '../../../../../../shared/ui';
 import { useUpdateSection } from '../../../hooks';
-import type { Section } from '../../../types';
 import type { DraggableItem } from '../KanbanView';
-import { NewTask } from './NewItem';
+import { NewTask } from '../kanban-item/NewKanbanItem';
 
 export type KanbanColumnProps = {
   index: number;
-  id: Section['id'];
+  id: string;
   count: number;
-  section?: Section;
-  onMoreActionsClick?: Callback<
-    [event: React.MouseEvent<HTMLButtonElement>, sectionId: Section['id']]
-  >;
+  section?: SectionDto;
+  onMoreActionsClick?: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    sectionId: string,
+  ) => void;
   children: React.ReactNode;
 };
 
@@ -47,14 +47,13 @@ export function KanbanColumn({
   const { trigger: updateSection, isMutating: isUpdating } = useUpdateSection(
     workspaceId!,
     projectId!,
+    section?.id ?? '',
   );
 
-  const handleUpdateSectionName = async (name: string) => {
-    if (!section?.id) return;
-    await updateSection({ id: section.id, name })
+  const handleUpdateSectionName = (name: string) =>
+    updateSection({ name })
       .then((res) => toast.success(res.message))
       .catch((err) => toast.error(err.message));
-  };
 
   return (
     <Stack ref={ref} spacing={1}>

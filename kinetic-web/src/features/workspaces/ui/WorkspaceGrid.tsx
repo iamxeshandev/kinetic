@@ -16,14 +16,13 @@ import {
   UsersIcon,
 } from '../../../shared/icons';
 import { StyledIcon } from '../../../shared/icons/StyledIcon';
-import type { Callback } from '../../../shared/types';
 import { Label } from '../../../shared/ui';
 
 export type WorkspaceGridProps = {
   workspaces: WorkspaceDto[];
-  onOpenClick?: Callback<[string], void>;
-  onEditClick?: Callback<[string], void>;
-  onDeleteClick?: Callback<[string], void>;
+  onOpenClick?: (workspaceId: string) => void;
+  onEditClick?: (workspaceId: string) => void;
+  onDeleteClick?: (workspaceId: string) => void;
 };
 
 export function WorkspaceGrid({

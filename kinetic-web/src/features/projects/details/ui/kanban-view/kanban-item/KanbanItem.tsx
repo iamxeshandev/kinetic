@@ -1,18 +1,18 @@
 import { useSortable } from '@dnd-kit/react/sortable';
 import { Box, Card, Typography } from '@mui/material';
-import type { Callback } from '../../../../../../shared/types';
+import type { TaskDto } from '../../../../../../shared/api';
 import { Label } from '../../../../../../shared/ui';
-import type { Section, Task } from '../../../types';
 import type { DraggableItem } from '../KanbanView';
 
 export type KanbanItemProps = {
   index: number;
-  id: Task['id'];
-  sectionId: Section['id'];
-  task?: Task;
-  onEditTask?: Callback<
-    [event: React.MouseEvent<HTMLDivElement>, taskId: Task['id']]
-  >;
+  id: string;
+  sectionId: string;
+  task?: TaskDto;
+  onEditTask?: (
+    event: React.MouseEvent<HTMLDivElement>,
+    taskId: string,
+  ) => void;
 };
 
 export function KanbanItem({

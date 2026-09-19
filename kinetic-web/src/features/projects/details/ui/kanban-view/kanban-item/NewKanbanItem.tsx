@@ -7,13 +7,12 @@ import {
 import { useParams } from 'react-router';
 import { toast } from '../../../../../../shared/toast';
 import { useCreateTask } from '../../../hooks';
-import type { Section, Task } from '../../../types';
 
 export function NewTask({
   sectionId,
   onClose,
 }: {
-  sectionId: Section['id'];
+  sectionId: string;
   onClose: VoidFunction;
 }) {
   const { workspaceId, projectId } = useParams();
@@ -23,23 +22,19 @@ export function NewTask({
     projectId!,
   );
 
-  const handleCreateTask = (event: React.FocusEvent<HTMLInputElement>) => {
-    const name = event.currentTarget.value.trim();
-    if (!name) {
-      onClose();
-      return;
-    }
-
-    const task: Omit<Task, 'id'> = {
-      sectionId,
-      name,
-      priority: 'None',
-    };
-
-    createTask(task)
-      .then(onClose)
-      .catch((err) => toast.error(err.message));
-  };
+  const handleCreateTask = (name: string) =>
+    name
+      ? createTask({
+          sectionId,
+          name,
+          description: null,
+          priority: 'None',
+          dueDate: null,
+          assigneeId: null,
+        })
+          .then(() => onClose())
+          .catch((err) => toast.error(err.message))
+      : onClose();
 
   return (
     <Card sx={{ p: 2 }}>
@@ -49,7 +44,7 @@ export function NewTask({
         variant='standard'
         multiline
         autoFocus
-        onBlur={handleCreateTask}
+        onBlur={(e) => handleCreateTask(e.currentTarget.value.trim())}
         disabled={isSubmitting}
         slotProps={{
           input: {

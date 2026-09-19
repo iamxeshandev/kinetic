@@ -1,8 +1,9 @@
-import { workspaceRoleRankMap, type WorkspaceRole } from '../constants';
+import type { EWorkspaceRole } from '../../../shared/api';
+import { workspaceRoleRankMap } from '../constants';
 
 export const hasWorkspaceRole = (
-  currentRole: WorkspaceRole | undefined = 'Member',
-  minimumRequiredRole: WorkspaceRole,
+  currentRole: EWorkspaceRole = 'Member',
+  minimumRequiredRole: EWorkspaceRole,
 ) =>
   workspaceRoleRankMap[currentRole] >=
   workspaceRoleRankMap[minimumRequiredRole];

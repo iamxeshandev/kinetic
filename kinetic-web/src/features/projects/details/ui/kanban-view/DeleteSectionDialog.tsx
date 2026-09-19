@@ -10,18 +10,17 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { ConfirmDialog } from '../../../../../shared/ui/ConfirmDialog.js';
+import type { SectionDto } from '../../../../../shared/api/types.gen.js';
 import { toast } from '../../../../../shared/toast/toast.js';
-import type { Callback } from '../../../../../shared/types/callback.js';
+import { ConfirmDialog } from '../../../../../shared/ui/ConfirmDialog.js';
 import { useDeleteSection } from '../../hooks/useSections.js';
-import type { Section } from '../../types/index.js';
 
 type Props = {
   open: boolean;
-  onClose: Callback;
-  sectionId?: Section['id'];
-  hasTasks?: boolean;
-  options?: Section[];
+  onClose: VoidFunction;
+  sectionId: string;
+  hasTasks: boolean;
+  options?: SectionDto[];
 };
 
 export function DeleteSectionDialog({
@@ -33,13 +32,17 @@ export function DeleteSectionDialog({
 }: Props) {
   const { workspaceId, projectId } = useParams();
 
+  const [mode, setMode] = useState<'delete' | 'move'>('move');
+
+  const [moveTasksTo, setMoveTasksTo] = useState<string>('');
+
   const { trigger: deleteSection, isMutating: isDeleting } = useDeleteSection(
     workspaceId!,
     projectId!,
+    sectionId,
+    hasTasks && mode === 'move' ? moveTasksTo : undefined,
+    !hasTasks && mode === 'delete',
   );
-
-  const [mode, setMode] = useState<'delete' | 'move'>('move');
-  const [moveTasksTo, setMoveTasksTo] = useState<Section['id']>('');
 
   useEffect(() => {
     if (!open || !hasTasks) return;
@@ -51,20 +54,13 @@ export function DeleteSectionDialog({
     reset();
   }, [hasTasks, open, options]);
 
-  const handleDelete = async () => {
-    if (!sectionId) return;
-
-    deleteSection({
-      sectionId,
-      ...(hasTasks && mode === 'move' && { moveTasksTo }),
-      ...(hasTasks && mode === 'delete' && { deleteTasks: true }),
-    })
+  const handleDelete = async () =>
+    deleteSection()
       .then((res) => {
         toast.success(res.message);
         onClose();
       })
       .catch((err) => toast.error(err.message));
-  };
 
   const content = (
     <Stack spacing={1}>
@@ -82,7 +78,7 @@ export function DeleteSectionDialog({
           />
           <Select
             value={moveTasksTo}
-            onChange={(e) => setMoveTasksTo(e.target.value as Section['id'])}
+            onChange={(e) => setMoveTasksTo(e.target.value)}
             size='small'
             fullWidth
             sx={{ mb: 1 }}

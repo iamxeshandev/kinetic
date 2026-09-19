@@ -1,6 +1,7 @@
-import { projectRoleRankMap, type ProjectRole } from '../constants';
+import type { EProjectRole } from '../../../shared/api';
+import { projectRoleRankMap } from '../constants';
 
 export const hasProjectRole = (
-  currentRole: ProjectRole | undefined = 'Member',
-  minimumRequiredRole: ProjectRole,
+  currentRole: EProjectRole,
+  minimumRequiredRole: EProjectRole,
 ) => projectRoleRankMap[currentRole] >= projectRoleRankMap[minimumRequiredRole];

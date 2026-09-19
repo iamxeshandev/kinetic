@@ -1,14 +1,13 @@
 import { Box, Drawer, Stack, Typography } from '@mui/material';
-import type { Callback } from '../../../../../shared/types';
-import { type Task } from '../../types';
+import type { TaskDto } from '../../../../../shared/api';
 import { AttachmentsSection } from './AttachmentsSection';
-import { FormSection } from './FormSection';
+import { OverviewSection } from './OverviewSection';
 import { SubtasksSection } from './SubtasksSection';
 
 export type TaskFormProps = {
   open: boolean;
-  onClose: Callback;
-  task: Task;
+  onClose: VoidFunction;
+  task?: TaskDto;
 };
 
 export function TaskDetailsView({ open, onClose, task }: TaskFormProps) {
@@ -36,7 +35,7 @@ export function TaskDetailsView({ open, onClose, task }: TaskFormProps) {
         spacing={3}
         sx={{ flex: 1, p: 2, overflow: 'auto', position: 'relative' }}
       >
-        <FormSection open={open} task={task} />
+        <OverviewSection open={open} task={task} />
         <SubtasksSection />
         <AttachmentsSection />
       </Stack>

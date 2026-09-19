@@ -16,6 +16,7 @@ import { useParams } from 'react-router';
 import z from 'zod';
 import { getUsers, type ProjectDto, type UserDto } from '../../../shared/api';
 import { zEPriority, zEProjectStatus } from '../../../shared/api/zod.gen';
+import { priorityOptions } from '../../../shared/constants';
 import {
   Form,
   FormAutocomplete,
@@ -24,9 +25,8 @@ import {
   FormTextField,
 } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import { priorityOptions } from '../../../shared/types';
 import { projectStatusOptions } from '../constants/project-status';
-import { useCreateProject, useUpdateProject } from '../hooks';
+import { useCreateProject, useUpdateProject } from '../hooks/use-projects';
 
 const projectFormSchema = z.object({
   name: z

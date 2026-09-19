@@ -8,7 +8,7 @@ import {
 
 export type FavoriteSectionProps = {
   favoriteProjects: ProjectDto[];
-  onFavoriteClick: (projectId: string) => void;
+  onFavoriteClick: (projectId: string, isFavorite: boolean) => void;
   onProjectClick: (projectId: string) => void;
   actions: ActionMenuIconButtonProps['actions'];
 };

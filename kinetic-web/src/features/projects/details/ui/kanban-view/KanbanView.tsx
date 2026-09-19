@@ -9,13 +9,16 @@ import { isSortable } from '@dnd-kit/react/sortable';
 import { Stack } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
+import { moveSection, moveTask } from '../../../../../shared/api/sdk.gen.js';
+import type {
+  SectionDto,
+  TaskDto,
+} from '../../../../../shared/api/types.gen.js';
 import { useBoolean } from '../../../../../shared/hooks';
 import { TrashIcon } from '../../../../../shared/icons';
 import { toast } from '../../../../../shared/toast';
 import { ActionMenu } from '../../../../../shared/ui';
-import { sectionsApi, tasksApi } from '../../api';
 import { useSections, useTasks } from '../../hooks';
-import type { Section, Task } from '../../types';
 import { TaskDetailsView } from '../task-details-view';
 import { CreateSectionButton } from './CreateSectionButton.js';
 import { DeleteSectionDialog } from './DeleteSectionDialog.js';
@@ -31,32 +34,33 @@ export default function KanbanView() {
     workspaceId!,
     projectId!,
   );
+
   const { data: tasks = [] } = useTasks(workspaceId!, projectId!);
 
-  const [taskId, setTaskId] = useState<Task['id'] | undefined>(undefined);
+  const [taskId, setTaskId] = useState<string | null>(null);
+
   const taskDetails = useBoolean();
 
   const [columnMenu, setColumnMenu] = useState<{
-    id: Section['id'] | undefined;
-    anchorEl: HTMLButtonElement | undefined;
-  }>({ id: undefined, anchorEl: undefined });
+    id: string | null;
+    anchorEl: HTMLButtonElement | null;
+  }>({ id: null, anchorEl: null });
 
   const deleteSectionDialog = useBoolean();
-  const [deleteSectionId, setDeleteSectionId] = useState<
-    Section['id'] | undefined
-  >(undefined);
+
+  const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null);
 
   const sectionsMap = sections.reduce(
     (acc, section) => ({ ...acc, [section.id]: section }),
-    {} as Record<Section['id'], Section>,
+    {} as Record<string, SectionDto>,
   );
 
   const tasksMap = tasks.reduce(
     (acc, task) => ({ ...acc, [task.id]: task }),
-    {} as Record<Task['id'], Task>,
+    {} as Record<string, TaskDto>,
   );
 
-  const [items, setItems] = useState<Record<Section['id'], Task['id'][]>>({});
+  const [items, setItems] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     const newItems = sections.reduce(
@@ -66,7 +70,7 @@ export default function KanbanView() {
           .map((task) => task.id);
         return acc;
       },
-      {} as Record<Section['id'], Task['id'][]>,
+      {} as Record<string, string[]>,
     );
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(newItems);
@@ -74,15 +78,15 @@ export default function KanbanView() {
 
   const onEditTask = (
     event: React.MouseEvent<HTMLDivElement>,
-    taskId: Task['id'],
+    taskId: string,
   ) => {
     event.currentTarget.blur();
     setTaskId(taskId);
     taskDetails.setTrue();
   };
 
-  const itemLastGroup = useRef<Section['id'] | undefined>(undefined);
-  const itemLastIndex = useRef<number | undefined>(undefined);
+  const itemLastGroup = useRef<string>(null);
+  const itemLastIndex = useRef<number>(null);
 
   const onDragStart = (event: DragStartEvent) => {
     const { source } = event.operation;
@@ -91,7 +95,7 @@ export default function KanbanView() {
     const type = source.type as DraggableItem;
 
     if (type === 'item') {
-      itemLastGroup.current = source.initialGroup as Section['id'];
+      itemLastGroup.current = source.initialGroup as string;
       itemLastIndex.current = source.initialIndex;
     }
   };
@@ -121,21 +125,23 @@ export default function KanbanView() {
       const newSections = arrayMove(sections, currentIndex, newIndex);
 
       const previousSectionId =
-        newIndex === 0 ? undefined : newSections[newIndex - 1].id;
-      const currentSectionId = source.id as Section['id'];
+        newIndex === 0 ? null : newSections[newIndex - 1]?.id;
+      const currentSectionId = source.id as string;
       const nextSectionId = newSections[newIndex + 1]?.id;
 
       mutateSections(newSections, false);
 
-      sectionsApi
-        .move(workspaceId!, projectId!, currentSectionId, {
-          previousSectionId,
-          nextSectionId,
-        })
-        .catch((err) => {
-          toast.error(err.message);
-          mutateSections(oldSections, false);
-        });
+      moveSection({
+        path: {
+          workspaceId: workspaceId!,
+          projectId: projectId!,
+          sectionId: currentSectionId,
+        },
+        body: { previousSectionId, nextSectionId },
+      }).catch((err) => {
+        toast.error(err.message);
+        mutateSections(oldSections, false);
+      });
     }
 
     if (
@@ -143,22 +149,19 @@ export default function KanbanView() {
       (source.group !== itemLastGroup.current ||
         source.index !== itemLastIndex.current)
     ) {
-      const sectionId = source.group as Section['id'];
+      const sectionId = source.group as string;
       const sectionTaskIds = items[sectionId];
 
       const previousTaskId = sectionTaskIds?.[source.index - 1];
-      const currentTaskId = source.id as Task['id'];
+      const taskId = source.id as string;
       const nextTaskId = sectionTaskIds?.[source.index + 1];
 
-      tasksApi
-        .move(workspaceId!, projectId!, currentTaskId, {
-          sectionId,
-          previousTaskId,
-          nextTaskId,
-        })
-        .catch((err) => {
-          toast.error(err.message);
-        });
+      moveTask({
+        path: { workspaceId: workspaceId!, projectId: projectId!, taskId },
+        body: { sectionId, previousTaskId, nextTaskId },
+      }).catch((err) => {
+        toast.error(err.message);
+      });
     }
   };
 
@@ -201,13 +204,13 @@ export default function KanbanView() {
       <TaskDetailsView
         open={taskDetails.value}
         onClose={taskDetails.setFalse}
-        task={tasksMap[taskId!]}
+        task={tasksMap[taskId ?? '']}
       />
 
       <ActionMenu
         open={!!columnMenu.anchorEl}
         anchorEl={columnMenu.anchorEl}
-        onClose={() => setColumnMenu({ id: undefined, anchorEl: undefined })}
+        onClose={() => setColumnMenu({ id: null, anchorEl: null })}
         actions={[
           {
             label: 'Delete',
@@ -224,7 +227,7 @@ export default function KanbanView() {
       <DeleteSectionDialog
         open={deleteSectionDialog.value}
         onClose={deleteSectionDialog.setFalse}
-        sectionId={deleteSectionId}
+        sectionId={deleteSectionId ?? ''}
         hasTasks={items[deleteSectionId ?? '']?.length > 0}
         options={sections.filter((s) => s.id !== deleteSectionId)}
       />

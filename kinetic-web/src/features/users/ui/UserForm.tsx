@@ -16,7 +16,6 @@ import type { UserDto } from '../../../shared/api';
 import { zEWorkspaceRole } from '../../../shared/api/zod.gen';
 import { Form, FormSelect, FormTextField } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import type { Callback } from '../../../shared/types';
 import { workspaceRoleOptions } from '../../workspaces/constants';
 import { useCreateUser, useUpdateUser } from '../hooks';
 
@@ -34,7 +33,7 @@ const defaultValues: UserForm = {
 
 export type UserFormProps = {
   open: boolean;
-  onClose: Callback;
+  onClose: VoidFunction;
   user?: UserDto;
 };
 
