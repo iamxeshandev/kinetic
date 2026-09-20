@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
-  devtools: true,
+  // devtools: true,
   plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
   build: {
     outDir: '../kinetic-api/wwwroot/',
