@@ -3,15 +3,15 @@ import { useSortable } from '@dnd-kit/react/sortable';
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { useParams } from 'react-router';
-import type { SectionDto } from '../../../../../../shared/api';
-import { varAlpha } from '../../../../../../shared/helpers';
-import { useBoolean } from '../../../../../../shared/hooks';
-import { AddIcon, MoreIcon } from '../../../../../../shared/icons';
-import { toast } from '../../../../../../shared/toast';
-import { InlineText } from '../../../../../../shared/ui';
-import { useUpdateSection } from '../../../hooks';
-import type { DraggableItem } from '../KanbanView';
-import { NewTask } from '../kanban-item/NewKanbanItem';
+import type { SectionDto } from '../../../../../shared/api';
+import { varAlpha } from '../../../../../shared/helpers';
+import { useBoolean } from '../../../../../shared/hooks';
+import { AddIcon, GripIcon, MoreIcon } from '../../../../../shared/icons';
+import { toast } from '../../../../../shared/toast';
+import { InlineText } from '../../../../../shared/ui';
+import { useUpdateSection } from '../../hooks';
+import type { DraggableItem } from './KanbanView';
+import { NewKanbanItem } from './NewKanbanItem';
 
 export type KanbanColumnProps = {
   index: number;
@@ -33,7 +33,7 @@ export function KanbanColumn({
   onMoreActionsClick,
   children,
 }: KanbanColumnProps) {
-  const { ref } = useSortable({
+  const { ref, handleRef } = useSortable({
     id,
     index,
     type: 'column' satisfies DraggableItem,
@@ -83,7 +83,12 @@ export function KanbanColumn({
             value={section?.name ?? ''}
             onSave={handleUpdateSectionName}
             loading={isUpdating}
-            sx={{ flex: 1, height: 40, display: 'flex', alignItems: 'center' }}
+            slotProps={{
+              typography: {
+                variant: 'h5',
+              },
+            }}
+            sx={{ flex: 1, display: 'flex', alignItems: 'center' }}
           />
 
           <IconButton
@@ -101,10 +106,16 @@ export function KanbanColumn({
           >
             <MoreIcon />
           </IconButton>
+
+          <IconButton ref={handleRef} size='small' sx={{ cursor: 'grab' }}>
+            <GripIcon />
+          </IconButton>
         </Box>
       </Card>
 
-      {newTask.value && <NewTask sectionId={id} onClose={newTask.setFalse} />}
+      {newTask.value && (
+        <NewKanbanItem sectionId={id} onClose={newTask.setFalse} />
+      )}
 
       {children}
     </Stack>

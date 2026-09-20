@@ -1,29 +1,43 @@
-import { Box, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import type { JSONContent } from '@tiptap/core';
-import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Box, MenuItem, Stack } from '@mui/material';
+import { type JSONContent } from '@tiptap/core';
+import { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { LuCalendar, LuFlag, LuText, LuUser } from 'react-icons/lu';
 import { useParams } from 'react-router';
-import {
-  type EPriority,
-  type TaskDto,
-  type TaskRequest,
-} from '../../../../../shared/api';
+import z from 'zod';
+import { type TaskDto } from '../../../../../shared/api';
+import { zEPriority } from '../../../../../shared/api/zod.gen';
 import { priorityOptions } from '../../../../../shared/constants';
+import {
+  Form,
+  FormDatePicker,
+  FormRichTextEditor,
+  FormSelect,
+  FormTextField,
+} from '../../../../../shared/form';
 import { toast } from '../../../../../shared/toast';
 import { useProjectMembers } from '../../../hooks';
 import { useUpdateTask } from '../../hooks';
 import { FieldLabel } from './FieldLabel';
 import { GridFieldLabel } from './GridFieldLabel';
 
-type TaskData = {
-  name: string;
-  description: JSONContent | null;
-  priority: EPriority;
-  dueDate: Date | null;
-  assigneeId: string;
+const taskFormSchema = z.object({
+  name: z.string().min(1, 'Enter a task name.'),
+  description: z.custom<JSONContent>().nullable(),
+  priority: zEPriority,
+  dueDate: z.date().nullable(),
+  assigneeId: z.uuid('Select a valid assignee.').or(z.literal('')),
+});
+
+type TaskForm = z.infer<typeof taskFormSchema>;
+
+const defaultValues: TaskForm = {
+  name: '',
+  description: null,
+  priority: 'None',
+  dueDate: null,
+  assigneeId: '',
 };
 
 export type OverviewSectionProps = {
@@ -42,28 +56,35 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
     task?.id ?? '',
   );
 
-  const [data, setData] = useState<TaskData>({
-    name: '',
-    description: null,
-    priority: 'None',
-    dueDate: null,
-    assigneeId: '',
+  const methods = useForm<TaskForm>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues,
+  });
+
+  const [name, description] = useWatch({
+    control: methods.control,
+    name: ['name', 'description'],
+  });
+
+  const [priority, dueDate, assigneeId] = useWatch({
+    control: methods.control,
+    name: ['priority', 'dueDate', 'assigneeId'],
   });
 
   useEffect(() => {
     if (!open) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setData({
-      name: task?.name ?? '',
-      description: task?.description ?? null,
-      priority: task?.priority ?? 'None',
-      dueDate: task?.dueDate ? new Date(task.dueDate) : null,
-      assigneeId: task?.assignee?.id
-        ? (members.find((m) => m.id === task?.assignee?.id)?.id ?? '')
-        : '',
+    methods.reset({
+      name: task?.name ?? defaultValues.name,
+      description: task?.description ?? defaultValues.description,
+      priority: task?.priority ?? defaultValues.priority,
+      dueDate: task?.dueDate ? new Date(task.dueDate) : defaultValues.dueDate,
+      assigneeId:
+        members.find((member) => member.id === task?.assignee?.id)?.id ??
+        defaultValues.assigneeId,
     });
   }, [
     members,
+    methods,
     open,
     task?.assignee?.id,
     task?.description,
@@ -72,36 +93,48 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
     task?.priority,
   ]);
 
-  const handleUpdate = (value: Record<string, unknown>) => {
-    const fallback = data;
-    const newData = { ...data, ...value };
+  // Debounce updates
+  useEffect(() => {
+    if (!methods.formState.isDirty || !task) return;
 
-    setData(newData);
+    const timer = setTimeout(() => {
+      updateTask({
+        sectionId: task.sectionId,
+        name: name ?? '',
+        description: description || null,
+        priority: methods.getValues('priority') ?? 'None',
+        dueDate: methods.getValues('dueDate')?.toISOString() ?? null,
+        assigneeId: methods.getValues('assigneeId') || null,
+      }).catch((err) => {
+        toast.error(err.message);
+      });
+    }, 1000);
 
-    const payload: TaskRequest = {
-      sectionId: task!.sectionId,
-      name: newData.name,
-      description: newData.description,
-      priority: newData.priority,
-      dueDate: newData.dueDate?.toISOString() ?? null,
-      assigneeId: newData.assigneeId || null,
-    };
+    return () => clearTimeout(timer);
+  }, [description, methods, name, task, updateTask]);
 
-    updateTask(payload).catch((err) => {
+  // Immediate updates
+  useEffect(() => {
+    if (!methods.formState.isDirty || !task) return;
+
+    updateTask({
+      sectionId: task.sectionId,
+      name: methods.getValues('name') ?? '',
+      description: methods.getValues('description') || null,
+      priority: priority ?? 'None',
+      dueDate: dueDate?.toISOString() ?? null,
+      assigneeId: assigneeId || null,
+    }).catch((err) => {
       toast.error(err.message);
-      setData(fallback);
-      console.error(err);
     });
-  };
+  }, [assigneeId, dueDate, methods, priority, task, updateTask]);
 
   return (
-    <>
-      <TextField
-        label='Name'
-        value={data.name}
-        onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
-        required
-      />
+    <Form
+      methods={methods}
+      sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+    >
+      <FormTextField name='name' label='Name' required />
 
       <Box
         sx={{
@@ -117,9 +150,8 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
         }}
       >
         <GridFieldLabel icon={LuFlag} label='Priority' />
-        <Select
-          value={data.priority}
-          onChange={(e) => handleUpdate({ priority: e.target.value })}
+        <FormSelect
+          name='priority'
           size='small'
           sx={{ backgroundColor: 'background.paper' }}
         >
@@ -128,12 +160,11 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
               {label}
             </MenuItem>
           ))}
-        </Select>
+        </FormSelect>
 
         <GridFieldLabel icon={LuUser} label='Assignee' />
-        <Select
-          value={data.assigneeId}
-          onChange={(e) => handleUpdate({ assigneeId: e.target.value })}
+        <FormSelect
+          name='assigneeId'
           size='small'
           sx={{ borderRadius: 4, backgroundColor: 'background.paper' }}
         >
@@ -143,26 +174,23 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
               {`${firstName} ${lastName}`}
             </MenuItem>
           ))}
-        </Select>
+        </FormSelect>
 
         <GridFieldLabel icon={LuCalendar} label='Due Date' />
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DatePicker
-            value={data.dueDate}
-            onChange={(newValue) => handleUpdate({ dueDate: newValue })}
-            slotProps={{
-              field: { clearable: true },
-              textField: { size: 'small' },
-            }}
-            sx={{ backgroundColor: 'background.paper' }}
-          />
-        </LocalizationProvider>
+        <FormDatePicker
+          name='dueDate'
+          slotProps={{
+            field: { clearable: true },
+            textField: { size: 'small' },
+          }}
+          sx={{ backgroundColor: 'background.paper' }}
+        />
       </Box>
 
       <Stack spacing={1}>
         <FieldLabel label='Description' icon={LuText} />
-        <TextField name='description' sx={{ borderRadius: 2 }} />
+        <FormRichTextEditor name='description' />
       </Stack>
-    </>
+    </Form>
   );
 }

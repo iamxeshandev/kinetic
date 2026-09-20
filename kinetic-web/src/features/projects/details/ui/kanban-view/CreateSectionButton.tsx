@@ -32,10 +32,11 @@ export function CreateSectionButton() {
     />
   ) : (
     <Button
+      size='large'
       variant='secondary'
       onClick={showField.setTrue}
       startIcon={<AddIcon />}
-      sx={{ alignSelf: 'start', width: 300, height: 56 }}
+      sx={{ alignSelf: 'start' }}
     >
       Create Section
     </Button>

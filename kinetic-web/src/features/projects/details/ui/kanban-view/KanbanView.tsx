@@ -22,8 +22,8 @@ import { useSections, useTasks } from '../../hooks';
 import { TaskDetailsView } from '../task-details-view';
 import { CreateSectionButton } from './CreateSectionButton.js';
 import { DeleteSectionDialog } from './DeleteSectionDialog.js';
-import { KanbanColumn } from './kanban-column/KanbanColumn.js';
-import { KanbanItem } from './kanban-item/KanbanItem.js';
+import { KanbanColumn } from './KanbanColumn.js';
+import { KanbanItem } from './KanbanItem.js';
 
 export type DraggableItem = 'column' | 'item';
 
@@ -35,7 +35,10 @@ export default function KanbanView() {
     projectId!,
   );
 
-  const { data: tasks = [] } = useTasks(workspaceId!, projectId!);
+  const { data: tasks = [], mutate: mutateTasks } = useTasks(
+    workspaceId!,
+    projectId!,
+  );
 
   const [taskId, setTaskId] = useState<string | null>(null);
 
@@ -91,9 +94,7 @@ export default function KanbanView() {
   const onDragStart = (event: DragStartEvent) => {
     const { source } = event.operation;
     if (!source || !isSortable(source)) return;
-
     const type = source.type as DraggableItem;
-
     if (type === 'item') {
       itemLastGroup.current = source.initialGroup as string;
       itemLastIndex.current = source.initialIndex;
@@ -103,11 +104,8 @@ export default function KanbanView() {
   const onDragOver = (event: DragOverEvent) => {
     const { source } = event.operation;
     if (!source || !isSortable(source)) return;
-
     const type = source.type as DraggableItem;
-
     if (type === 'column') return;
-
     setItems((items) => move(items, event));
   };
 
@@ -117,19 +115,17 @@ export default function KanbanView() {
 
     const type = source.type as DraggableItem;
 
+    // * Sections
     if (type === 'column' && source.initialIndex !== source.index) {
       const currentIndex = source.initialIndex;
       const newIndex = source.index;
 
-      const oldSections = sections;
       const newSections = arrayMove(sections, currentIndex, newIndex);
 
       const previousSectionId =
         newIndex === 0 ? null : newSections[newIndex - 1]?.id;
       const currentSectionId = source.id as string;
       const nextSectionId = newSections[newIndex + 1]?.id;
-
-      mutateSections(newSections, false);
 
       moveSection({
         path: {
@@ -138,12 +134,14 @@ export default function KanbanView() {
           sectionId: currentSectionId,
         },
         body: { previousSectionId, nextSectionId },
-      }).catch((err) => {
-        toast.error(err.message);
-        mutateSections(oldSections, false);
-      });
+      })
+        .then(() => mutateSections(newSections, false))
+        .catch((err) => {
+          toast.error(err.message);
+        });
     }
 
+    // * Tasks
     if (
       type === 'item' &&
       (source.group !== itemLastGroup.current ||
@@ -159,9 +157,19 @@ export default function KanbanView() {
       moveTask({
         path: { workspaceId: workspaceId!, projectId: projectId!, taskId },
         body: { sectionId, previousTaskId, nextTaskId },
-      }).catch((err) => {
-        toast.error(err.message);
-      });
+      })
+        .then((res) =>
+          mutateTasks(
+            (prev) =>
+              prev
+                ?.map((t) => (t.id === res.data.data?.id ? res.data.data : t))
+                .sort((a, b) => a.position - b.position),
+            false,
+          ),
+        )
+        .catch((err) => {
+          toast.error(err.message);
+        });
     }
   };
 
