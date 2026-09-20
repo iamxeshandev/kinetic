@@ -8,7 +8,7 @@ import {
 
 type FormProps<TFieldValues extends FieldValues = FieldValues> = {
   methods: UseFormReturn<TFieldValues>;
-  onSubmit: SubmitHandler<TFieldValues>;
+  onSubmit?: SubmitHandler<TFieldValues>;
   children: React.ReactNode;
   sx?: SxProps<Theme>;
 };
@@ -25,7 +25,7 @@ export function Form<TFieldValues extends FieldValues = FieldValues>({
         component='form'
         noValidate
         autoComplete='off'
-        onSubmit={methods.handleSubmit(onSubmit)}
+        onSubmit={onSubmit ? methods.handleSubmit(onSubmit) : undefined}
         sx={sx}
       >
         {children}

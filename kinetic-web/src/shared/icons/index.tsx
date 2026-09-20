@@ -9,6 +9,7 @@ import {
   LuEllipsisVertical,
   LuFiles,
   LuFolderKanban,
+  LuGripVertical,
   LuLayoutDashboard,
   LuList,
   LuListFilter,
@@ -89,3 +90,5 @@ export const TrashIcon = LuTrash;
 export const UserIcon = LuUser;
 
 export const UsersIcon = LuUsers;
+
+export const GripIcon = LuGripVertical;

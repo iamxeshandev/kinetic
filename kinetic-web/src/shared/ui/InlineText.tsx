@@ -58,7 +58,6 @@ export function InlineText({
 
   const renderInput = (
     <TextField
-      size='small'
       {...slotProps?.textField}
       inputRef={inputRef}
       value={draft}
@@ -90,9 +89,7 @@ export function InlineText({
   );
 
   const renderText = (
-    <Typography sx={{ px: 1.75 }} {...slotProps?.typography}>
-      {value}
-    </Typography>
+    <Typography {...slotProps?.typography}>{value}</Typography>
   );
 
   return (

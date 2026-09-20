@@ -72,7 +72,7 @@ export const zProjectDto = z.object({
     description: z.string().nullable(),
     status: zEProjectStatus,
     priority: zEPriority,
-    role: zEProjectRole,
+    role: zEProjectRole.nullable(),
     isFavorite: z.boolean(),
     dueDate: z.iso.datetime().nullable(),
     team: z.array(zProjectMemberDto).nullable()
@@ -162,10 +162,7 @@ export const zTaskAttachmentDto = z.object({
     id: z.uuid(),
     fileName: z.string(),
     contentType: z.string(),
-    size: z.union([
-        z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
-        z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })
-    ]),
+    size: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
     downloadUrl: z.string()
 });
 
@@ -184,6 +181,7 @@ export const zTaskDto = z.object({
     sectionId: z.uuid(),
     name: z.string(),
     description: zJsonElement.nullable(),
+    position: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
     priority: zEPriority,
     dueDate: z.iso.datetime().nullable(),
     completedAt: z.iso.datetime().nullable(),
@@ -242,10 +240,7 @@ export const zWorkspaceDto = z.object({
     name: z.string(),
     role: zEWorkspaceRole,
     isPersonal: z.boolean(),
-    memberCount: z.union([
-        z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
-        z.string().regex(/^-?(?:0|[1-9]\d*)$/)
-    ])
+    memberCount: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
 });
 
 export const zMeDto = z.object({
@@ -563,10 +558,7 @@ export const zUploadTaskAttachmentBody = z.object({
     ContentType: z.string().optional(),
     ContentDisposition: z.string().optional(),
     Headers: z.record(z.string(), z.array(z.string())).optional(),
-    Length: z.union([
-        z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
-        z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })
-    ]).optional(),
+    Length: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).optional(),
     Name: z.string().optional(),
     FileName: z.string().optional()
 });
@@ -681,7 +673,7 @@ export const zMoveTaskPath = z.object({
 /**
  * OK
  */
-export const zMoveTaskResponse = zResponse;
+export const zMoveTaskResponse = zResponseOfTaskDto;
 
 export const zGetUsersPath = z.object({
     workspaceId: z.uuid()

@@ -55,7 +55,7 @@ export type ProjectDto = {
     description: null | string;
     status: EProjectStatus;
     priority: EPriority;
-    role: EProjectRole;
+    role: null | EProjectRole;
     isFavorite: boolean;
     dueDate: null | string;
     team: null | Array<ProjectMemberDto>;
@@ -199,7 +199,7 @@ export type TaskAttachmentDto = {
     id: string;
     fileName: string;
     contentType: string;
-    size: number | string;
+    size: number;
     downloadUrl: string;
 };
 
@@ -208,6 +208,7 @@ export type TaskDto = {
     sectionId: string;
     name: string;
     description: null | JsonElement;
+    position: number;
     priority: EPriority;
     dueDate: null | string;
     completedAt: null | string;
@@ -246,7 +247,7 @@ export type WorkspaceDto = {
     name: string;
     role: EWorkspaceRole;
     isPersonal: boolean;
-    memberCount: number | string;
+    memberCount: number;
 };
 
 export type WorkspaceRequest = {
@@ -772,7 +773,7 @@ export type UploadTaskAttachmentData = {
         Headers?: {
             [key: string]: Array<string>;
         };
-        Length?: number | string;
+        Length?: number;
         Name?: string;
         FileName?: string;
     };
@@ -968,7 +969,7 @@ export type MoveTaskResponses = {
     /**
      * OK
      */
-    200: Response;
+    200: ResponseOfTaskDto;
 };
 
 export type MoveTaskResponse = MoveTaskResponses[keyof MoveTaskResponses];
