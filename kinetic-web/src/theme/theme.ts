@@ -1,4 +1,5 @@
 import { createTheme, Paper } from '@mui/material';
+import { typography } from './typography';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -51,53 +52,7 @@ export const theme = createTheme({
     light: { palette: { surface: { subtle: '#F8F8F8' } } },
     dark: { palette: { surface: { subtle: '#1A1A1A' } } },
   },
-  typography: {
-    h1: {
-      fontSize: '2.5rem',
-      fontWeight: 'bold',
-    },
-    h2: {
-      fontSize: '2.25rem',
-      fontWeight: 'bold',
-    },
-    h3: {
-      fontSize: '2rem',
-      fontWeight: 'bold',
-    },
-    h4: {
-      fontSize: '1.75rem',
-      fontWeight: 'bold',
-    },
-    h5: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-    },
-    h6: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
-    },
-    subtitle1: {
-      color: 'var(--mui-palette-text-secondary)',
-    },
-    subtitle2: {
-      color: 'var(--mui-palette-text-secondary)',
-    },
-    overline: undefined,
-    overline1: {
-      fontWeight: 'bold',
-      textTransform: 'uppercase',
-      color: 'var(--mui-palette-text-secondary)',
-    },
-    overline2: {
-      fontWeight: 'bold',
-      textTransform: 'uppercase',
-      color: 'var(--mui-palette-text-secondary)',
-      fontSize: '0.875rem',
-    },
-    caption: {
-      fontWeight: 'bold',
-    },
-  },
+  typography,
   shape: {
     borderRadius: 8,
   },
