@@ -47,6 +47,7 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                 o.SectionId,
                 o.Name,
                 o.Description,
+                o.Position,
                 o.Priority,
                 o.DueDate,
                 o.CompletedAt,
@@ -95,6 +96,7 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                 o.SectionId,
                 o.Name,
                 o.Description,
+                o.Position,
                 o.Priority,
                 o.DueDate,
                 o.CompletedAt,
@@ -162,35 +164,45 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response<TaskDto>> UpdateTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
         TaskRequest request)
     {
-        var task = await db.Tasks.SingleOrDefaultAsync(o =>
-                       o.Id == taskId && o.Section.ProjectId == projectId &&
-                       o.Section.Project.WorkspaceId == workspaceId) ??
-                   throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
+        var strategy = db.Database.CreateExecutionStrategy();
 
-        task.Name = request.Name;
-        task.Description = request.Description;
-        task.Priority = request.Priority;
-        task.DueDate = request.DueDate;
-
-        if (task.AssigneeId != request.AssigneeId)
+        await strategy.ExecuteAsync(async () =>
         {
-            task.AssigneeId = request.AssigneeId;
-            task.AssignedAt = request.AssigneeId.HasValue ? DateTimeOffset.UtcNow : null;
-        }
+            await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
-        task.UpdatedAt = DateTimeOffset.UtcNow;
-        task.UpdatedBy = accessor.GetUserId();
+            var task = await db.Tasks.SingleOrDefaultAsync(o =>
+                           o.Id == taskId && o.Section.ProjectId == projectId &&
+                           o.Section.Project.WorkspaceId == workspaceId) ??
+                       throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
-        await db.SaveChangesAsync();
+            task.Name = request.Name;
+            task.Description = request.Description;
+            task.Priority = request.Priority;
+            task.DueDate = request.DueDate;
+
+            if (task.AssigneeId != request.AssigneeId)
+            {
+                task.AssigneeId = request.AssigneeId;
+                task.AssignedAt = request.AssigneeId.HasValue ? DateTimeOffset.UtcNow : null;
+            }
+
+            task.UpdatedAt = DateTimeOffset.UtcNow;
+            task.UpdatedBy = accessor.GetUserId();
+
+            await db.SaveChangesAsync();
+            await transaction.CommitAsync();
+        });
+
         return new Response<TaskDto>("Task updated.",
             await GetTaskByIdAsync(workspaceId, projectId, taskId).GetDataAsync());
     }
 
-    public async Task<Response> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId, MoveTaskRequest request)
+    public async Task<Response<TaskDto>> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
+        MoveTaskRequest request)
     {
         var strategy = db.Database.CreateExecutionStrategy();
 
-        return await strategy.ExecuteAsync(async () =>
+        await strategy.ExecuteAsync(async () =>
         {
             await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
@@ -247,9 +259,10 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                     s.SetProperty(o => o.Position, newPosition).SetProperty(o => o.SectionId, request.SectionId));
 
             await transaction.CommitAsync();
-
-            return new Response("Task moved.");
         });
+
+        return new Response<TaskDto>("Task moved.",
+            await GetTaskByIdAsync(workspaceId, projectId, taskId).GetDataAsync());
     }
 
     public async Task<Response> MoveSectionTasksAsync(Guid workspaceId, Guid projectId, Guid sectionId,

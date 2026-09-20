@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using kinetic_api.Authorization;
 using kinetic_api.Configuration;
 using kinetic_api.Data;
@@ -41,6 +42,13 @@ builder.Services.AddScoped<WorkspaceService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<SectionService>();
 builder.Services.AddScoped<TaskService>();
+
+
+// JSON Config
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+});
 
 
 // Controllers Config

@@ -43,7 +43,7 @@ public class TasksController(TaskService service) : ControllerBase
 
     [HttpPatch("{taskId:guid}/move")]
     [EndpointName("MoveTask")]
-    public async Task<ActionResult<Response>> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
+    public async Task<ActionResult<Response<TaskDto>>> MoveTaskAsync(Guid workspaceId, Guid projectId, Guid taskId,
         MoveTaskRequest request)
     {
         return await service.MoveTaskAsync(workspaceId, projectId, taskId, request);

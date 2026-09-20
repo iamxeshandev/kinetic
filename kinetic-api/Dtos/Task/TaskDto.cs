@@ -11,6 +11,7 @@ public record TaskDto(
     Guid SectionId,
     string Name,
     JsonElement? Description,
+    long Position,
     EPriority Priority,
     DateTimeOffset? DueDate,
     DateTimeOffset? CompletedAt,
