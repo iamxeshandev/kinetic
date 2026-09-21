@@ -1,9 +1,15 @@
 import { useSortable } from '@dnd-kit/react/sortable';
-import { Avatar, Box, Card, Divider, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Card, Chip, Stack, Typography } from '@mui/material';
+import type { ColorToken } from '../../../../../mui/types';
 import type { EPriority, TaskDto } from '../../../../../shared/api';
 import { formatDate, getInitials } from '../../../../../shared/helpers';
+import {
+  AttachmentIcon,
+  CalendarIcon,
+  SubtasksIcon,
+} from '../../../../../shared/icons';
 import { Label } from '../../../../../shared/ui';
-import type { ColorToken } from '../../../../../theme';
+import { SegmentedProgress } from '../../../../../shared/ui/SegmentedProgress';
 import type { DraggableItem } from './KanbanView';
 
 const PRIORITY_COLORS: Record<Exclude<EPriority, 'None'>, ColorToken> = {
@@ -40,60 +46,144 @@ export function KanbanItem({
 
   if (!task) return null;
 
+  const fullName = `${task.assignee?.firstName ?? ''} ${task.assignee?.lastName ?? ''}`;
+  const attachmentCount = task.attachments?.length ?? 0;
+  const completedSubtaskCount =
+    task.subtasks?.filter((subtask) => subtask.isCompleted).length ?? 0;
+  const subtaskCount = task.subtasks?.length ?? 0;
+
+  const showFooter = !!task.dueDate || !!attachmentCount || !!task.assignee;
+
   return (
     <Card
       ref={ref}
       onClick={(e) => onEditTask?.(e, id)}
       sx={{
-        p: 2,
+        p: 1,
+        flexShrink: 0,
         scale: isDragging ? 1.05 : 1,
+        cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
         gap: 1,
-        flexShrink: 0,
+        ':hover': {
+          outline: 2,
+          outlineColor: 'primary.main',
+        },
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Stack direction={'row'} spacing={1} sx={{ alignItems: 'center' }}>
+        <Typography
+          variant='overline'
+          color='textSecondary'
+          sx={{
+            p: 0.5,
+            backgroundColor: 'background.neutral',
+            border: 1,
+            borderColor: 'divider',
+            borderRadius: 1,
+          }}
+        >
+          TASK-{task.refId.toString().padStart(3, '0')}
+        </Typography>
         {task.priority !== 'None' && (
-          <Label color={PRIORITY_COLORS[task.priority]} size='small'>
+          <Label
+            color={PRIORITY_COLORS[task.priority]}
+            size='small'
+            sx={{ textTransform: 'uppercase' }}
+          >
             <Box
               sx={{
-                width: 8,
-                height: 8,
+                width: '0.5rem',
+                height: '0.5rem',
+                borderRadius: '50%',
                 backgroundColor: `${PRIORITY_COLORS[task.priority]}.main`,
-                borderRadius: 50,
-                mr: 1,
-                opacity: 0.9,
               }}
             />
             {task.priority}
           </Label>
         )}
-      </Box>
+      </Stack>
 
       <Typography variant='subtitle1'>{task?.name}</Typography>
 
-      <Divider />
+      {/* Subtasks */}
+      {!!task.subtasks?.length && (
+        <Box
+          sx={{
+            p: 1,
+            backgroundColor: (theme) => theme.vars!.palette.background.neutral,
+            borderRadius: 2,
+          }}
+        >
+          <Typography
+            variant='subtitle2'
+            color='textSecondary'
+            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}
+          >
+            <SubtasksIcon />
+            Subtasks
+            <Box component={'span'} sx={{ flex: 1 }} aria-hidden />
+            {completedSubtaskCount}/{subtaskCount}
+          </Typography>
 
-      <Stack direction={'row'} spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography variant='caption'>
-          {formatDate(task.dueDate, 'short')}
-        </Typography>
+          <SegmentedProgress
+            value={completedSubtaskCount}
+            segments={subtaskCount}
+          />
+        </Box>
+      )}
 
-        {!!task.attachments?.length && (
-          <Typography variant='caption'>{task.attachments?.length}</Typography>
-        )}
+      {showFooter && (
+        <Stack
+          direction={'row'}
+          spacing={1}
+          sx={{
+            alignItems: 'center',
+            pt: 1,
+            borderTop: 1,
+            borderTopColor: 'divider',
+          }}
+        >
+          {/* Due Date */}
+          {!!task.dueDate && (
+            <Chip
+              size='small'
+              label={
+                <Typography
+                  variant='caption'
+                  sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                >
+                  <CalendarIcon /> {formatDate(task.dueDate, 'short')}
+                </Typography>
+              }
+            />
+          )}
 
-        <Box sx={{ flex: 1 }} aria-hidden />
+          {/* Attachments */}
+          {!!attachmentCount && (
+            <Typography
+              variant='caption'
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+            >
+              <AttachmentIcon /> {attachmentCount}
+            </Typography>
+          )}
 
-        {!!task.assignee && (
-          <Avatar size='small'>
-            {getInitials(
-              `${task.assignee.firstName} ${task.assignee.lastName}`,
-            )}
-          </Avatar>
-        )}
-      </Stack>
+          <Box sx={{ flex: 1 }} aria-hidden />
+
+          {/* Assignee */}
+          {!!task.assignee && (
+            <Avatar
+              size='small'
+              src={task.assignee?.avatarUrl ?? undefined}
+              alt={fullName}
+            >
+              {getInitials(fullName)}
+            </Avatar>
+          )}
+        </Stack>
+      )}
     </Card>
   );
 }

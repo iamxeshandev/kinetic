@@ -1,10 +1,14 @@
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 import {
+  createSubtask,
   createTask,
+  deleteSubtask,
   deleteTask,
   getTasks,
+  updateSubtask,
   updateTask,
+  type SubtaskRequest,
   type TaskDto,
   type TaskRequest,
 } from '../../../../shared/api';
@@ -66,5 +70,92 @@ export const useDeleteTask = (
       revalidate: false,
       populateCache: (_, currentData: TaskDto[] = []) =>
         currentData.filter((task) => task.id !== taskId),
+    },
+  );
+
+export const useCreateSubtask = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+) =>
+  useSWRMutation(
+    KEY(workspaceId, projectId),
+    (_, { arg }: { arg: SubtaskRequest }) =>
+      createSubtask({
+        path: { workspaceId, projectId, taskId },
+        body: arg,
+      }).then((res) => res.data),
+    {
+      revalidate: false,
+      populateCache: (res, currentData: TaskDto[] = []) =>
+        currentData.map((task) =>
+          task.id === res.data?.taskId
+            ? {
+                ...task,
+                subtasks: [res.data, ...(task.subtasks ?? [])],
+              }
+            : task,
+        ),
+    },
+  );
+
+export const useUpdateSubtask = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+) =>
+  useSWRMutation(
+    KEY(workspaceId, projectId),
+    (
+      _,
+      {
+        arg: { subtaskId, ...payload },
+      }: { arg: { subtaskId: string } & SubtaskRequest },
+    ) =>
+      updateSubtask({
+        path: { workspaceId, projectId, taskId, subtaskId },
+        body: payload,
+      }).then((res) => res.data),
+    {
+      revalidate: false,
+      populateCache: (res, currentData: TaskDto[] = []) =>
+        currentData.map((task) =>
+          task.id === res.data?.taskId
+            ? {
+                ...task,
+                subtasks:
+                  task.subtasks?.map((subtask) =>
+                    subtask.id === res.data?.id ? res.data : subtask,
+                  ) ?? null,
+              }
+            : task,
+        ),
+    },
+  );
+
+export const useDeleteSubtask = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+) =>
+  useSWRMutation(
+    KEY(workspaceId, projectId),
+    (_, { arg: { subtaskId } }: { arg: { subtaskId: string } }) =>
+      deleteSubtask({
+        path: { workspaceId, projectId, taskId, subtaskId },
+      }).then((res) => ({ ...res.data, data: subtaskId })),
+    {
+      revalidate: false,
+      populateCache: (res, currentData: TaskDto[] = []) =>
+        currentData.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                subtasks:
+                  task.subtasks?.filter((subtask) => subtask.id !== res.data) ??
+                  null,
+              }
+            : task,
+        ),
     },
   );

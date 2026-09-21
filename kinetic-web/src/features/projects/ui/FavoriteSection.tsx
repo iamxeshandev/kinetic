@@ -21,7 +21,7 @@ export function FavoriteSection({
   if (favoriteProjects.length === 0) return null;
   return (
     <Box>
-      <Typography variant='overline1'>Favorites</Typography>
+      <Typography variant='overline'>Favorites</Typography>
       <Box
         sx={{
           display: 'grid',

@@ -50,7 +50,7 @@ export function AllProjectsSection({
           justifyContent: 'space-between',
         }}
       >
-        <Typography variant='overline1'>All Projects</Typography>
+        <Typography variant='overline'>All Projects</Typography>
 
         <ToggleButtonGroup
           aria-label='View'

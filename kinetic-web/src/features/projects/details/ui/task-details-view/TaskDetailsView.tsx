@@ -4,13 +4,13 @@ import { AttachmentsSection } from './AttachmentsSection';
 import { OverviewSection } from './OverviewSection';
 import { SubtasksSection } from './SubtasksSection';
 
-export type TaskFormProps = {
+export type TaskDetailsViewProps = {
   open: boolean;
   onClose: VoidFunction;
-  task?: TaskDto;
+  task: TaskDto;
 };
 
-export function TaskDetailsView({ open, onClose, task }: TaskFormProps) {
+export function TaskDetailsView({ open, onClose, task }: TaskDetailsViewProps) {
   return (
     <Drawer
       open={open}
@@ -36,7 +36,7 @@ export function TaskDetailsView({ open, onClose, task }: TaskFormProps) {
         sx={{ flex: 1, p: 2, overflow: 'auto', position: 'relative' }}
       >
         <OverviewSection open={open} task={task} />
-        <SubtasksSection />
+        <SubtasksSection task={task} />
         <AttachmentsSection />
       </Stack>
     </Drawer>

@@ -17,7 +17,7 @@ export function NewKanbanItem({
 }) {
   const { workspaceId, projectId } = useParams();
 
-  const { trigger, isMutating: isSubmitting } = useCreateTask(
+  const { trigger: createTask, isMutating: isCreating } = useCreateTask(
     workspaceId!,
     projectId!,
   );
@@ -30,39 +30,28 @@ export function NewKanbanItem({
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
-  const reset = () => setValue('');
-
-  const createTask = async () => {
-    const name = value.trim();
-    if (!name) return;
-    try {
-      await trigger({
-        sectionId,
-        name,
-        description: null,
-        priority: 'None',
-        dueDate: null,
-        assigneeId: null,
-      });
-
-      reset();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const onKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      onClose();
-    }
-    if (e.key === 'Enter' && !e.shiftKey) {
-      await createTask();
-    }
-  };
-
-  const onBlur = async () => {
-    await createTask();
+  const cancelCreateTask = () => {
     onClose();
+    setValue('');
+  };
+
+  const handleCreateTask = async () => {
+    if (isCreating) return;
+    const name = value.trim();
+    if (!name) {
+      cancelCreateTask();
+      return;
+    }
+    await createTask({
+      sectionId,
+      name,
+      description: null,
+      priority: 'None',
+      dueDate: null,
+      assigneeId: null,
+    })
+      .then(() => cancelCreateTask())
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -75,12 +64,20 @@ export function NewKanbanItem({
         placeholder='New Task'
         variant='standard'
         multiline
-        onKeyDown={onKeyDown}
-        onBlur={onBlur}
-        disabled={isSubmitting}
+        disabled={isCreating}
+        onBlur={isCreating ? undefined : handleCreateTask}
+        onKeyDown={async (e) => {
+          if (e.key === 'Escape') {
+            e.stopPropagation();
+            onClose();
+          }
+          if (e.key === 'Enter' && !e.shiftKey) {
+            await handleCreateTask();
+          }
+        }}
         slotProps={{
           input: {
-            endAdornment: isSubmitting && (
+            endAdornment: isCreating && (
               <InputAdornment position='end'>
                 <CircularProgress size={20} />
               </InputAdornment>

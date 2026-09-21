@@ -2,8 +2,8 @@ import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { motion } from 'motion/react';
 import { NavLink } from 'react-router';
 
-import heroImg from '../../../../assets/hero.svg';
-import { paths } from '../../../../routes/paths';
+import heroImg from '../../../assets/hero.svg';
+import { paths } from '../../../routes';
 
 export function HeroSection() {
   return (

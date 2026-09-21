@@ -33,7 +33,7 @@ export function ProjectHealth({
         : 'success';
 
   const renderStandard = () => (
-    <Typography variant='overline2' color={color}>
+    <Typography variant='overline' color={color}>
       {health}
     </Typography>
   );

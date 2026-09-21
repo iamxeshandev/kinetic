@@ -87,6 +87,9 @@ export function KanbanColumn({
               typography: {
                 variant: 'h5',
               },
+              textField: {
+                size: 'small',
+              },
             }}
             sx={{ flex: 1, display: 'flex', alignItems: 'center' }}
           />

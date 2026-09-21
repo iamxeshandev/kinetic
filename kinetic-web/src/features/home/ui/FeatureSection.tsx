@@ -2,7 +2,7 @@ import { Box, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 import { motion } from 'motion/react';
 import { MdCheckCircle } from 'react-icons/md';
 
-import featuresImg from '../../../../assets/features.svg';
+import featuresImg from '../../../assets/features.svg';
 
 export function FeatureSection() {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('md'));
