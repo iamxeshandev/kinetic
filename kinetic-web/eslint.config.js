@@ -20,6 +20,7 @@ export default defineConfig([
     },
     rules: {
       'prefer-template': 'error',
+      'object-shorthand': 'error',
     },
   },
 ]);
