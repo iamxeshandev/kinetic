@@ -22,8 +22,8 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
         var tasks = await db.Tasks
             .Where(o =>
                 o.SectionId == sectionId &&
-                o.Section.ProjectId == projectId &&
-                o.Section.Project.WorkspaceId == workspaceId)
+                o.ProjectId == projectId &&
+                o.Project.WorkspaceId == workspaceId)
             .OrderBy(o => o.Position)
             .ToListAsync();
 
@@ -40,10 +40,11 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response<List<TaskDto>>> GetAllTasksAsync(Guid workspaceId, Guid projectId)
     {
         var records = await db.Tasks
-            .Where(o => o.Section.ProjectId == projectId && o.Section.Project.WorkspaceId == workspaceId)
+            .Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
             .OrderBy(o => o.Position)
             .Select(o => new TaskDto(
                 o.Id,
+                o.RefId,
                 o.SectionId,
                 o.Name,
                 o.Description,
@@ -66,12 +67,12 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                     .SingleOrDefault(),
                 db.Subtasks
                     .Where(st => st.TaskId == o.Id)
-                    .Select(st => new SubtaskDto(st.Id, st.TaskId, st.Name))
+                    .Select(st => new SubtaskDto(st.Id, st.TaskId, st.Name, st.IsCompleted))
                     .ToList(),
                 db.TaskAttachments
                     .Where(ta =>
-                        ta.TaskId == o.Id && ta.Task.Section.ProjectId == projectId &&
-                        ta.Task.Section.Project.WorkspaceId == workspaceId)
+                        ta.TaskId == o.Id && ta.Task.ProjectId == projectId &&
+                        ta.Task.Project.WorkspaceId == workspaceId)
                     .Select(ta => new TaskAttachmentDto(
                         ta.Id,
                         ta.FileName,
@@ -89,10 +90,11 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response<TaskDto>> GetTaskByIdAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         var record = await db.Tasks
-            .Where(o => o.Id == taskId && o.Section.ProjectId == projectId &&
-                        o.Section.Project.WorkspaceId == workspaceId)
+            .Where(o => o.Id == taskId && o.ProjectId == projectId &&
+                        o.Project.WorkspaceId == workspaceId)
             .Select(o => new TaskDto(
                 o.Id,
+                o.RefId,
                 o.SectionId,
                 o.Name,
                 o.Description,
@@ -115,12 +117,12 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                     .SingleOrDefault(),
                 db.Subtasks
                     .Where(st => st.TaskId == o.Id)
-                    .Select(st => new SubtaskDto(st.Id, st.TaskId, st.Name))
+                    .Select(st => new SubtaskDto(st.Id, st.TaskId, st.Name, st.IsCompleted))
                     .ToList(),
                 db.TaskAttachments
                     .Where(ta =>
-                        ta.TaskId == o.Id && ta.Task.Section.ProjectId == projectId &&
-                        ta.Task.Section.Project.WorkspaceId == workspaceId)
+                        ta.TaskId == o.Id && ta.Task.ProjectId == projectId &&
+                        ta.Task.Project.WorkspaceId == workspaceId)
                     .Select(ta => new TaskAttachmentDto(
                         ta.Id,
                         ta.FileName,
@@ -144,13 +146,18 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
 
         var lastPosition =
             await db.Tasks
-                .Where(o => o.SectionId == request.SectionId && o.Section.ProjectId == projectId &&
-                            o.Section.Project.WorkspaceId == workspaceId).MaxAsync(o => (long?)o.Position) ?? 0L;
+                .Where(o => o.SectionId == request.SectionId && o.ProjectId == projectId &&
+                            o.Project.WorkspaceId == workspaceId).MaxAsync(o => (long?)o.Position) ?? 0L;
+
+        var lastRefId = await db.Tasks.Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
+            .MaxAsync(o => (int?)o.RefId) ?? 0;
 
         var task = new Task
         {
-            SectionId = request.SectionId,
+            ProjectId = projectId,
+            RefId = lastRefId + 1,
             Name = request.Name,
+            SectionId = request.SectionId,
             Position = lastPosition + TaskPositionStep,
             CreatedBy = accessor.GetUserId()
         };
@@ -171,8 +178,8 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
             await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
             var task = await db.Tasks.SingleOrDefaultAsync(o =>
-                           o.Id == taskId && o.Section.ProjectId == projectId &&
-                           o.Section.Project.WorkspaceId == workspaceId) ??
+                           o.Id == taskId && o.ProjectId == projectId &&
+                           o.Project.WorkspaceId == workspaceId) ??
                        throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
             task.Name = request.Name;
@@ -207,8 +214,8 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
             await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
             var taskExists = await db.Tasks.AnyAsync(o =>
-                o.Id == taskId && o.Section.ProjectId == projectId &&
-                o.Section.Project.WorkspaceId == workspaceId);
+                o.Id == taskId && o.ProjectId == projectId &&
+                o.Project.WorkspaceId == workspaceId);
             if (!taskExists)
                 throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
@@ -222,24 +229,24 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                 { PreviousTaskId: null } => (await db.Tasks
                     .Where(o => o.Id != taskId &&
                                 o.SectionId == request.SectionId &&
-                                o.Section.ProjectId == projectId &&
-                                o.Section.Project.WorkspaceId == workspaceId)
+                                o.ProjectId == projectId &&
+                                o.Project.WorkspaceId == workspaceId)
                     .Select(o => (long?)o.Position)
                     .MinAsync() ?? 2 * TaskPositionStep) - TaskPositionStep,
 
                 { NextTaskId: null } => (await db.Tasks
                     .Where(o => o.Id != taskId &&
                                 o.SectionId == request.SectionId &&
-                                o.Section.ProjectId == projectId &&
-                                o.Section.Project.WorkspaceId == workspaceId)
+                                o.ProjectId == projectId &&
+                                o.Project.WorkspaceId == workspaceId)
                     .Select(o => (long?)o.Position)
                     .MaxAsync() ?? 0L) + TaskPositionStep,
 
                 _ => await db.Tasks
                     .Where(o =>
                         (o.Id == request.PreviousTaskId.Value || o.Id == request.NextTaskId.Value) &&
-                        o.SectionId == request.SectionId && o.Section.ProjectId == projectId &&
-                        o.Section.Project.WorkspaceId == workspaceId)
+                        o.SectionId == request.SectionId && o.ProjectId == projectId &&
+                        o.Project.WorkspaceId == workspaceId)
                     .OrderBy(o => o.Position)
                     .Select(o => o.Position)
                     .ToListAsync() is { Count: 2 } positions
@@ -254,7 +261,7 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
 
             await db.Tasks
                 .Where(o =>
-                    o.Id == taskId && o.Section.ProjectId == projectId && o.Section.Project.WorkspaceId == workspaceId)
+                    o.Id == taskId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
                 .ExecuteUpdateAsync(s =>
                     s.SetProperty(o => o.Position, newPosition).SetProperty(o => o.SectionId, request.SectionId));
 
@@ -274,13 +281,13 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
             throw new ApiException(HttpStatusCode.NotFound, "Target section not found.");
 
         var lastPosition = await db.Tasks
-            .Where(o => o.SectionId == newSectionId && o.Section.ProjectId == projectId &&
-                        o.Section.Project.WorkspaceId == workspaceId).Select(o => (long?)o.Position).MaxAsync() ?? 0L;
+            .Where(o => o.SectionId == newSectionId && o.ProjectId == projectId &&
+                        o.Project.WorkspaceId == workspaceId).Select(o => (long?)o.Position).MaxAsync() ?? 0L;
 
         var tasks = await db.Tasks
             .Where(o =>
-                o.SectionId == sectionId && o.Section.ProjectId == projectId &&
-                o.Section.Project.WorkspaceId == workspaceId)
+                o.SectionId == sectionId && o.ProjectId == projectId &&
+                o.Project.WorkspaceId == workspaceId)
             .OrderBy(o => o.Position)
             .ToListAsync();
 
@@ -297,8 +304,8 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response> DeleteTaskAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         var task = await db.Tasks.SingleOrDefaultAsync(o =>
-                       o.Id == taskId && o.Section.ProjectId == projectId &&
-                       o.Section.Project.WorkspaceId == workspaceId) ??
+                       o.Id == taskId && o.ProjectId == projectId &&
+                       o.Project.WorkspaceId == workspaceId) ??
                    throw new ApiException(HttpStatusCode.NotFound, "Task not found");
 
         task.DeletedAt = DateTimeOffset.UtcNow;
@@ -313,8 +320,8 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
         var userId = accessor.GetUserId();
 
         var tasks = await db.Tasks.Where(o =>
-            o.SectionId == sectionId && o.Section.ProjectId == projectId &&
-            o.Section.Project.WorkspaceId == workspaceId).ToListAsync();
+            o.SectionId == sectionId && o.ProjectId == projectId &&
+            o.Project.WorkspaceId == workspaceId).ToListAsync();
 
         foreach (var task in tasks)
         {

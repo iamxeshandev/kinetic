@@ -14,9 +14,9 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response<List<SubtaskDto>>> GetAllSubtasksAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         var records = await db.Subtasks
-            .Where(o => o.TaskId == taskId && o.Task.Section.ProjectId == projectId &&
-                        o.Task.Section.Project.WorkspaceId == workspaceId)
-            .Select(o => new SubtaskDto(o.Id, o.TaskId, o.Name))
+            .Where(o => o.TaskId == taskId && o.Task.ProjectId == projectId &&
+                        o.Task.Project.WorkspaceId == workspaceId)
+            .Select(o => new SubtaskDto(o.Id, o.TaskId, o.Name, o.IsCompleted))
             .ToListAsync();
 
         return new Response<List<SubtaskDto>>(records);
@@ -26,9 +26,9 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
         Guid subtaskId)
     {
         var records = await db.Subtasks
-            .Where(o => o.Id == subtaskId && o.TaskId == taskId && o.Task.Section.ProjectId == projectId &&
-                        o.Task.Section.Project.WorkspaceId == workspaceId)
-            .Select(o => new SubtaskDto(o.Id, o.TaskId, o.Name))
+            .Where(o => o.Id == subtaskId && o.TaskId == taskId && o.Task.ProjectId == projectId &&
+                        o.Task.Project.WorkspaceId == workspaceId)
+            .Select(o => new SubtaskDto(o.Id, o.TaskId, o.Name, o.IsCompleted))
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Subtask not found.");
 
         return new Response<SubtaskDto>(records);
@@ -38,7 +38,7 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
         SubtaskRequest request)
     {
         var taskExists = await db.Tasks.AnyAsync(o =>
-            o.Id == taskId && o.Section.ProjectId == projectId && o.Section.Project.WorkspaceId == workspaceId);
+            o.Id == taskId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
         if (!taskExists)
             throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
@@ -59,11 +59,12 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
         Guid subtaskId, SubtaskRequest request)
     {
         var subtask = await db.Subtasks.SingleOrDefaultAsync(o =>
-                          o.Id == subtaskId && o.TaskId == taskId && o.Task.Section.ProjectId == projectId &&
-                          o.Task.Section.Project.WorkspaceId == workspaceId) ??
+                          o.Id == subtaskId && o.TaskId == taskId && o.Task.ProjectId == projectId &&
+                          o.Task.Project.WorkspaceId == workspaceId) ??
                       throw new ApiException(HttpStatusCode.NotFound, "Subtask not found");
 
         subtask.Name = request.Name;
+        subtask.IsCompleted = request.IsCompleted;
         subtask.UpdatedAt = DateTimeOffset.UtcNow;
         subtask.UpdatedBy = accessor.GetUserId();
 
@@ -75,8 +76,8 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response> DeleteSubtaskAsync(Guid workspaceId, Guid projectId, Guid taskId, Guid subtaskId)
     {
         var subtask = await db.Subtasks.SingleOrDefaultAsync(o =>
-                          o.Id == subtaskId && o.TaskId == taskId && o.Task.Section.ProjectId == projectId &&
-                          o.Task.Section.Project.WorkspaceId == workspaceId) ??
+                          o.Id == subtaskId && o.TaskId == taskId && o.Task.ProjectId == projectId &&
+                          o.Task.Project.WorkspaceId == workspaceId) ??
                       throw new ApiException(HttpStatusCode.NotFound, "Subtask not found.");
 
         subtask.DeletedAt = DateTimeOffset.UtcNow;

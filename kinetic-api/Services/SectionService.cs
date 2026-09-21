@@ -157,8 +157,8 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
                               throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
                 var hasTasks = await db.Tasks.AnyAsync(o =>
-                    o.SectionId == sectionId && o.Section.ProjectId == projectId &&
-                    o.Section.Project.WorkspaceId == workspaceId);
+                    o.SectionId == sectionId && o.ProjectId == projectId &&
+                    o.Project.WorkspaceId == workspaceId);
 
                 if (hasTasks)
                 {

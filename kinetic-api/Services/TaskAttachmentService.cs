@@ -17,8 +17,8 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
         var records = await db.TaskAttachments
             .Where(o =>
                 o.TaskId == taskId &&
-                o.Task.Section.ProjectId == projectId &&
-                o.Task.Section.Project.WorkspaceId == workspaceId
+                o.Task.ProjectId == projectId &&
+                o.Task.Project.WorkspaceId == workspaceId
             )
             .Select(o => new TaskAttachmentDto(
                 o.Id,
@@ -39,8 +39,8 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
             .Where(o =>
                 o.Id == taskAttachmentId &&
                 o.TaskId == taskId &&
-                o.Task.Section.ProjectId == projectId &&
-                o.Task.Section.Project.WorkspaceId == workspaceId
+                o.Task.ProjectId == projectId &&
+                o.Task.Project.WorkspaceId == workspaceId
             )
             .Select(o => new TaskAttachmentDto(
                 o.Id,
@@ -72,7 +72,7 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
             throw new ApiException(HttpStatusCode.BadRequest, "Invalid file type.");
 
         var taskExists = await db.Tasks.AnyAsync(o =>
-            o.Id == taskId && o.Section.ProjectId == projectId && o.Section.Project.WorkspaceId == workspaceId);
+            o.Id == taskId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
         if (!taskExists)
             throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
@@ -117,8 +117,8 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
     {
         var attachment = await db.TaskAttachments
                              .SingleOrDefaultAsync(o =>
-                                 o.Id == attachmentId && o.TaskId == taskId && o.Task.Section.ProjectId == projectId &&
-                                 o.Task.Section.Project.WorkspaceId == workspaceId)
+                                 o.Id == attachmentId && o.TaskId == taskId && o.Task.ProjectId == projectId &&
+                                 o.Task.Project.WorkspaceId == workspaceId)
                          ?? throw new ApiException(HttpStatusCode.NotFound, "Attachment not found.");
 
         var relativePath = attachment.StorageKey.Replace("/", Path.DirectorySeparatorChar.ToString());
@@ -137,8 +137,8 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
     {
         var attachment =
             await db.TaskAttachments.SingleOrDefaultAsync(o =>
-                o.Id == attachmentId && o.TaskId == taskId && o.Task.Section.ProjectId == projectId &&
-                o.Task.Section.Project.WorkspaceId == workspaceId) ??
+                o.Id == attachmentId && o.TaskId == taskId && o.Task.ProjectId == projectId &&
+                o.Task.Project.WorkspaceId == workspaceId) ??
             throw new ApiException(HttpStatusCode.NotFound, "Attachment not found.");
 
         attachment.DeletedAt = DateTimeOffset.UtcNow;
