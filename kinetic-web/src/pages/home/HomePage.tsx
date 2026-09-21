@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { HomeView } from '../../features/landing/ui';
+import { HomeView } from '../../features/home/ui';
 
 export function HomePage() {
   return (

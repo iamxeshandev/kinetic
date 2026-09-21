@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { AboutView } from '../../features/landing/ui';
+import { AboutView } from '../../features/about/ui';
 
 export function AboutPage() {
   return (
