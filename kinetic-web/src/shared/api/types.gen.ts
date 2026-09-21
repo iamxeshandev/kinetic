@@ -189,10 +189,12 @@ export type SubtaskDto = {
     id: string;
     taskId: string;
     name: string;
+    isCompleted: boolean;
 };
 
 export type SubtaskRequest = {
     name: string;
+    isCompleted: boolean;
 };
 
 export type TaskAttachmentDto = {
@@ -205,6 +207,7 @@ export type TaskAttachmentDto = {
 
 export type TaskDto = {
     id: string;
+    refId: number;
     sectionId: string;
     name: string;
     description: null | JsonElement;

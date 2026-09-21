@@ -8,7 +8,7 @@ import {
   type TextFieldProps,
   type TypographyProps,
 } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useBoolean } from '../hooks';
 
 export type InlineTextProps = BoxProps & {
@@ -32,14 +32,6 @@ export function InlineText({
 
   const [draft, setDraft] = useState<string>(value);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editing) {
-      inputRef.current?.select();
-    }
-  }, [editing]);
-
   const cancelEditing = () => {
     editing.setFalse();
     setDraft(value);
@@ -59,7 +51,6 @@ export function InlineText({
   const renderInput = (
     <TextField
       {...slotProps?.textField}
-      inputRef={inputRef}
       value={draft}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={save}

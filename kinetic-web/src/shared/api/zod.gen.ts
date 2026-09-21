@@ -141,7 +141,8 @@ export const zSectionRequest = z.object({
 export const zSubtaskDto = z.object({
     id: z.uuid(),
     taskId: z.uuid(),
-    name: z.string()
+    name: z.string(),
+    isCompleted: z.boolean()
 });
 
 export const zResponseOfListOfSubtaskDto = z.object({
@@ -155,7 +156,8 @@ export const zResponseOfSubtaskDto = z.object({
 });
 
 export const zSubtaskRequest = z.object({
-    name: z.string()
+    name: z.string(),
+    isCompleted: z.boolean()
 });
 
 export const zTaskAttachmentDto = z.object({
@@ -178,6 +180,7 @@ export const zResponseOfTaskAttachmentDto = z.object({
 
 export const zTaskDto = z.object({
     id: z.uuid(),
+    refId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
     sectionId: z.uuid(),
     name: z.string(),
     description: zJsonElement.nullable(),

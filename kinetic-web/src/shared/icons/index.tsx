@@ -12,6 +12,7 @@ import {
   LuGripVertical,
   LuLayoutDashboard,
   LuList,
+  LuListChecks,
   LuListFilter,
   LuLogOut,
   LuMenu,
@@ -59,6 +60,8 @@ export const FilesIcon = LuFiles;
 
 export const FilterIcon = LuListFilter;
 
+export const GripIcon = LuGripVertical;
+
 export const KanbanIcon = LuSquareKanban;
 
 export const ListIcon = LuList;
@@ -81,6 +84,8 @@ export const StarIcon = LuStar;
 
 export const StarOffIcon = LuStarOff;
 
+export const SubtasksIcon = LuListChecks;
+
 export const SunIcon = LuSun;
 
 export const TimelineIcon = MdTimeline;
@@ -90,5 +95,3 @@ export const TrashIcon = LuTrash;
 export const UserIcon = LuUser;
 
 export const UsersIcon = LuUsers;
-
-export const GripIcon = LuGripVertical;

@@ -1,5 +1,5 @@
 import { Box, styled, type CSSObject } from '@mui/material';
-import type { ColorToken } from '../../theme';
+import type { ColorToken } from '../../mui/types';
 import { varAlpha } from '../helpers';
 
 const styles: Record<string, CSSObject> = {
@@ -12,18 +12,26 @@ const props = ['color', 'size', 'chip'];
 
 export const Label = styled(Box, {
   shouldForwardProp: (prop) => !props.includes(prop as string),
-})<{ color?: ColorToken; size?: 'small' | 'medium' | 'large'; chip?: boolean }>(
-  ({ theme, color = 'primary', size = 'medium', chip = false }) => ({
-    ...styles[size],
-    borderRadius: chip ? 50 : theme.shape.borderRadius,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: theme.vars!.palette[color].main,
-    backgroundColor: varAlpha(
-      theme.vars!.palette[color].mainChannel,
-      theme.vars!.palette.action.selectedOpacity,
-    ),
-    fontWeight: 'bold',
-  }),
-);
+})<{
+  color?: ColorToken | 'default';
+  size?: 'small' | 'medium' | 'large';
+  chip?: boolean;
+}>(({ theme, color = 'default', size = 'medium', chip = false }) => ({
+  ...styles[size],
+  borderRadius: chip ? 50 : theme.shape.borderRadius,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '4px',
+  color:
+    color === 'default'
+      ? theme.vars!.palette.text.secondary
+      : theme.vars!.palette[color].main,
+  backgroundColor: varAlpha(
+    color === 'default'
+      ? theme.vars!.palette.text.secondaryChannel
+      : theme.vars!.palette[color].mainChannel,
+    color === 'default' ? 0.08 : 0.12,
+  ),
+  fontWeight: 'bold',
+}));
