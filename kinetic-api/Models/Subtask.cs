@@ -10,6 +10,7 @@ public class Subtask : ITrackable
     public virtual Task Task { get; set; } = null!;
 
     [Required] [MaxLength(100)] public required string Name { get; set; }
+    public bool IsCompleted { get; set; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public required Guid CreatedBy { get; init; }

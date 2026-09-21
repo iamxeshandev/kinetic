@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using kinetic_api.Data;
 
@@ -11,9 +12,11 @@ using kinetic_api.Data;
 namespace kinetic_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260921105333_AddIsCompletedInSubtask")]
+    partial class AddIsCompletedInSubtask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -443,12 +446,6 @@ namespace kinetic_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RefId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("SectionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -462,8 +459,7 @@ namespace kinetic_api.Migrations
 
                     b.HasIndex("AssigneeId");
 
-                    b.HasIndex("ProjectId", "RefId")
-                        .IsUnique();
+                    b.HasIndex("SectionId");
 
                     b.ToTable("Tasks");
                 });
@@ -723,15 +719,15 @@ namespace kinetic_api.Migrations
                         .WithMany()
                         .HasForeignKey("AssigneeId");
 
-                    b.HasOne("kinetic_api.Models.Project", "Project")
+                    b.HasOne("kinetic_api.Models.Section", "Section")
                         .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Assignee");
 
-                    b.Navigation("Project");
+                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("kinetic_api.Models.TaskAttachment", b =>
