@@ -8,6 +8,7 @@ namespace kinetic_api.Dtos.Task;
 
 public record TaskDto(
     Guid Id,
+    int RefId,
     Guid SectionId,
     string Name,
     JsonElement? Description,

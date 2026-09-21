@@ -3,5 +3,6 @@
 public record SubtaskDto(
     Guid Id,
     Guid TaskId,
-    string Name
+    string Name,
+    bool IsCompleted
 );
