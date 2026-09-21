@@ -73,9 +73,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
         // Memberships must follow their required soft-deletable parent entities.
         builder.Entity<WorkspaceMember>().HasQueryFilter(member => member.Workspace.DeletedAt == null);
         builder.Entity<ProjectMember>().HasQueryFilter(member => member.Project.DeletedAt == null);
+        builder.Entity<UserFavorite>().HasQueryFilter(uf => uf.Workspace.DeletedAt == null);
 
 
-        // Task Description
+        // Task
         builder.Entity<Task>()
             .Property(t => t.Description)
             .HasColumnType("nvarchar(max)")
@@ -83,5 +84,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
                 v => v.HasValue ? JsonSerializer.Serialize(v.Value) : null,
                 v => string.IsNullOrEmpty(v) ? null : JsonSerializer.Deserialize<JsonElement>(v)
             );
+
+        builder.Entity<Task>()
+            .HasIndex(t => new { t.ProjectId, t.RefId })
+            .IsUnique();
     }
 }

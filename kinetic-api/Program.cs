@@ -27,32 +27,10 @@ builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Sto
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options
-        .UseAzureSql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
         .EnableDetailedErrors()
         .LogTo(Console.WriteLine, LogLevel.Information);
 });
-
-
-// App Services Config
-builder.Services.AddSingleton<StorageService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<FavoriteService>();
-builder.Services.AddScoped<WorkspaceService>();
-builder.Services.AddScoped<ProjectService>();
-builder.Services.AddScoped<SectionService>();
-builder.Services.AddScoped<TaskService>();
-
-
-// JSON Config
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
-});
-
-
-// Controllers Config
-builder.Services.AddControllers();
 
 
 // Identity Config
@@ -66,6 +44,30 @@ builder
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+
+// App Services Config
+builder.Services.AddSingleton<StorageService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<FavoriteService>();
+builder.Services.AddScoped<WorkspaceService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<SectionService>();
+builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<SubtaskService>();
+builder.Services.AddScoped<TaskAttachmentService>();
+
+
+// Controllers Config
+builder.Services.AddControllers();
+
+
+// JSON Config
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+});
 
 
 // Authorization Policies
