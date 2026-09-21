@@ -2,11 +2,11 @@ import { CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
 import { RouterProvider } from 'react-router';
 import { SWRConfig } from 'swr';
 import { AuthProvider } from './features/auth/context/AuthProvider';
-import { NotificationProvider } from './features/notifications/context';
+import { styles } from './mui/styles';
+import { theme } from './mui/theme';
 import { router } from './routes';
 import { IconProvider } from './shared/icons/IconProvider';
 import { ToastProvider } from './shared/toast';
-import { styles, theme } from './theme';
 
 function App() {
   return (
@@ -15,11 +15,9 @@ function App() {
         <IconProvider>
           <ToastProvider>
             <AuthProvider>
-              <NotificationProvider>
-                <CssBaseline />
-                <GlobalStyles styles={styles} />
-                <RouterProvider router={router} />
-              </NotificationProvider>
+              <CssBaseline />
+              <GlobalStyles styles={styles} />
+              <RouterProvider router={router} />
             </AuthProvider>
           </ToastProvider>
         </IconProvider>
