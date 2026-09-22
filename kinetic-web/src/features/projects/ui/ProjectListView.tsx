@@ -9,20 +9,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { LuArrowRight } from 'react-icons/lu';
-import { formatDate } from '../../../shared/helpers';
 import { MoreIcon } from '../../../shared/icons';
 import type { AllProjectSectionProps } from './AllProjectsSection';
-import { ProjectHealth } from './ProjectHealth';
 
-const COLUMNS = [
-  'Project',
-  'Health',
-  'Progress',
-  'Lead',
-  'Due Date',
-  'Team',
-  '',
-];
+const COLUMNS = ['Project', 'Progress', 'Lead', 'Team', ''];
 
 export default function ProjectList({
   projects,
@@ -47,12 +37,6 @@ export default function ProjectList({
               <TableRow key={project.id}>
                 <TableCell>{project.name}</TableCell>
                 <TableCell>
-                  <ProjectHealth
-                    dueDate={project.dueDate ?? undefined}
-                    isCompleted={false}
-                  />
-                </TableCell>
-                <TableCell>
                   {/* <ProjectProgress
                       value={p.completedTasks}
                       max={p.tasks}
@@ -62,7 +46,6 @@ export default function ProjectList({
                 <TableCell>
                   {/* <Avatar src={p.team[0]} alt={p.team[0]} /> */}
                 </TableCell>
-                <TableCell>{formatDate(project.dueDate)}</TableCell>
                 <TableCell>
                   {/* <AvatarGroup max={3} sx={{ justifyContent: 'flex-end' }}>
                     {p.team.map((name) => (

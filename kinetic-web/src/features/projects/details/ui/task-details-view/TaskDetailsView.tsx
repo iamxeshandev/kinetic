@@ -37,7 +37,7 @@ export function TaskDetailsView({ open, onClose, task }: TaskDetailsViewProps) {
       >
         <OverviewSection open={open} task={task} />
         <SubtasksSection task={task} />
-        <AttachmentsSection />
+        <AttachmentsSection task={task} />
       </Stack>
     </Drawer>
   );

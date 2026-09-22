@@ -24,7 +24,7 @@ export function HeaderSection({ onCreateClick }: HeaderSectionProps) {
         </Typography>
       </Box>
 
-      <Can allowed={hasWorkspaceRole(user?.currentWorkspace?.role, 'Manager')}>
+      <Can allowed={hasWorkspaceRole(user?.activeWorkspace?.role, 'Manager')}>
         <Button
           startIcon={<LuPlus />}
           sx={{ display: { xs: 'none', sm: 'inherit' } }}

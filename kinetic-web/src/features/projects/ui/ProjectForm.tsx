@@ -25,7 +25,7 @@ import {
   FormTextField,
 } from '../../../shared/form';
 import { toast } from '../../../shared/toast';
-import { projectStatusOptions } from '../constants/project-status';
+import { projectStatusOptions } from '../constants';
 import { useCreateProject, useUpdateProject } from '../hooks/use-projects';
 
 const projectFormSchema = z.object({
@@ -36,8 +36,8 @@ const projectFormSchema = z.object({
   description: z
     .string()
     .max(1000, 'Description cannot exceed 1000 characters.'),
-  status: zEProjectStatus,
   priority: zEPriority,
+  status: zEProjectStatus,
   dueDate: z.date().nullable(),
   leadIds: z.array(z.uuid()),
   memberIds: z.array(z.uuid()),
@@ -48,8 +48,8 @@ type ProjectForm = z.infer<typeof projectFormSchema>;
 const defaultValues: ProjectForm = {
   name: '',
   description: '',
-  status: 'Active',
   priority: 'None',
+  status: 'Active',
   dueDate: null,
   leadIds: [],
   memberIds: [],
@@ -141,13 +141,13 @@ export function ProjectForm({ open, onClose, project }: ProjectFormProps) {
 
   const handleSubmit = async (data: ProjectForm) =>
     isNew
-      ? createProject({ ...data, dueDate: data.dueDate?.toISOString() ?? null })
+      ? createProject({ ...data, dueDate: data.dueDate?.toISOString() })
           .then((res) => {
             toast.success(res.message);
             onClose();
           })
           .catch((err) => toast.error(err.message))
-      : updateProject({ ...data, dueDate: data.dueDate?.toISOString() ?? null })
+      : updateProject({ ...data, dueDate: data.dueDate?.toISOString() })
           .then((res) => toast.success(res.message))
           .catch((err) => toast.error(err.message));
 

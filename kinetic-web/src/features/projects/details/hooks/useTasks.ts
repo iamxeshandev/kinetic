@@ -8,6 +8,8 @@ import {
   getTasks,
   updateSubtask,
   updateTask,
+  uploadTaskAttachment,
+  type IFormFile,
   type SubtaskRequest,
   type TaskDto,
   type TaskRequest,
@@ -89,10 +91,12 @@ export const useCreateSubtask = (
       revalidate: false,
       populateCache: (res, currentData: TaskDto[] = []) =>
         currentData.map((task) =>
-          task.id === res.data?.taskId
+          task.id === taskId
             ? {
                 ...task,
-                subtasks: [res.data, ...(task.subtasks ?? [])],
+                subtasks: res.data
+                  ? [res.data, ...(task.subtasks ?? [])]
+                  : task.subtasks,
               }
             : task,
         ),
@@ -120,7 +124,7 @@ export const useUpdateSubtask = (
       revalidate: false,
       populateCache: (res, currentData: TaskDto[] = []) =>
         currentData.map((task) =>
-          task.id === res.data?.taskId
+          task.id === taskId
             ? {
                 ...task,
                 subtasks:
@@ -154,6 +158,36 @@ export const useDeleteSubtask = (
                 subtasks:
                   task.subtasks?.filter((subtask) => subtask.id !== res.data) ??
                   null,
+              }
+            : task,
+        ),
+    },
+  );
+
+export const useUploadTaskAttachment = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+) =>
+  useSWRMutation(
+    KEY(workspaceId, projectId),
+    (_, { arg }: { arg: IFormFile }) =>
+      uploadTaskAttachment({
+        path: { workspaceId, projectId, taskId },
+        body: {
+          File: arg,
+        },
+      }).then((res) => res.data),
+    {
+      revalidate: false,
+      populateCache: (res, currentData: TaskDto[] = []) =>
+        currentData.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                attachments: res.data
+                  ? [...(task.attachments ?? []), res.data]
+                  : task.attachments,
               }
             : task,
         ),

@@ -9,7 +9,6 @@ import {
 import type { ProjectDto } from '../../../shared/api';
 import { ArrowRightIcon, MoreIcon } from '../../../shared/icons';
 import type { AllProjectSectionProps } from './AllProjectsSection';
-import { ProjectHealth } from './ProjectHealth';
 import { ProjectProgress } from './ProjectProgress';
 
 export default function ProjectGrid({
@@ -101,11 +100,6 @@ function ProjectCard({
             gap: 1,
           }}
         >
-          <ProjectHealth
-            dueDate={project.dueDate ?? undefined}
-            isCompleted={false}
-          />
-
           <AvatarGroup max={3}>
             {['A', 'B', 'C', 'D', 'E', 'F'].map((member) => (
               <Avatar key={member}>{member}</Avatar>

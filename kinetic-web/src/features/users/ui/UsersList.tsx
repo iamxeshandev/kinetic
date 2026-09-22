@@ -9,12 +9,11 @@ import {
 } from '@mui/material';
 import type React from 'react';
 import type { EWorkspaceRole, UserDto } from '../../../shared/api';
-import { formatDate } from '../../../shared/helpers';
 import { MoreIcon } from '../../../shared/icons';
 import { useAuthContext } from '../../auth/context';
 import { workspaceRoleRankMap } from '../../workspaces/constants';
 
-const COLUMNS = ['Name', 'Email', 'Role', 'Joined', ''];
+const COLUMNS = ['Name', 'Email', 'Role', ''];
 
 const ALLOWED_ROLES: EWorkspaceRole[] = ['Owner', 'Admin', 'Manager'];
 
@@ -30,7 +29,7 @@ export const UsersList = ({ users, onMenuClick }: UsersListProps) => {
   const { user: currentUser } = useAuthContext();
 
   const isAllowed = ALLOWED_ROLES.includes(
-    currentUser?.currentWorkspace?.role ?? 'Member',
+    currentUser?.activeWorkspace?.role ?? 'Member',
   );
 
   return (
@@ -50,11 +49,10 @@ export const UsersList = ({ users, onMenuClick }: UsersListProps) => {
               <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
-              <TableCell>{formatDate(user.joinedAt)}</TableCell>
               <TableCell align='right'>
                 {isAllowed &&
                   workspaceRoleRankMap[
-                    currentUser?.currentWorkspace?.role ?? 'Member'
+                    currentUser?.activeWorkspace?.role ?? 'Member'
                   ] > workspaceRoleRankMap[user.role] && (
                     <IconButton
                       size='small'

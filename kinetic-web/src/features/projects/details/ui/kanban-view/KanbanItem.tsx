@@ -49,7 +49,7 @@ export function KanbanItem({
   const fullName = `${task.assignee?.firstName ?? ''} ${task.assignee?.lastName ?? ''}`;
   const attachmentCount = task.attachments?.length ?? 0;
   const completedSubtaskCount =
-    task.subtasks?.filter((subtask) => subtask.isCompleted).length ?? 0;
+    task.subtasks?.filter((subtask) => subtask.completedAt).length ?? 0;
   const subtaskCount = task.subtasks?.length ?? 0;
 
   const showFooter = !!task.dueDate || !!attachmentCount || !!task.assignee;

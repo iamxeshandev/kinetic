@@ -71,7 +71,7 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
       cancelCreateSubtask();
       return;
     }
-    await createSubtask({ name, isCompleted: false })
+    await createSubtask({ name })
       .then((res) => {
         toast.success(res.message);
         cancelCreateSubtask();
@@ -93,7 +93,6 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
     await updateSubtask({
       subtaskId: editSubtask.id,
       name,
-      isCompleted: editSubtask.isCompleted,
     })
       .then(() => cancelUpdateSubtask())
       .catch((err) => toast.error(err.message));
@@ -103,7 +102,6 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
     await updateSubtask({
       subtaskId: subtask.id,
       name: subtask.name,
-      isCompleted: !subtask.isCompleted,
     })
       .then((res) => {
         toast.success(res.message);
@@ -232,7 +230,7 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
                     <>
                       <ListItemIcon>
                         <Checkbox
-                          checked={subtask.isCompleted}
+                          checked={!!subtask.completedAt}
                           onChange={() =>
                             handleToggleSubtaskCompletion(subtask)
                           }
@@ -247,10 +245,10 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
                           setEditSubtask(subtask);
                         }}
                         sx={{
-                          textDecoration: subtask.isCompleted
+                          textDecoration: subtask.completedAt
                             ? 'line-through'
                             : '',
-                          color: subtask.isCompleted ? 'text.disabled' : '',
+                          color: subtask.completedAt ? 'text.disabled' : '',
                         }}
                       >
                         {subtask.name}

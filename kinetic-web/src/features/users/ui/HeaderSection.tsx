@@ -25,7 +25,7 @@ export const HeaderSection = ({ onCreateClick }: HeaderSectionProps) => {
         <Typography variant='subtitle1'>Manage your users here</Typography>
       </Box>
 
-      <Can allowed={hasWorkspaceRole(user?.currentWorkspace?.role, 'Manager')}>
+      <Can allowed={hasWorkspaceRole(user?.activeWorkspace?.role, 'Manager')}>
         <Button startIcon={<AddIcon />} onClick={onCreateClick}>
           Create User
         </Button>

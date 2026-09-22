@@ -80,18 +80,19 @@ export function WorkspaceGrid({
                     <PencilIcon />
                   </IconButton>
 
-                  {!workspace.isPersonal && workspace.role === 'Owner' && (
-                    <IconButton
-                      className='workspace-hover-button'
-                      color='error'
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onDeleteClick?.(workspace?.id);
-                      }}
-                    >
-                      <TrashIcon />
-                    </IconButton>
-                  )}
+                  {!workspace.isPersonalWorkspace &&
+                    workspace.role === 'Owner' && (
+                      <IconButton
+                        className='workspace-hover-button'
+                        color='error'
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onDeleteClick?.(workspace?.id);
+                        }}
+                      >
+                        <TrashIcon />
+                      </IconButton>
+                    )}
                 </Box>
               </Stack>
 
@@ -99,7 +100,7 @@ export function WorkspaceGrid({
                 <Typography variant='h5'>{workspace.name}</Typography>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                   <Label chip>
-                    {workspace.isPersonal
+                    {workspace.isPersonalWorkspace
                       ? 'Personal Workspace'
                       : workspace.role}
                   </Label>

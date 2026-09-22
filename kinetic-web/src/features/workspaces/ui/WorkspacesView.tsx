@@ -28,7 +28,7 @@ export function WorkspacesView() {
   const [confirm, setConfirm] = useState<boolean>(false);
 
   const handleOpenClick = (workspaceId: string) =>
-    user?.currentWorkspace?.id === workspaceId
+    user?.activeWorkspace?.id === workspaceId
       ? navigate(paths.workspaces.dashboard(workspaceId), { replace: true })
       : switch_({ path: { workspaceId } })
           .then((res) => setUser(res.data.data ?? null))
