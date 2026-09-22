@@ -7,13 +7,14 @@ export function WorkspaceGuard({ children }: { children: React.ReactNode }) {
 
   const { user } = useAuthContext();
 
-  const currentWorkspace = user?.currentWorkspace;
+  const activeWorkspaceId = user?.activeWorkspace?.id;
 
-  if (!currentWorkspace) return <Navigate to={paths.workspaces.root} replace />;
+  if (!activeWorkspaceId)
+    return <Navigate to={paths.workspaces.root} replace />;
 
-  if (currentWorkspace.id !== workspaceId)
+  if (activeWorkspaceId !== workspaceId)
     return (
-      <Navigate to={paths.workspaces.dashboard(currentWorkspace.id)} replace />
+      <Navigate to={paths.workspaces.dashboard(activeWorkspaceId)} replace />
     );
 
   return children;

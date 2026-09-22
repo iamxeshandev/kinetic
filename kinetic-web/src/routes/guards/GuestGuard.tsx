@@ -9,8 +9,8 @@ export function GuestGuard({ children }: { children: React.ReactNode }) {
     return (
       <Navigate
         to={
-          user.currentWorkspace
-            ? paths.workspaces.dashboard(user.currentWorkspace.id)
+          user.activeWorkspace
+            ? paths.workspaces.dashboard(user.activeWorkspace.id)
             : paths.workspaces.root
         }
         replace
