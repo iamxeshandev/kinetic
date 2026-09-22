@@ -8,6 +8,7 @@ import {
   LuContrast,
   LuEllipsisVertical,
   LuFiles,
+  LuFileUp,
   LuFolderKanban,
   LuGripVertical,
   LuLayoutDashboard,
@@ -57,6 +58,8 @@ export const ContrastIcon = LuContrast;
 export const DashboardIcon = LuLayoutDashboard;
 
 export const FilesIcon = LuFiles;
+
+export const FileUpload = LuFileUp;
 
 export const FilterIcon = LuListFilter;
 

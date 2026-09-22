@@ -36,63 +36,63 @@ export const zIFormFile = z.string();
 export const zJsonElement = z.unknown();
 
 export const zLoginRequest = z.object({
-    email: z.string(),
-    password: z.string(),
-    rememberMe: z.boolean()
+    email: z.string().max(254),
+    password: z.string().max(128),
+    rememberMe: z.boolean().optional()
 });
 
 export const zMeRequest = z.object({
-    firstName: z.string(),
-    lastName: z.string().nullable()
+    firstName: z.string().max(50),
+    lastName: z.string().max(50).nullish()
 });
 
 export const zMoveSectionRequest = z.object({
-    previousSectionId: z.uuid().nullable(),
-    nextSectionId: z.uuid().nullable()
+    previousSectionId: z.uuid().nullish(),
+    nextSectionId: z.uuid().nullish()
 });
 
 export const zMoveTaskRequest = z.object({
     sectionId: z.uuid(),
-    previousTaskId: z.uuid().nullable(),
-    nextTaskId: z.uuid().nullable()
+    previousTaskId: z.uuid().nullish(),
+    nextTaskId: z.uuid().nullish()
 });
 
 export const zProjectMemberDto = z.object({
     id: z.uuid(),
     email: z.string(),
     firstName: z.string(),
-    lastName: z.string().nullable(),
-    avatarUrl: z.string().nullable(),
+    lastName: z.string().nullish(),
+    fullName: z.string().nullish(),
+    avatarUrl: z.string().nullish(),
     role: zEProjectRole
 });
 
 export const zProjectDto = z.object({
     id: z.uuid(),
     name: z.string(),
-    description: z.string().nullable(),
-    status: zEProjectStatus,
+    description: z.string().nullish(),
     priority: zEPriority,
-    role: zEProjectRole.nullable(),
-    isFavorite: z.boolean(),
-    dueDate: z.iso.datetime().nullable(),
-    team: z.array(zProjectMemberDto).nullable()
+    status: zEProjectStatus,
+    dueDate: z.iso.datetime().nullish(),
+    role: zEProjectRole.nullish(),
+    team: z.array(zProjectMemberDto)
 });
 
 export const zProjectRequest = z.object({
-    name: z.string(),
-    description: z.string().nullable(),
-    status: zEProjectStatus,
+    name: z.string().max(100),
+    description: z.string().max(1000).nullish(),
     priority: zEPriority,
-    dueDate: z.iso.datetime().nullable(),
-    leadIds: z.array(z.uuid()).nullable(),
-    memberIds: z.array(z.uuid()).nullable()
+    status: zEProjectStatus,
+    dueDate: z.iso.datetime().nullish(),
+    leadIds: z.array(z.uuid()).max(50).nullish(),
+    memberIds: z.array(z.uuid()).max(50).nullish()
 });
 
 export const zRegisterRequest = z.object({
-    email: z.string(),
-    password: z.string(),
-    firstName: z.string(),
-    lastName: z.string().nullable()
+    email: z.string().max(254),
+    password: z.string().min(8).max(128),
+    firstName: z.string().max(100),
+    lastName: z.string().max(100).nullish()
 });
 
 export const zResponse = z.object({
@@ -114,11 +114,6 @@ export const zResponseOfProjectDto = z.object({
     message: z.string().optional()
 });
 
-export const zResponseOfstring = z.object({
-    data: z.string().nullish(),
-    message: z.string().optional()
-});
-
 export const zSectionDto = z.object({
     id: z.uuid(),
     name: z.string()
@@ -135,14 +130,13 @@ export const zResponseOfSectionDto = z.object({
 });
 
 export const zSectionRequest = z.object({
-    name: z.string()
+    name: z.string().max(100)
 });
 
 export const zSubtaskDto = z.object({
     id: z.uuid(),
-    taskId: z.uuid(),
     name: z.string(),
-    isCompleted: z.boolean()
+    completedAt: z.iso.datetime().nullish()
 });
 
 export const zResponseOfListOfSubtaskDto = z.object({
@@ -156,15 +150,16 @@ export const zResponseOfSubtaskDto = z.object({
 });
 
 export const zSubtaskRequest = z.object({
-    name: z.string(),
-    isCompleted: z.boolean()
+    name: z.string().max(1000),
+    previousSubtaskId: z.uuid().nullish(),
+    nextSubtaskId: z.uuid().nullish()
 });
 
 export const zTaskAttachmentDto = z.object({
     id: z.uuid(),
     fileName: z.string(),
     contentType: z.string(),
-    size: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
+    sizeBytes: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
     downloadUrl: z.string()
 });
 
@@ -181,17 +176,17 @@ export const zResponseOfTaskAttachmentDto = z.object({
 export const zTaskDto = z.object({
     id: z.uuid(),
     refId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
-    sectionId: z.uuid(),
     name: z.string(),
-    description: zJsonElement.nullable(),
+    description: zJsonElement.nullish(),
+    sectionId: z.uuid(),
     position: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
     priority: zEPriority,
-    dueDate: z.iso.datetime().nullable(),
-    completedAt: z.iso.datetime().nullable(),
-    assignedAt: z.iso.datetime().nullable(),
-    assignee: zProjectMemberDto.nullable(),
-    subtasks: z.array(zSubtaskDto).nullable(),
-    attachments: z.array(zTaskAttachmentDto).nullable()
+    dueDate: z.iso.datetime().nullish(),
+    completedAt: z.iso.datetime().nullish(),
+    assignee: zProjectMemberDto.nullish(),
+    assignedAt: z.iso.datetime().nullish(),
+    attachments: z.array(zTaskAttachmentDto),
+    subtasks: z.array(zSubtaskDto)
 });
 
 export const zResponseOfListOfTaskDto = z.object({
@@ -205,22 +200,24 @@ export const zResponseOfTaskDto = z.object({
 });
 
 export const zTaskRequest = z.object({
+    name: z.string().max(100),
+    description: zJsonElement.nullish(),
     sectionId: z.uuid(),
-    name: z.string(),
-    description: zJsonElement.nullable(),
     priority: zEPriority,
-    dueDate: z.iso.datetime().nullable(),
-    assigneeId: z.uuid().nullable()
+    dueDate: z.iso.datetime().nullish(),
+    assigneeId: z.uuid().nullish(),
+    previousTaskId: z.uuid().nullish(),
+    nextTaskId: z.uuid().nullish()
 });
 
 export const zUserDto = z.object({
     id: z.uuid(),
     email: z.string(),
     firstName: z.string(),
-    lastName: z.string().nullable(),
-    avatarUrl: z.string().nullable(),
-    role: zEWorkspaceRole,
-    joinedAt: z.iso.datetime()
+    lastName: z.string().nullish(),
+    fullName: z.string().nullish(),
+    avatarUrl: z.string().nullish(),
+    role: zEWorkspaceRole
 });
 
 export const zResponseOfListOfUserDto = z.object({
@@ -234,7 +231,7 @@ export const zResponseOfUserDto = z.object({
 });
 
 export const zUserRequest = z.object({
-    email: z.string(),
+    email: z.string().max(254),
     role: zEWorkspaceRole
 });
 
@@ -242,7 +239,7 @@ export const zWorkspaceDto = z.object({
     id: z.uuid(),
     name: z.string(),
     role: zEWorkspaceRole,
-    isPersonal: z.boolean(),
+    isPersonalWorkspace: z.boolean().optional(),
     memberCount: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' })
 });
 
@@ -250,9 +247,10 @@ export const zMeDto = z.object({
     id: z.uuid(),
     email: z.string(),
     firstName: z.string(),
-    lastName: z.string().nullable(),
-    avatarUrl: z.string().nullable(),
-    currentWorkspace: zWorkspaceDto.nullable()
+    lastName: z.string().nullish(),
+    fullName: z.string().nullish(),
+    avatarUrl: z.string().nullish(),
+    activeWorkspace: zWorkspaceDto.nullish()
 });
 
 export const zResponseOfListOfWorkspaceDto = z.object({
@@ -271,7 +269,7 @@ export const zResponseOfWorkspaceDto = z.object({
 });
 
 export const zWorkspaceRequest = z.object({
-    name: z.string()
+    name: z.string().max(100)
 });
 
 export const zRegisterBody = zRegisterRequest;
@@ -321,7 +319,7 @@ export const zUploadAvatarBody = z.object({
 /**
  * OK
  */
-export const zUploadAvatarResponse = zResponseOfstring;
+export const zUploadAvatarResponse = zResponseOfMeDto;
 
 export const zDeleteFavoritePath = z.object({
     workspaceId: z.uuid(),
@@ -558,12 +556,7 @@ export const zGetTaskAttachmentsPath = z.object({
 export const zGetTaskAttachmentsResponse = zResponseOfListOfTaskAttachmentDto;
 
 export const zUploadTaskAttachmentBody = z.object({
-    ContentType: z.string().optional(),
-    ContentDisposition: z.string().optional(),
-    Headers: z.record(z.string(), z.array(z.string())).optional(),
-    Length: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).optional(),
-    Name: z.string().optional(),
-    FileName: z.string().optional()
+    File: zIFormFile.optional()
 });
 
 export const zUploadTaskAttachmentPath = z.object({

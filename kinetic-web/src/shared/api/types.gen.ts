@@ -21,70 +21,71 @@ export type JsonElement = unknown;
 export type LoginRequest = {
     email: string;
     password: string;
-    rememberMe: boolean;
+    rememberMe?: boolean;
 };
 
 export type MeDto = {
     id: string;
     email: string;
     firstName: string;
-    lastName: null | string;
-    avatarUrl: null | string;
-    currentWorkspace: null | WorkspaceDto;
+    lastName?: null | string;
+    fullName?: null | string;
+    avatarUrl?: null | string;
+    activeWorkspace?: null | WorkspaceDto;
 };
 
 export type MeRequest = {
     firstName: string;
-    lastName: null | string;
+    lastName?: null | string;
 };
 
 export type MoveSectionRequest = {
-    previousSectionId: null | string;
-    nextSectionId: null | string;
+    previousSectionId?: null | string;
+    nextSectionId?: null | string;
 };
 
 export type MoveTaskRequest = {
     sectionId: string;
-    previousTaskId: null | string;
-    nextTaskId: null | string;
+    previousTaskId?: null | string;
+    nextTaskId?: null | string;
 };
 
 export type ProjectDto = {
     id: string;
     name: string;
-    description: null | string;
-    status: EProjectStatus;
+    description?: null | string;
     priority: EPriority;
-    role: null | EProjectRole;
-    isFavorite: boolean;
-    dueDate: null | string;
-    team: null | Array<ProjectMemberDto>;
+    status: EProjectStatus;
+    dueDate?: null | string;
+    role?: null | EProjectRole;
+    team: Array<ProjectMemberDto>;
 };
 
 export type ProjectMemberDto = {
     id: string;
     email: string;
     firstName: string;
-    lastName: null | string;
-    avatarUrl: null | string;
+    lastName?: null | string;
+    fullName?: null | string;
+    avatarUrl?: null | string;
     role: EProjectRole;
 };
 
 export type ProjectRequest = {
     name: string;
-    description: null | string;
-    status: EProjectStatus;
+    description?: null | string;
     priority: EPriority;
-    dueDate: null | string;
-    leadIds: null | Array<string>;
-    memberIds: null | Array<string>;
+    status: EProjectStatus;
+    dueDate?: null | string;
+    leadIds?: null | Array<string>;
+    memberIds?: null | Array<string>;
 };
 
 export type RegisterRequest = {
     email: string;
     password: string;
     firstName: string;
-    lastName: null | string;
+    lastName?: null | string;
 };
 
 export type Response = {
@@ -146,11 +147,6 @@ export type ResponseOfSectionDto = {
     message?: string;
 };
 
-export type ResponseOfstring = {
-    data?: null | string;
-    message?: string;
-};
-
 export type ResponseOfSubtaskDto = {
     data?: SubtaskDto;
     message?: string;
@@ -187,57 +183,59 @@ export type SectionRequest = {
 
 export type SubtaskDto = {
     id: string;
-    taskId: string;
     name: string;
-    isCompleted: boolean;
+    completedAt?: null | string;
 };
 
 export type SubtaskRequest = {
     name: string;
-    isCompleted: boolean;
+    previousSubtaskId?: null | string;
+    nextSubtaskId?: null | string;
 };
 
 export type TaskAttachmentDto = {
     id: string;
     fileName: string;
     contentType: string;
-    size: number;
+    sizeBytes: number;
     downloadUrl: string;
 };
 
 export type TaskDto = {
     id: string;
     refId: number;
-    sectionId: string;
     name: string;
-    description: null | JsonElement;
+    description?: null | JsonElement;
+    sectionId: string;
     position: number;
     priority: EPriority;
-    dueDate: null | string;
-    completedAt: null | string;
-    assignedAt: null | string;
-    assignee: null | ProjectMemberDto;
-    subtasks: null | Array<SubtaskDto>;
-    attachments: null | Array<TaskAttachmentDto>;
+    dueDate?: null | string;
+    completedAt?: null | string;
+    assignee?: null | ProjectMemberDto;
+    assignedAt?: null | string;
+    attachments: Array<TaskAttachmentDto>;
+    subtasks: Array<SubtaskDto>;
 };
 
 export type TaskRequest = {
-    sectionId: string;
     name: string;
-    description: null | JsonElement;
+    description?: null | JsonElement;
+    sectionId: string;
     priority: EPriority;
-    dueDate: null | string;
-    assigneeId: null | string;
+    dueDate?: null | string;
+    assigneeId?: null | string;
+    previousTaskId?: null | string;
+    nextTaskId?: null | string;
 };
 
 export type UserDto = {
     id: string;
     email: string;
     firstName: string;
-    lastName: null | string;
-    avatarUrl: null | string;
+    lastName?: null | string;
+    fullName?: null | string;
+    avatarUrl?: null | string;
     role: EWorkspaceRole;
-    joinedAt: string;
 };
 
 export type UserRequest = {
@@ -249,7 +247,7 @@ export type WorkspaceDto = {
     id: string;
     name: string;
     role: EWorkspaceRole;
-    isPersonal: boolean;
+    isPersonalWorkspace?: boolean;
     memberCount: number;
 };
 
@@ -368,7 +366,7 @@ export type UploadAvatarResponses = {
     /**
      * OK
      */
-    200: ResponseOfstring;
+    200: ResponseOfMeDto;
 };
 
 export type UploadAvatarResponse = UploadAvatarResponses[keyof UploadAvatarResponses];
@@ -771,14 +769,7 @@ export type GetTaskAttachmentsResponse = GetTaskAttachmentsResponses[keyof GetTa
 
 export type UploadTaskAttachmentData = {
     body: {
-        ContentType?: string;
-        ContentDisposition?: string;
-        Headers?: {
-            [key: string]: Array<string>;
-        };
-        Length?: number;
-        Name?: string;
-        FileName?: string;
+        File?: IFormFile;
     };
     path: {
         workspaceId: string;
