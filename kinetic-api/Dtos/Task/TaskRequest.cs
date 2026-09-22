@@ -4,15 +4,14 @@ using kinetic_api.Enums;
 
 namespace kinetic_api.Dtos.Task;
 
-public record TaskRequest(
-    [Required(ErrorMessage = "Select a section.")]
-    Guid SectionId,
-    [Required(ErrorMessage = "Enter a task name.")]
-    [MaxLength(200, ErrorMessage = "Task name must be 200 characters or fewer.")]
-    string Name,
-    JsonElement? Description,
-    [Required(ErrorMessage = "Select a priority.")]
-    EPriority Priority,
-    DateTimeOffset? DueDate,
-    Guid? AssigneeId
-);
+public record TaskRequest
+{
+    [MaxLength(100)] public required string Name { get; init; }
+    public JsonElement? Description { get; init; }
+    public required Guid SectionId { get; init; }
+    public required EPriority Priority { get; init; }
+    public DateTimeOffset? DueDate { get; init; }
+    public Guid? AssigneeId { get; init; }
+    public Guid? PreviousTaskId { get; init; }
+    public Guid? NextTaskId { get; init; }
+}

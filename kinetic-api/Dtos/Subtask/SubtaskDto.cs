@@ -1,8 +1,8 @@
 ﻿namespace kinetic_api.Dtos.Subtask;
 
-public record SubtaskDto(
-    Guid Id,
-    Guid TaskId,
-    string Name,
-    bool IsCompleted
-);
+public record SubtaskDto
+{
+    public required Guid Id { get; init; }
+    public required string Name { get; init; }
+    public DateTimeOffset? CompletedAt { get; init; }
+}
