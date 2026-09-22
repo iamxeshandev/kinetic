@@ -27,7 +27,7 @@ public sealed class WorkspaceTypeHandler(AppDbContext db) : AuthorizationHandler
             // Query expected workspace type from DB
             var isPersonal = await db.Workspaces
                 .Where(w => w.Id == workspaceId)
-                .Select(w => (bool?)w.IsPersonal)
+                .Select(w => (bool?)w.IsPersonalWorkspace)
                 .SingleOrDefaultAsync();
 
             // Validate against the required boolean value

@@ -57,7 +57,7 @@ public static class DbSeeder
             {
                 Id = Guid.NewGuid(),
                 Name = "Personal Workspace",
-                IsPersonal = true,
+                IsPersonalWorkspace = true,
                 CreatedBy = user.Id
             };
             db.Workspaces.Add(personalWorkspace);
@@ -66,8 +66,7 @@ public static class DbSeeder
             {
                 WorkspaceId = personalWorkspace.Id,
                 UserId = user.Id,
-                Role = EWorkspaceRole.Owner,
-                CreatedBy = user.Id
+                Role = EWorkspaceRole.Owner
             };
             db.WorkspaceMembers.Add(personalWorkspaceMembership);
         }
@@ -88,29 +87,25 @@ public static class DbSeeder
             {
                 WorkspaceId = workspace.Id,
                 UserId = users[0].Id,
-                Role = EWorkspaceRole.Owner,
-                CreatedBy = userId
+                Role = EWorkspaceRole.Owner
             },
             new()
             {
                 WorkspaceId = workspace.Id,
                 UserId = users[1].Id,
-                Role = EWorkspaceRole.Admin,
-                CreatedBy = userId
+                Role = EWorkspaceRole.Admin
             },
             new()
             {
                 WorkspaceId = workspace.Id,
                 UserId = users[2].Id,
-                Role = EWorkspaceRole.Manager,
-                CreatedBy = userId
+                Role = EWorkspaceRole.Manager
             },
             new()
             {
                 WorkspaceId = workspace.Id,
                 UserId = users[3].Id,
-                Role = EWorkspaceRole.Member,
-                CreatedBy = userId
+                Role = EWorkspaceRole.Member
             }
         };
         db.WorkspaceMembers.AddRange(workspaceMembers);
@@ -119,8 +114,8 @@ public static class DbSeeder
         {
             WorkspaceId = workspace.Id,
             Name = "Kinetic App Development",
+            Priority = EPriority.Medium,
             Status = EProjectStatus.Active,
-            Priority = EPriority.None,
             CreatedBy = userId
         };
         db.Projects.Add(project);
