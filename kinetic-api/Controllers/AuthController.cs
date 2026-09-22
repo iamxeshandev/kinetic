@@ -57,7 +57,7 @@ public class AuthController(AuthService authService) : ControllerBase
     [HttpPost("me/avatar")]
     [Authorize]
     [EndpointName("UploadAvatar")]
-    public async Task<ActionResult<Response<string>>> UploadAvatarAsync(IFormFile avatar)
+    public async Task<ActionResult<Response<MeDto>>> UploadAvatarAsync(IFormFile avatar)
     {
         return await authService.UploadAvatarAsync(avatar, HttpContext.User);
     }

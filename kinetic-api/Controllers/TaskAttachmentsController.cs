@@ -29,10 +29,11 @@ public class TaskAttachmentsController(TaskAttachmentService service) : Controll
 
     [HttpPost]
     [EndpointName("UploadTaskAttachment")]
+    [Consumes("multipart/form-data")]
     public async Task<ActionResult<Response<TaskAttachmentDto>>> UploadTaskAttachmentAsync(Guid workspaceId,
-        Guid projectId, Guid taskId, [FromForm] IFormFile file)
+        Guid projectId, Guid taskId, [FromForm] FileUploadRequest request)
     {
-        return Created("", await service.UploadTaskAttachmentAsync(workspaceId, projectId, taskId, file));
+        return Created("", await service.UploadTaskAttachmentAsync(workspaceId, projectId, taskId, request));
     }
 
     [HttpGet("{attachmentId:guid}/download")]
