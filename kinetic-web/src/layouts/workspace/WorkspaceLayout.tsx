@@ -18,7 +18,7 @@ export function WorkspaceLayout({ children }: PropsWithChildren) {
 
   const navLinks = createNavLinks(
     workspaceId!,
-    user!.currentWorkspace!.isPersonal,
+    user!.activeWorkspace!.isPersonalWorkspace!,
   );
 
   return (

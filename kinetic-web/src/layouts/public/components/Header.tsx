@@ -32,10 +32,10 @@ export function Header() {
 
         <ThemeSwitcher />
 
-        {user?.currentWorkspace ? (
+        {user?.activeWorkspace ? (
           <Button
             component={NavLink}
-            to={paths.workspaces.dashboard(user.currentWorkspace.id)}
+            to={paths.workspaces.dashboard(user.activeWorkspace.id)}
           >
             Dashboard
           </Button>
