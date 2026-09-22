@@ -1,13 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using kinetic_api.Interfaces;
+﻿using kinetic_api.Interfaces;
 
 namespace kinetic_api.Models;
 
 public class Workspace : ITrackable
 {
     public Guid Id { get; init; } = Guid.NewGuid();
-    public bool IsPersonal { get; init; }
-    [Required] [MaxLength(100)] public required string Name { get; set; }
+    public required string Name { get; set; }
+    public bool IsPersonalWorkspace { get; init; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public required Guid CreatedBy { get; init; }

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
+﻿using System.Text.Json;
 using kinetic_api.Enums;
 using kinetic_api.Interfaces;
 
@@ -11,8 +10,8 @@ public class Task : ITrackable
     public required Guid ProjectId { get; init; }
     public virtual Project Project { get; set; } = null!;
 
-    [Required] public required int RefId { get; init; }
-    [Required] [MaxLength(100)] public required string Name { get; set; }
+    public required int RefId { get; init; }
+    public required string Name { get; set; }
     public required Guid SectionId { get; set; }
     public required long Position { get; set; }
     public JsonElement? Description { get; set; }

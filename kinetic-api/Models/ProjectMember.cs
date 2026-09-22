@@ -8,5 +8,5 @@ public class ProjectMember
     public virtual Project Project { get; set; } = null!;
     public required Guid UserId { get; init; }
     public virtual ApplicationUser User { get; set; } = null!;
-    public EProjectRole Role { get; set; }
+    public required EProjectRole Role { get; set; }
 }

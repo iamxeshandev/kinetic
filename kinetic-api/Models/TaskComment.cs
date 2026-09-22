@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace kinetic_api.Models;
+﻿namespace kinetic_api.Models;
 
 public class TaskComment
 {
@@ -12,7 +10,7 @@ public class TaskComment
     public required Guid AuthorId { get; init; }
     public virtual ApplicationUser Author { get; set; } = null!;
 
-    [MaxLength(2000)] public required string Content { get; set; }
+    public required string Content { get; set; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedAt { get; set; }
