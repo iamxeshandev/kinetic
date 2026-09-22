@@ -24,15 +24,15 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
                 (int)EWorkspaceRole.Member)
             .ThenBy(o => o.User.FirstName)
             .ThenBy(o => o.User.LastName)
-            .Select(o => new UserDto(
-                o.UserId,
-                o.User.Email!,
-                o.User.FirstName,
-                o.User.LastName,
-                o.User.AvatarKey.ToPublicUrl(),
-                o.Role,
-                o.CreatedAt
-            ))
+            .Select(o => new UserDto
+            {
+                Id = o.UserId,
+                Email = o.User.Email!,
+                FirstName = o.User.FirstName,
+                LastName = o.User.LastName,
+                AvatarUrl = o.User.AvatarKey.ToPublicUrl(),
+                Role = o.Role
+            })
             .ToListAsync();
 
         return new Response<List<UserDto>>(records);
@@ -42,15 +42,15 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
     {
         var record = await db.WorkspaceMembers
             .Where(o => o.WorkspaceId == workspaceId && o.UserId == userId)
-            .Select(o => new UserDto(
-                o.UserId,
-                o.User.Email!,
-                o.User.FirstName,
-                o.User.LastName,
-                o.User.AvatarKey.ToPublicUrl(),
-                o.Role,
-                o.CreatedAt
-            ))
+            .Select(o => new UserDto
+            {
+                Id = o.UserId,
+                Email = o.User.Email!,
+                FirstName = o.User.FirstName,
+                LastName = o.User.LastName,
+                AvatarUrl = o.User.AvatarKey.ToPublicUrl(),
+                Role = o.Role
+            })
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
         return new Response<UserDto>(record);
@@ -78,8 +78,7 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
         {
             WorkspaceId = workspaceId,
             UserId = user.Id,
-            Role = targetRole,
-            CreatedBy = accessor.GetUserId()
+            Role = targetRole
         };
         db.Add(member);
 
@@ -90,9 +89,8 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
 
     public async Task<Response<UserDto>> UpdateUserAsync(Guid workspaceId, Guid userId, UserRequest request)
     {
-        var member = await db.WorkspaceMembers.FindAsync(workspaceId, userId)
-                     ?? throw new ApiException(HttpStatusCode.NotFound,
-                         "User not found.");
+        var member = await db.WorkspaceMembers.FindAsync(workspaceId, userId) ??
+                     throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
         var currentUserRole = (await db.WorkspaceMembers.FindAsync(workspaceId, accessor.GetUserId()))!.Role;
         var existingRole = member.Role;
@@ -103,8 +101,6 @@ public class UserService(AppDbContext db, IHttpContextAccessor accessor, UserMan
             throw new ApiException(HttpStatusCode.Forbidden, "Cannot assign equal or higher role to a user.");
 
         member.Role = targetRole;
-        member.UpdatedAt = DateTimeOffset.UtcNow;
-        member.UpdatedBy = accessor.GetUserId();
 
         await db.SaveChangesAsync();
         return new Response<UserDto>("User updated.",

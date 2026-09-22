@@ -16,15 +16,16 @@ public class WorkspaceService(AppDbContext db, IHttpContextAccessor accessor)
     {
         var records = await db.WorkspaceMembers
             .Where(o => o.UserId == accessor.GetUserId())
-            .OrderByDescending(o => o.Workspace.IsPersonal)
-            .ThenByDescending(o => o.CreatedAt)
-            .Select(o => new WorkspaceDto(
-                o.Workspace.Id,
-                o.Workspace.Name,
-                o.Role,
-                o.Workspace.IsPersonal,
-                db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
-            ))
+            .OrderByDescending(o => o.Workspace.IsPersonalWorkspace)
+            .ThenBy(o => o.Workspace.Name)
+            .Select(o => new WorkspaceDto
+            {
+                Id = o.Workspace.Id,
+                Name = o.Workspace.Name,
+                Role = o.Role,
+                IsPersonalWorkspace = o.Workspace.IsPersonalWorkspace,
+                MemberCount = db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
+            })
             .ToListAsync();
 
         return new Response<List<WorkspaceDto>>(records);
@@ -34,13 +35,14 @@ public class WorkspaceService(AppDbContext db, IHttpContextAccessor accessor)
     {
         var record = await db.WorkspaceMembers
             .Where(o => o.WorkspaceId == workspaceId && o.UserId == accessor.GetUserId())
-            .Select(o => new WorkspaceDto(
-                o.Workspace.Id,
-                o.Workspace.Name,
-                o.Role,
-                o.Workspace.IsPersonal,
-                db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
-            ))
+            .Select(o => new WorkspaceDto
+            {
+                Id = o.Workspace.Id,
+                Name = o.Workspace.Name,
+                Role = o.Role,
+                IsPersonalWorkspace = o.Workspace.IsPersonalWorkspace,
+                MemberCount = db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
+            })
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Workspace not found.");
 
         return new Response<WorkspaceDto>(record);
@@ -59,8 +61,7 @@ public class WorkspaceService(AppDbContext db, IHttpContextAccessor accessor)
         {
             WorkspaceId = workspace.Id,
             UserId = accessor.GetUserId(),
-            Role = EWorkspaceRole.Owner,
-            CreatedBy = accessor.GetUserId()
+            Role = EWorkspaceRole.Owner
         };
         db.WorkspaceMembers.Add(workspaceMember);
 
@@ -92,7 +93,7 @@ public class WorkspaceService(AppDbContext db, IHttpContextAccessor accessor)
                             .Select(o => o.Workspace).SingleOrDefaultAsync() ??
                         throw new ApiException(HttpStatusCode.NotFound, "Workspace not found.");
 
-        if (workspace.IsPersonal)
+        if (workspace.IsPersonalWorkspace)
             throw new ApiException(HttpStatusCode.Forbidden, "Cannot delete personal workspace.");
 
         workspace.DeletedAt = DateTime.UtcNow;

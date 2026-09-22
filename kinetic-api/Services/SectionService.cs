@@ -36,7 +36,11 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
         var records = await db.Sections
             .Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
             .OrderBy(o => o.Position)
-            .Select(o => new SectionDto(o.Id, o.Name))
+            .Select(o => new SectionDto
+            {
+                Id = o.Id,
+                Name = o.Name
+            })
             .ToListAsync();
 
         return new Response<List<SectionDto>>(records);
@@ -46,7 +50,11 @@ public class SectionService(AppDbContext db, IHttpContextAccessor accessor, Task
     {
         var record = await db.Sections
             .Where(o => o.Id == sectionId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
-            .Select(o => new SectionDto(o.Id, o.Name))
+            .Select(o => new SectionDto
+            {
+                Id = o.Id,
+                Name = o.Name
+            })
             .FirstOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
         return new Response<SectionDto>(record);

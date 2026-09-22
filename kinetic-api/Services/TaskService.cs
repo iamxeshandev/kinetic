@@ -17,13 +17,10 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
 {
     private const long TaskPositionStep = 1000000;
 
-    private async Task<List<Task>> NormalizeTaskPositionsAsync(Guid workspaceId, Guid projectId, Guid sectionId)
+    private async Task<List<Task>> NormalizeTaskPositionsAsync(Guid sectionId)
     {
         var tasks = await db.Tasks
-            .Where(o =>
-                o.SectionId == sectionId &&
-                o.ProjectId == projectId &&
-                o.Project.WorkspaceId == workspaceId)
+            .Where(o => o.SectionId == sectionId)
             .OrderBy(o => o.Position)
             .ToListAsync();
 
@@ -36,52 +33,90 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
         return tasks;
     }
 
+    private async Task<long?> GetNewTaskPositionAsync(Guid sectionId, Guid taskId, Guid? previousTaskId,
+        Guid? nextTaskId)
+    {
+        return new { previousTaskId, nextTaskId } switch
+        {
+            { previousTaskId: null } => (await db.Tasks
+                .Where(o => o.Id != taskId && o.SectionId == sectionId)
+                .Select(o => (long?)o.Position)
+                .MinAsync() ?? 2 * TaskPositionStep) - TaskPositionStep,
+
+            { nextTaskId: null } => (await db.Tasks
+                .Where(o => o.Id != taskId && o.SectionId == sectionId)
+                .Select(o => (long?)o.Position)
+                .MaxAsync() ?? 0L) + TaskPositionStep,
+
+            _ => await db.Tasks
+                .Where(o => (o.Id == previousTaskId || o.Id == nextTaskId) && o.SectionId == sectionId)
+                .OrderBy(o => o.Position)
+                .Select(o => o.Position)
+                .ToListAsync() is { Count: 2 } positions
+                ? positions[1] - positions[0] <= 1
+                    ? (await NormalizeTaskPositionsAsync(sectionId))
+                    .Where(o => o.Id == previousTaskId || o.Id == nextTaskId)
+                    .Select(o => o.Position)
+                    .Sum() / 2
+                    : positions.Sum() / 2
+                : null
+        };
+    }
 
     public async Task<Response<List<TaskDto>>> GetAllTasksAsync(Guid workspaceId, Guid projectId)
     {
         var records = await db.Tasks
             .Where(o => o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId)
             .OrderBy(o => o.Position)
-            .Select(o => new TaskDto(
-                o.Id,
-                o.RefId,
-                o.SectionId,
-                o.Name,
-                o.Description,
-                o.Position,
-                o.Priority,
-                o.DueDate,
-                o.CompletedAt,
-                o.AssignedAt,
-                db.ProjectMembers
+            .Select(o => new TaskDto
+            {
+                Id = o.Id,
+                RefId = o.RefId,
+                SectionId = o.SectionId,
+                Name = o.Name,
+                Description = o.Description,
+                Position = o.Position,
+                Priority = o.Priority,
+                DueDate = o.DueDate,
+                CompletedAt = o.CompletedAt,
+                AssignedAt = o.AssignedAt,
+                Assignee = db.ProjectMembers
                     .Where(pm =>
                         pm.ProjectId == projectId && pm.UserId == o.AssigneeId && pm.Project.WorkspaceId == workspaceId)
-                    .Select(pm => new ProjectMemberDto(
-                        pm.UserId,
-                        pm.User.Email!,
-                        pm.User.FirstName,
-                        pm.User.LastName,
-                        pm.User.AvatarKey.ToPublicUrl(),
-                        pm.Role
-                    ))
+                    .Select(pm => new ProjectMemberDto
+                    {
+                        Id = pm.UserId,
+                        Email = pm.User.Email!,
+                        FirstName = pm.User.FirstName,
+                        LastName = pm.User.LastName,
+                        AvatarUrl = pm.User.AvatarKey.ToPublicUrl(),
+                        Role = pm.Role
+                    })
                     .SingleOrDefault(),
-                db.Subtasks
+                Subtasks = db.Subtasks
                     .Where(st => st.TaskId == o.Id)
-                    .Select(st => new SubtaskDto(st.Id, st.TaskId, st.Name, st.IsCompleted))
+                    .Select(st => new SubtaskDto
+                    {
+                        Id = st.Id,
+                        Name = st.Name,
+                        CompletedAt = st.CompletedAt
+                    })
                     .ToList(),
-                db.TaskAttachments
+                Attachments = db.TaskAttachments
                     .Where(ta =>
                         ta.TaskId == o.Id && ta.Task.ProjectId == projectId &&
                         ta.Task.Project.WorkspaceId == workspaceId)
-                    .Select(ta => new TaskAttachmentDto(
-                        ta.Id,
-                        ta.FileName,
-                        ta.ContentType,
-                        ta.SizeBytes,
-                        $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{o.Id}/attachments/{ta.Id}/download"
-                    ))
+                    .Select(ta => new TaskAttachmentDto
+                    {
+                        Id = ta.Id,
+                        FileName = ta.FileName,
+                        ContentType = ta.ContentType,
+                        SizeBytes = ta.SizeBytes,
+                        DownloadUrl =
+                            $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{o.Id}/attachments/{ta.Id}/download"
+                    })
                     .ToList()
-            ))
+            })
             .ToListAsync();
 
         return new Response<List<TaskDto>>(records);
@@ -90,48 +125,65 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
     public async Task<Response<TaskDto>> GetTaskByIdAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         var record = await db.Tasks
-            .Where(o => o.Id == taskId && o.ProjectId == projectId &&
-                        o.Project.WorkspaceId == workspaceId)
-            .Select(o => new TaskDto(
-                o.Id,
-                o.RefId,
-                o.SectionId,
-                o.Name,
-                o.Description,
-                o.Position,
-                o.Priority,
-                o.DueDate,
-                o.CompletedAt,
-                o.AssignedAt,
-                db.ProjectMembers
+            .Where(o =>
+                o.Id == taskId &&
+                o.ProjectId == projectId &&
+                o.Project.WorkspaceId == workspaceId
+            )
+            .Select(o => new TaskDto
+            {
+                Id = o.Id,
+                RefId = o.RefId,
+                SectionId = o.SectionId,
+                Name = o.Name,
+                Description = o.Description,
+                Position = o.Position,
+                Priority = o.Priority,
+                DueDate = o.DueDate,
+                CompletedAt = o.CompletedAt,
+                AssignedAt = o.AssignedAt,
+                Assignee = db.ProjectMembers
                     .Where(pm =>
-                        pm.ProjectId == projectId && pm.UserId == o.AssigneeId && pm.Project.WorkspaceId == workspaceId)
-                    .Select(pm => new ProjectMemberDto(
-                        pm.UserId,
-                        pm.User.Email!,
-                        pm.User.FirstName,
-                        pm.User.LastName,
-                        pm.User.AvatarKey.ToPublicUrl(),
-                        pm.Role
-                    ))
+                        pm.ProjectId == projectId &&
+                        pm.UserId == o.AssigneeId &&
+                        pm.Project.WorkspaceId == workspaceId
+                    )
+                    .Select(pm => new ProjectMemberDto
+                    {
+                        Id = pm.UserId,
+                        Email = pm.User.Email!,
+                        FirstName = pm.User.FirstName,
+                        LastName = pm.User.LastName,
+                        AvatarUrl = pm.User.AvatarKey.ToPublicUrl(),
+                        Role = pm.Role
+                    })
                     .SingleOrDefault(),
-                db.Subtasks
+                Subtasks = db.Subtasks
                     .Where(st => st.TaskId == o.Id)
-                    .Select(st => new SubtaskDto(st.Id, st.TaskId, st.Name, st.IsCompleted))
+                    .Select(st => new SubtaskDto
+                    {
+                        Id = st.Id,
+                        Name = st.Name,
+                        CompletedAt = st.CompletedAt
+                    })
                     .ToList(),
-                db.TaskAttachments
+                Attachments = db.TaskAttachments
                     .Where(ta =>
-                        ta.TaskId == o.Id && ta.Task.ProjectId == projectId &&
-                        ta.Task.Project.WorkspaceId == workspaceId)
-                    .Select(ta => new TaskAttachmentDto(
-                        ta.Id,
-                        ta.FileName,
-                        ta.ContentType,
-                        ta.SizeBytes,
-                        $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{o.Id}/attachments/{ta.Id}/download"
-                    ))
+                        ta.TaskId == o.Id
+                        && ta.Task.ProjectId == projectId &&
+                        ta.Task.Project.WorkspaceId == workspaceId
+                    )
+                    .Select(ta => new TaskAttachmentDto
+                    {
+                        Id = ta.Id,
+                        FileName = ta.FileName,
+                        ContentType = ta.ContentType,
+                        SizeBytes = ta.SizeBytes,
+                        DownloadUrl =
+                            $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{o.Id}/attachments/{ta.Id}/download"
+                    })
                     .ToList()
-            ))
+            })
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
         return new Response<TaskDto>(record);
@@ -214,8 +266,7 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
             await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
             var taskExists = await db.Tasks.AnyAsync(o =>
-                o.Id == taskId && o.ProjectId == projectId &&
-                o.Project.WorkspaceId == workspaceId);
+                o.Id == taskId && o.ProjectId == projectId && o.Project.WorkspaceId == workspaceId);
             if (!taskExists)
                 throw new ApiException(HttpStatusCode.NotFound, "Task not found.");
 
@@ -224,40 +275,9 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
             if (!sectionExists)
                 throw new ApiException(HttpStatusCode.NotFound, "Section not found.");
 
-            var newPosition = request switch
-            {
-                { PreviousTaskId: null } => (await db.Tasks
-                    .Where(o => o.Id != taskId &&
-                                o.SectionId == request.SectionId &&
-                                o.ProjectId == projectId &&
-                                o.Project.WorkspaceId == workspaceId)
-                    .Select(o => (long?)o.Position)
-                    .MinAsync() ?? 2 * TaskPositionStep) - TaskPositionStep,
-
-                { NextTaskId: null } => (await db.Tasks
-                    .Where(o => o.Id != taskId &&
-                                o.SectionId == request.SectionId &&
-                                o.ProjectId == projectId &&
-                                o.Project.WorkspaceId == workspaceId)
-                    .Select(o => (long?)o.Position)
-                    .MaxAsync() ?? 0L) + TaskPositionStep,
-
-                _ => await db.Tasks
-                    .Where(o =>
-                        (o.Id == request.PreviousTaskId.Value || o.Id == request.NextTaskId.Value) &&
-                        o.SectionId == request.SectionId && o.ProjectId == projectId &&
-                        o.Project.WorkspaceId == workspaceId)
-                    .OrderBy(o => o.Position)
-                    .Select(o => o.Position)
-                    .ToListAsync() is { Count: 2 } positions
-                    ? positions[1] - positions[0] <= 1
-                        ? (await NormalizeTaskPositionsAsync(workspaceId, projectId, request.SectionId))
-                        .Where(o => o.Id == request.PreviousTaskId.Value || o.Id == request.NextTaskId.Value)
-                        .Select(o => o.Position)
-                        .Sum() / 2
-                        : positions.Sum() / 2
-                    : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring tasks.")
-            };
+            var newPosition =
+                await GetNewTaskPositionAsync(request.SectionId, taskId, request.PreviousTaskId, request.NextTaskId) ??
+                throw new ApiException(HttpStatusCode.BadRequest, "Invalid position.");
 
             await db.Tasks
                 .Where(o =>

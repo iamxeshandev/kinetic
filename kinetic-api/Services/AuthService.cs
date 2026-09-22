@@ -38,7 +38,7 @@ public class AuthService(
         var workspace = new Workspace
         {
             Name = "Personal Workspace",
-            IsPersonal = true,
+            IsPersonalWorkspace = true,
             CreatedBy = user.Id
         };
         db.Workspaces.Add(workspace);
@@ -47,12 +47,11 @@ public class AuthService(
         {
             WorkspaceId = workspace.Id,
             UserId = user.Id,
-            Role = EWorkspaceRole.Owner,
-            CreatedBy = user.Id
+            Role = EWorkspaceRole.Owner
         };
         db.WorkspaceMembers.Add(member);
 
-        user.CurrentWorkspaceId = workspace.Id;
+        user.ActiveWorkspaceId = workspace.Id;
 
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
@@ -77,29 +76,9 @@ public class AuthService(
         if (!result.Succeeded)
             throw new ApiException(HttpStatusCode.Unauthorized, "Invalid credentials.");
 
-        var workspaceDto = user.CurrentWorkspaceId.HasValue
-            ? await db.WorkspaceMembers
-                .Where(o => o.WorkspaceId == user.CurrentWorkspaceId.Value && o.UserId == user.Id)
-                .Select(o => new WorkspaceDto(
-                    o.WorkspaceId,
-                    o.Workspace.Name,
-                    o.Role,
-                    o.Workspace.IsPersonal,
-                    db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
-                ))
-                .SingleOrDefaultAsync()
-            : null;
+        var responseDto = await GetMeAsync().GetDataAsync();
 
-        var dto = new MeDto(
-            user.Id,
-            user.Email!,
-            user.FirstName,
-            user.LastName,
-            user.AvatarKey.ToPublicUrl(),
-            workspaceDto
-        );
-
-        return new Response<MeDto>(dto);
+        return new Response<MeDto>(responseDto!);
     }
 
     public async Task<Response> LogoutAsync()
@@ -113,36 +92,23 @@ public class AuthService(
     {
         var userId = accessor.GetUserId();
 
-        var workspaceDto = await db.WorkspaceMembers
-            .Where(o => o.WorkspaceId == workspaceId && o.UserId == userId)
-            .Select(o => new WorkspaceDto(
-                o.WorkspaceId,
-                o.Workspace.Name,
-                o.Role,
-                o.Workspace.IsPersonal,
-                db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
-            ))
-            .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Workspace not found.");
-
         var user = await userManager.FindByIdAsync(userId.ToString()) ??
                    throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-        user.CurrentWorkspaceId = workspaceDto.Id;
+        var isWorkspaceMember =
+            await db.WorkspaceMembers.AnyAsync(o => o.WorkspaceId == workspaceId && o.UserId == userId);
+        if (!isWorkspaceMember)
+            throw new ApiException(HttpStatusCode.NotFound, "Workspace not found.");
+
+        user.ActiveWorkspaceId = workspaceId;
 
         var result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)
             throw new ApiException(HttpStatusCode.InternalServerError, "Something went wrong. Try again later.");
 
-        var dto = new MeDto(
-            user.Id,
-            user.Email!,
-            user.FirstName,
-            user.LastName,
-            user.AvatarKey.ToPublicUrl(),
-            workspaceDto
-        );
+        var responseDto = await GetMeAsync().GetDataAsync();
 
-        return new Response<MeDto>(dto);
+        return new Response<MeDto>(responseDto!);
     }
 
 
@@ -154,36 +120,37 @@ public class AuthService(
             await userManager.FindByIdAsync(userId) is not { } user)
             return new Response<MeDto?>(null);
 
-        var workspaceDto = user.CurrentWorkspaceId.HasValue
-            ? await db.WorkspaceMembers
-                .Where(o => o.WorkspaceId == user.CurrentWorkspaceId.Value && o.UserId == user.Id)
-                .Select(o => new WorkspaceDto(
-                    o.WorkspaceId,
-                    o.Workspace.Name,
-                    o.Role,
-                    o.Workspace.IsPersonal,
-                    db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
-                ))
-                .SingleOrDefaultAsync()
-            : null;
+        var responseDto = new MeDto
+        {
+            Id = user.Id,
+            Email = user.Email!,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            AvatarUrl = user.AvatarKey,
+            ActiveWorkspace = user.ActiveWorkspaceId is null
+                ? null
+                : await db.WorkspaceMembers
+                    .Where(o => o.WorkspaceId == user.ActiveWorkspaceId && o.UserId == user.Id)
+                    .Select(o => new WorkspaceDto
+                    {
+                        Id = o.Workspace.Id,
+                        Name = o.Workspace.Name,
+                        IsPersonalWorkspace = o.Workspace.IsPersonalWorkspace,
+                        Role = o.Role,
+                        MemberCount = db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
+                    })
+                    .SingleOrDefaultAsync()
+        };
 
-        var dto = new MeDto(
-            user.Id,
-            user.Email!,
-            user.FirstName,
-            user.LastName,
-            user.AvatarKey,
-            workspaceDto
-        );
-
-        return new Response<MeDto?>(dto);
+        return new Response<MeDto?>(responseDto);
     }
 
     public async Task<Response<MeDto>> UpdateMeAsync(MeRequest request)
     {
         var userId = accessor.GetUserId();
 
-        var user = await userManager.FindByIdAsync(userId.ToString()) ?? throw new UnauthorizedAccessException();
+        var user = await userManager.FindByIdAsync(userId.ToString()) ??
+                   throw new ApiException(HttpStatusCode.NotFound, "User  not found.");
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
 
@@ -191,30 +158,12 @@ public class AuthService(
         if (!result.Succeeded)
             throw new ApiException(HttpStatusCode.BadRequest, "Could not update user.");
 
-        var workspaceDto = user.CurrentWorkspaceId.HasValue
-            ? await db.WorkspaceMembers
-                .Where(o => o.WorkspaceId == user.CurrentWorkspaceId.Value && o.UserId == user.Id)
-                .Select(o => new WorkspaceDto(
-                    o.WorkspaceId,
-                    o.Workspace.Name,
-                    o.Role,
-                    o.Workspace.IsPersonal,
-                    db.WorkspaceMembers.Count(wm => wm.WorkspaceId == o.WorkspaceId)
-                ))
-                .SingleOrDefaultAsync()
-            : null;
+        var responseDto = await GetMeAsync().GetDataAsync();
 
-        return new Response<MeDto>("User updated.", new MeDto(
-            user.Id,
-            user.Email!,
-            user.FirstName,
-            user.LastName,
-            user.AvatarKey.ToPublicUrl(),
-            workspaceDto
-        ));
+        return new Response<MeDto>("User updated.", responseDto!);
     }
 
-    public async Task<Response<string>> UploadAvatarAsync(IFormFile file, ClaimsPrincipal currentUser)
+    public async Task<Response<MeDto>> UploadAvatarAsync(IFormFile file, ClaimsPrincipal currentUser)
     {
         if (!Guid.TryParse(currentUser.FindFirstValue(ClaimTypes.NameIdentifier) ?? "", out var userId))
             throw new UnauthorizedAccessException();
@@ -268,6 +217,8 @@ public class AuthService(
                 File.Delete(oldStoragePath);
         }
 
-        return new Response<string>("Avatar uploaded.", user.AvatarKey.ToPublicUrl());
+        var responseDto = await GetMeAsync().GetDataAsync();
+
+        return new Response<MeDto>("Avatar uploaded.", responseDto!);
     }
 }

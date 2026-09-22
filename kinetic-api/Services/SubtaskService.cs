@@ -11,12 +11,64 @@ namespace kinetic_api.Services;
 
 public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
 {
+    private const long SubtaskPositionStep = 1000000;
+
+    private async Task<List<Subtask>> NormalizeSubtasksAsync(Guid taskId)
+    {
+        var subtasks = await db.Subtasks
+            .Where(o => o.TaskId == taskId)
+            .OrderBy(o => o.Position)
+            .ToListAsync();
+
+        var position = 0L;
+
+        foreach (var subtask in subtasks)
+            subtask.Position = position += SubtaskPositionStep;
+
+        await db.SaveChangesAsync();
+        return subtasks;
+    }
+
+    private async Task<long> GetNewSubtaskPositionAsync(Guid taskId, Guid? previousSubtaskId, Guid? nextSubtaskId)
+    {
+        return new { previousSubtaskId, nextSubtaskId } switch
+        {
+            { previousSubtaskId: null } => (await db.Subtasks
+                .Where(o => o.TaskId == taskId)
+                .MinAsync(o => (long?)o.Position) ?? 2 * SubtaskPositionStep) - SubtaskPositionStep,
+
+            { nextSubtaskId: null } => (await db.Subtasks
+                .Where(o => o.TaskId == taskId)
+                .MaxAsync(o => (long?)o.Position) ?? 0L) + SubtaskPositionStep,
+
+            _ => await db.Subtasks
+                .Where(o => (o.Id == previousSubtaskId || o.Id == nextSubtaskId) && o.TaskId == taskId)
+                .OrderBy(o => o.Position)
+                .Select(o => o.Position)
+                .ToListAsync() is { Count: 2 } positions
+                ? positions[1] - positions[0] <= 1
+                    ? (await NormalizeSubtasksAsync(taskId))
+                    .Where(o => o.Id == previousSubtaskId || o.Id == nextSubtaskId).Sum(o => o.Position) / 2
+                    : positions.Sum() / 2
+                : throw new ApiException(HttpStatusCode.BadRequest, "Invalid neighbouring subtasks.")
+        };
+    }
+
+
     public async Task<Response<List<SubtaskDto>>> GetAllSubtasksAsync(Guid workspaceId, Guid projectId, Guid taskId)
     {
         var records = await db.Subtasks
-            .Where(o => o.TaskId == taskId && o.Task.ProjectId == projectId &&
-                        o.Task.Project.WorkspaceId == workspaceId)
-            .Select(o => new SubtaskDto(o.Id, o.TaskId, o.Name, o.IsCompleted))
+            .Where(o =>
+                o.TaskId == taskId &&
+                o.Task.ProjectId == projectId &&
+                o.Task.Project.WorkspaceId == workspaceId
+            )
+            .Select(o => new SubtaskDto
+            {
+                Id = o.Id,
+                Name = o.Name,
+                CompletedAt = o.CompletedAt
+            })
             .ToListAsync();
 
         return new Response<List<SubtaskDto>>(records);
@@ -26,9 +78,18 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
         Guid subtaskId)
     {
         var records = await db.Subtasks
-            .Where(o => o.Id == subtaskId && o.TaskId == taskId && o.Task.ProjectId == projectId &&
-                        o.Task.Project.WorkspaceId == workspaceId)
-            .Select(o => new SubtaskDto(o.Id, o.TaskId, o.Name, o.IsCompleted))
+            .Where(o =>
+                o.Id == subtaskId &&
+                o.TaskId == taskId &&
+                o.Task.ProjectId == projectId &&
+                o.Task.Project.WorkspaceId == workspaceId
+            )
+            .Select(o => new SubtaskDto
+            {
+                Id = o.Id,
+                Name = o.Name,
+                CompletedAt = o.CompletedAt
+            })
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Subtask not found.");
 
         return new Response<SubtaskDto>(records);
@@ -46,6 +107,7 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
         {
             TaskId = taskId,
             Name = request.Name,
+            Position = await GetNewSubtaskPositionAsync(taskId, request.PreviousSubtaskId, request.NextSubtaskId),
             CreatedBy = accessor.GetUserId()
         };
         db.Subtasks.Add(subtask);
@@ -64,7 +126,6 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
                       throw new ApiException(HttpStatusCode.NotFound, "Subtask not found");
 
         subtask.Name = request.Name;
-        subtask.IsCompleted = request.IsCompleted;
         subtask.UpdatedAt = DateTimeOffset.UtcNow;
         subtask.UpdatedBy = accessor.GetUserId();
 

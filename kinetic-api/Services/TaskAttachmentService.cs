@@ -11,6 +11,9 @@ namespace kinetic_api.Services;
 
 public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accessor, StorageService storageService)
 {
+    private const long MaxFileSize = 1024 * 1024;
+
+
     public async Task<Response<List<TaskAttachmentDto>>> GetAllTaskAttachmentsAsync(Guid workspaceId, Guid projectId,
         Guid taskId)
     {
@@ -20,13 +23,15 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
                 o.Task.ProjectId == projectId &&
                 o.Task.Project.WorkspaceId == workspaceId
             )
-            .Select(o => new TaskAttachmentDto(
-                o.Id,
-                o.FileName,
-                o.ContentType,
-                o.SizeBytes,
-                $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{taskId}/attachments/{o.Id}/download"
-            ))
+            .Select(o => new TaskAttachmentDto
+            {
+                Id = o.Id,
+                FileName = o.FileName,
+                ContentType = o.ContentType,
+                SizeBytes = o.SizeBytes,
+                DownloadUrl =
+                    $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{taskId}/attachments/{o.Id}/download"
+            })
             .ToListAsync();
 
         return new Response<List<TaskAttachmentDto>>(records);
@@ -42,32 +47,32 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
                 o.Task.ProjectId == projectId &&
                 o.Task.Project.WorkspaceId == workspaceId
             )
-            .Select(o => new TaskAttachmentDto(
-                o.Id,
-                o.FileName,
-                o.ContentType,
-                o.SizeBytes,
-                $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{taskId}/attachments/{o.Id}/download"
-            ))
+            .Select(o => new TaskAttachmentDto
+            {
+                Id = o.Id,
+                FileName = o.FileName,
+                ContentType = o.ContentType,
+                SizeBytes = o.SizeBytes,
+                DownloadUrl =
+                    $"/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{taskId}/attachments/{o.Id}/download"
+            })
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Task attachment not found.");
 
         return new Response<TaskAttachmentDto>(record);
     }
 
     public async Task<Response<TaskAttachmentDto>> UploadTaskAttachmentAsync(Guid workspaceId, Guid projectId,
-        Guid taskId, IFormFile file)
+        Guid taskId, FileUploadRequest request)
     {
-        const long maxFileSize = 1024 * 1024;
-
-        switch (file.Length)
+        switch (request.File.Length)
         {
             case 0:
                 throw new ApiException(HttpStatusCode.BadRequest, "No file selected.");
-            case > maxFileSize:
-                throw new ApiException(HttpStatusCode.BadRequest, "File must be 1 MB max.");
+            case > MaxFileSize:
+                throw new ApiException(HttpStatusCode.BadRequest, "File size cannot exceed 1 MB.");
         }
 
-        var fileExtension = Path.GetExtension(file.FileName);
+        var fileExtension = Path.GetExtension(request.File.FileName);
         if (string.IsNullOrEmpty(fileExtension))
             throw new ApiException(HttpStatusCode.BadRequest, "Invalid file type.");
 
@@ -84,15 +89,15 @@ public class TaskAttachmentService(AppDbContext db, IHttpContextAccessor accesso
         Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
 
         await using var stream = new FileStream(absolutePath, FileMode.Create, FileAccess.Write);
-        await file.CopyToAsync(stream);
+        await request.File.CopyToAsync(stream);
 
         var taskAttachment = new TaskAttachment
         {
             TaskId = taskId,
-            FileName = file.FileName,
+            FileName = request.File.FileName,
             StorageKey = relativePath.Replace("\\", "/"),
-            ContentType = file.ContentType,
-            SizeBytes = file.Length,
+            ContentType = request.File.ContentType,
+            SizeBytes = request.File.Length,
             CreatedBy = accessor.GetUserId()
         };
         db.TaskAttachments.Add(taskAttachment);
