@@ -4,7 +4,6 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
-  LinearProgress,
   List,
   ListItem,
   ListItemIcon,
@@ -20,12 +19,13 @@ import { useBoolean } from '../../../../../shared/hooks';
 import { AddIcon, SubtasksIcon, TrashIcon } from '../../../../../shared/icons';
 import { toast } from '../../../../../shared/toast';
 import { Centered, ConfirmDialog } from '../../../../../shared/ui';
+import { SegmentedProgress } from '../../../../../shared/ui/SegmentedProgress';
 import {
   useCreateSubtask,
   useDeleteSubtask,
   useUpdateSubtask,
 } from '../../hooks';
-import { FieldLabel } from './FieldLabel';
+import { SectionLabel } from './SectionLabel';
 
 export type SubtaskSectionProps = {
   task: TaskDto;
@@ -71,12 +71,13 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
       cancelCreateSubtask();
       return;
     }
-    await createSubtask({ name })
-      .then((res) => {
-        toast.success(res.message);
-        cancelCreateSubtask();
+
+    await createSubtask({ name, previousSubtaskId: task.subtasks?.at(-1)?.id })
+      .catch((err) => {
+        toast.error(err.message);
+        console.error(err);
       })
-      .catch((err) => toast.error(err.message));
+      .finally(() => cancelCreateSubtask());
   };
 
   const cancelUpdateSubtask = () => {
@@ -90,103 +91,73 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
       cancelUpdateSubtask();
       return;
     }
+
     await updateSubtask({
       subtaskId: editSubtask.id,
       name,
     })
-      .then(() => cancelUpdateSubtask())
-      .catch((err) => toast.error(err.message));
+      .catch((err) => {
+        toast.error(err.message);
+        console.error(err);
+      })
+      .finally(() => cancelUpdateSubtask());
   };
 
-  const handleToggleSubtaskCompletion = async (subtask: SubtaskDto) => {
-    await updateSubtask({
-      subtaskId: subtask.id,
-      name: subtask.name,
-    })
-      .then((res) => {
-        toast.success(res.message);
-      })
-      .catch((err) => toast.error(err.message));
-  };
+  const handleToggleSubtaskCompletion = async () => {};
 
   const handleDeleteSubtask = async () => {
     if (!deleteSubtaskId) return;
+
     await deleteSubtask({ subtaskId: deleteSubtaskId })
-      .then((res) => {
-        toast.success(res.message);
-        setDeleteSubtaskId(null);
-      })
-      .catch((err) => toast.error(err.message));
+      .then(() => setDeleteSubtaskId(null))
+      .catch((err) => {
+        toast.error(err.message);
+        console.error(err);
+      });
   };
+
+  const completedTaskCount =
+    task.subtasks?.filter((subtask) => !!subtask.completedAt).length ?? 0;
 
   return (
     <>
       <Stack spacing={1}>
-        <FieldLabel
-          label='Subtasks'
-          icon={SubtasksIcon}
-          action={
-            <Button
-              variant='text'
-              size='small'
-              startIcon={<AddIcon />}
-              onClick={createMode.setTrue}
-            >
-              Add Subtask
-            </Button>
+        <SectionLabel
+          label={
+            !task.subtasks?.length
+              ? 'Subtasks'
+              : `Subtasks (${completedTaskCount}/${task.subtasks.length})`
           }
+          icon={SubtasksIcon}
         />
 
-        <LinearProgress variant='determinate' value={60} max={100} />
+        {task.subtasks?.length && (
+          <SegmentedProgress
+            value={completedTaskCount}
+            segments={task.subtasks.length}
+            max={20}
+          />
+        )}
 
-        <List
-          disablePadding
-          sx={{
-            p: 1,
-            backgroundColor: 'background.neutral',
-            borderRadius: 2,
-          }}
-        >
-          {createMode.value && (
-            <ListItem>
-              {/* <ListItemIcon /> */}
-              <TextField
-                value={newSubtaskName}
-                onChange={(e) => setNewSubtaskName(e.target.value)}
-                placeholder='New Subtask'
-                size='small'
-                fullWidth
-                autoFocus
-                multiline
-                disabled={isCreating}
-                onBlur={isCreating ? undefined : handleCreateSubtask}
-                onKeyDown={async (e) => {
-                  if (e.key === 'Escape') {
-                    e.stopPropagation();
-                    cancelCreateSubtask();
-                  }
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    await handleCreateSubtask();
-                  }
-                }}
-                slotProps={{
-                  input: {
-                    endAdornment: isCreating ? (
-                      <InputAdornment position='end'>
-                        <CircularProgress size={20} />
-                      </InputAdornment>
-                    ) : undefined,
-                  },
-                }}
-              />
-            </ListItem>
-          )}
-
-          {task.subtasks?.length
-            ? task.subtasks.map((subtask) => (
+        <List sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {!task.subtasks?.length
+            ? !createMode.value && (
+                <Centered
+                  sx={{
+                    p: 2,
+                    backgroundColor: 'background.neutral',
+                    borderRadius: 2,
+                  }}
+                >
+                  No subtasks
+                </Centered>
+              )
+            : task.subtasks.map((subtask) => (
                 <ListItem
                   key={subtask.id}
                   sx={{
+                    backgroundColor: 'background.neutral',
+                    borderRadius: 2,
                     '& .actions': {
                       display: 'none',
                     },
@@ -231,9 +202,7 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
                       <ListItemIcon>
                         <Checkbox
                           checked={!!subtask.completedAt}
-                          onChange={() =>
-                            handleToggleSubtaskCompletion(subtask)
-                          }
+                          onChange={() => handleToggleSubtaskCompletion()}
                           disabled={isUpdating}
                           size='small'
                           sx={{ p: 0 }}
@@ -266,10 +235,48 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
                     </>
                   )}
                 </ListItem>
-              ))
-            : !createMode.value && (
-                <Centered sx={{ height: 50 }}>No subtasks</Centered>
-              )}
+              ))}
+
+          {createMode.value ? (
+            <TextField
+              value={newSubtaskName}
+              onChange={(e) => setNewSubtaskName(e.target.value)}
+              placeholder='New Subtask'
+              size='small'
+              fullWidth
+              autoFocus
+              multiline
+              disabled={isCreating}
+              onBlur={isCreating ? undefined : handleCreateSubtask}
+              onKeyDown={async (e) => {
+                if (e.key === 'Escape') {
+                  e.stopPropagation();
+                  cancelCreateSubtask();
+                }
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  await handleCreateSubtask();
+                }
+              }}
+              slotProps={{
+                input: {
+                  endAdornment: isCreating ? (
+                    <InputAdornment position='end'>
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ) : undefined,
+                },
+              }}
+            />
+          ) : (
+            <Button
+              variant='text'
+              startIcon={<AddIcon />}
+              sx={{ alignSelf: 'center' }}
+              onClick={createMode.setTrue}
+            >
+              Create Subtask
+            </Button>
+          )}
         </List>
       </Stack>
 

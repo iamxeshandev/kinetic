@@ -5,6 +5,8 @@ import {
   createTask,
   deleteSubtask,
   deleteTask,
+  deleteTaskAttachment,
+  downloadTaskAttachment,
   getTasks,
   updateSubtask,
   updateTask,
@@ -95,7 +97,7 @@ export const useCreateSubtask = (
             ? {
                 ...task,
                 subtasks: res.data
-                  ? [res.data, ...(task.subtasks ?? [])]
+                  ? [...task.subtasks, res.data]
                   : task.subtasks,
               }
             : task,
@@ -188,6 +190,70 @@ export const useUploadTaskAttachment = (
                 attachments: res.data
                   ? [...(task.attachments ?? []), res.data]
                   : task.attachments,
+              }
+            : task,
+        ),
+    },
+  );
+
+export const useDownloadTaskAttachment = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+) =>
+  useSWRMutation(
+    KEY(workspaceId, projectId),
+    (
+      _,
+      {
+        arg: { attachmentId, fileName },
+      }: { arg: { attachmentId: string; fileName: string } },
+    ) =>
+      downloadTaskAttachment({
+        path: {
+          workspaceId,
+          projectId,
+          taskId,
+          attachmentId,
+        },
+      }).then((res) => {
+        const url = URL.createObjectURL(res.data as Blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }),
+    {
+      revalidate: false,
+    },
+  );
+
+export const useDeleteTaskAttachment = (
+  workspaceId: string,
+  projectId: string,
+  taskId: string,
+) =>
+  useSWRMutation(
+    KEY(workspaceId, projectId),
+    (_, { arg: attachmentId }: { arg: string }) =>
+      deleteTaskAttachment({
+        path: { workspaceId, projectId, taskId, attachmentId },
+      }).then((res) => ({ ...res.data, data: attachmentId })),
+    {
+      revalidate: false,
+      populateCache: (res, currentData: TaskDto[] = []) =>
+        currentData.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                attachments: task.attachments.filter(
+                  (attachment) => attachment.id !== res.data,
+                ),
               }
             : task,
         ),

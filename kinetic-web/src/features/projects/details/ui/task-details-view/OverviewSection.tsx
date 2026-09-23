@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, MenuItem, Stack } from '@mui/material';
+import { Box, MenuItem, Stack, Typography } from '@mui/material';
 import { type JSONContent } from '@tiptap/core';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import type { IconType } from 'react-icons/lib';
 import { LuCalendar, LuFlag, LuText, LuUser } from 'react-icons/lu';
 import { useParams } from 'react-router';
 import z from 'zod';
@@ -19,11 +20,13 @@ import {
 import { toast } from '../../../../../shared/toast';
 import { useProjectMembers } from '../../../hooks';
 import { useUpdateTask } from '../../hooks';
-import { FieldLabel } from './FieldLabel';
-import { GridFieldLabel } from './GridFieldLabel';
+import { SectionLabel } from './SectionLabel';
 
 const taskFormSchema = z.object({
-  name: z.string().min(1, 'Enter a task name.'),
+  name: z
+    .string()
+    .min(1, 'Enter a task name.')
+    .max(100, 'Task name cannot exceed 100 characters.'),
   description: z.custom<JSONContent>().nullable(),
   priority: zEPriority,
   dueDate: z.date().nullable(),
@@ -42,7 +45,7 @@ const defaultValues: TaskForm = {
 
 export type OverviewSectionProps = {
   open: boolean;
-  task?: TaskDto;
+  task: TaskDto;
 };
 
 export function OverviewSection({ open, task }: OverviewSectionProps) {
@@ -57,9 +60,12 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
   );
 
   const methods = useForm<TaskForm>({
+    mode: 'all',
     resolver: zodResolver(taskFormSchema),
     defaultValues,
   });
+
+  const { isDirty, isValid } = methods.formState;
 
   const [name, description] = useWatch({
     control: methods.control,
@@ -95,37 +101,39 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
 
   // Debounce updates
   useEffect(() => {
-    if (!methods.formState.isDirty || !task) return;
+    if (!isDirty || !isValid) return;
 
     const timer = setTimeout(() => {
       updateTask({
         sectionId: task.sectionId,
-        name: name ?? '',
+        name,
         description: description || null,
         priority: methods.getValues('priority') ?? 'None',
-        dueDate: methods.getValues('dueDate')?.toISOString() ?? null,
-        assigneeId: methods.getValues('assigneeId') || null,
+        dueDate: methods.getValues('dueDate')?.toISOString(),
+        assigneeId: methods.getValues('assigneeId'),
       }).catch((err) => {
         toast.error(err.message);
+        console.error(err);
       });
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [description, methods, name, task, updateTask]);
+  }, [description, isDirty, isValid, methods, name, task, updateTask]);
 
   // Immediate updates
   useEffect(() => {
-    if (!methods.formState.isDirty || !task) return;
+    if (!methods.formState.isDirty || !methods.formState.isValid) return;
 
     updateTask({
       sectionId: task.sectionId,
       name: methods.getValues('name') ?? '',
       description: methods.getValues('description') || null,
-      priority: priority ?? 'None',
-      dueDate: dueDate?.toISOString() ?? null,
-      assigneeId: assigneeId || null,
+      priority,
+      dueDate: dueDate?.toISOString(),
+      assigneeId,
     }).catch((err) => {
       toast.error(err.message);
+      console.error(err);
     });
   }, [assigneeId, dueDate, methods, priority, task, updateTask]);
 
@@ -134,26 +142,24 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
       methods={methods}
       sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
     >
-      <FormTextField name='name' label='Name' required />
+      <FormTextField name='name' label='Name' multiline required />
 
       <Box
         sx={{
           p: 2,
-          border: 1,
           borderRadius: 2,
-          borderColor: 'divider',
-          backgroundColor: 'surface.subtle',
+          backgroundColor: 'background.neutral',
           display: 'grid',
-          gridTemplateColumns: '100px auto',
+          gridTemplateColumns: '120px auto',
           alignItems: 'center',
           gap: 1,
         }}
       >
-        <GridFieldLabel icon={LuFlag} label='Priority' />
+        <CustomLabel icon={LuFlag} label='Priority' />
         <FormSelect
           name='priority'
           size='small'
-          sx={{ backgroundColor: 'background.paper' }}
+          sx={{ backgroundColor: 'background.default' }}
         >
           {priorityOptions.map(({ value, label }) => (
             <MenuItem key={value} value={value}>
@@ -162,11 +168,11 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
           ))}
         </FormSelect>
 
-        <GridFieldLabel icon={LuUser} label='Assignee' />
+        <CustomLabel icon={LuUser} label='Assignee' />
         <FormSelect
           name='assigneeId'
           size='small'
-          sx={{ borderRadius: 4, backgroundColor: 'background.paper' }}
+          sx={{ backgroundColor: 'background.default' }}
         >
           <MenuItem value=''>None</MenuItem>
           {members.map(({ id, firstName, lastName }) => (
@@ -176,21 +182,42 @@ export function OverviewSection({ open, task }: OverviewSectionProps) {
           ))}
         </FormSelect>
 
-        <GridFieldLabel icon={LuCalendar} label='Due Date' />
+        <CustomLabel icon={LuCalendar} label='Due Date' />
         <FormDatePicker
           name='dueDate'
           slotProps={{
             field: { clearable: true },
             textField: { size: 'small' },
           }}
-          sx={{ backgroundColor: 'background.paper' }}
+          sx={{ backgroundColor: 'background.default' }}
         />
       </Box>
 
       <Stack spacing={1}>
-        <FieldLabel label='Description' icon={LuText} />
+        <SectionLabel label='Description' icon={LuText} />
         <FormRichTextEditor name='description' />
       </Stack>
     </Form>
   );
 }
+
+const CustomLabel = ({
+  icon: Icon,
+  label,
+}: {
+  icon: IconType;
+  label: string;
+}) => (
+  <Typography
+    color='textSecondary'
+    variant='subtitle1'
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1,
+    }}
+  >
+    <Icon strokeWidth={2} />
+    {label}
+  </Typography>
+);

@@ -66,17 +66,21 @@ export default function KanbanView() {
   const [items, setItems] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
-    const newItems = sections.reduce(
-      (acc, section) => {
-        acc[section.id] = tasks
-          .filter((task) => task.sectionId === section.id)
-          .map((task) => task.id);
-        return acc;
-      },
-      {} as Record<string, string[]>,
-    );
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setItems(newItems);
+    if (!sections.length || !tasks.length) return;
+    const syncItems = () => {
+      const newItems = sections.reduce(
+        (acc, section) => {
+          acc[section.id] = tasks
+            .filter((task) => task.sectionId === section.id)
+            .map((task) => task.id);
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+      setItems(newItems);
+    };
+
+    syncItems();
   }, [sections, tasks]);
 
   const onEditTask = (
@@ -212,7 +216,7 @@ export default function KanbanView() {
       <TaskDetailsView
         open={taskDetails.value}
         onClose={taskDetails.setFalse}
-        task={tasksMap[taskId ?? '']}
+        task={taskId ? tasksMap[taskId] : undefined}
       />
 
       <ActionMenu

@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import type { IconType } from 'react-icons/lib';
 
-export const GridFieldLabel = ({
+export const SectionLabel = ({
   icon: Icon,
   label,
 }: {
@@ -10,14 +10,14 @@ export const GridFieldLabel = ({
 }) => (
   <Typography
     color='textSecondary'
+    variant='h5'
     sx={{
       display: 'flex',
       alignItems: 'center',
       gap: 1,
-      fontWeight: 'bold',
     }}
   >
-    <Icon strokeWidth={2.5} />
+    <Icon />
     {label}
   </Typography>
 );

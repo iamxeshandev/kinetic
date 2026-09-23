@@ -56,8 +56,8 @@ export function KanbanColumn({
       .catch((err) => toast.error(err.message));
 
   return (
-    <Stack ref={ref} spacing={1}>
-      <Card sx={{ p: 1, width: 300 }}>
+    <Stack ref={ref} spacing={1} sx={{ width: 300 }}>
+      <Card sx={{ p: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography
             sx={{
