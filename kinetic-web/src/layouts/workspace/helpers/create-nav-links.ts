@@ -3,7 +3,7 @@ import {
   CalendarIcon,
   DashboardIcon,
   ProjectsIcon,
-  UserIcon,
+  UsersIcon,
 } from '../../../shared/icons';
 import type { NavLink } from '../types/nav-links';
 
@@ -31,7 +31,7 @@ export const createNavLinks = (
     : [
         {
           label: 'Users',
-          icon: UserIcon,
+          icon: UsersIcon,
           to: paths.workspaces.users(workspaceId),
         },
       ]),

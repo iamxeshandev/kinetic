@@ -27,12 +27,19 @@ export function WorkspacesView() {
   const [form, setForm] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
 
-  const handleOpenClick = (workspaceId: string) =>
-    user?.activeWorkspace?.id === workspaceId
-      ? navigate(paths.workspaces.dashboard(workspaceId), { replace: true })
-      : switch_({ path: { workspaceId } })
-          .then((res) => setUser(res.data.data ?? null))
-          .catch((err) => toast.error(err.message));
+  const handleSwitchWorkspace = async (workspaceId: string) => {
+    const isSame = workspaceId === user?.activeWorkspace?.id;
+    if (isSame) {
+      return navigate(paths.workspaces.dashboard(workspaceId));
+    }
+    await switch_({ path: { workspaceId } }).then((res) => {
+      const me = res.data.data;
+      setUser(me ?? null);
+      if (me?.activeWorkspace?.id) {
+        navigate(paths.workspaces.dashboard(me.activeWorkspace.id));
+      }
+    });
+  };
 
   const handleEditClick = (workspaceId: string) => {
     setWorkspaceId(workspaceId);
@@ -67,7 +74,7 @@ export function WorkspacesView() {
 
         <WorkspaceGrid
           workspaces={workspaces}
-          onOpenClick={handleOpenClick}
+          onOpenClick={handleSwitchWorkspace}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}
         />

@@ -2,25 +2,19 @@ import {
   Box,
   Card,
   CardActionArea,
-  Divider,
   IconButton,
   Stack,
   Typography,
 } from '@mui/material';
 import { LuBuilding } from 'react-icons/lu';
 import type { WorkspaceDto } from '../../../shared/api';
-import {
-  ArrowRightIcon,
-  PencilIcon,
-  TrashIcon,
-  UsersIcon,
-} from '../../../shared/icons';
-import { StyledIcon } from '../../../shared/icons/StyledIcon';
+import { useBoolean } from '../../../shared/hooks';
+import { PencilIcon, TrashIcon, UsersIcon } from '../../../shared/icons';
 import { Label } from '../../../shared/ui';
 
 export type WorkspaceGridProps = {
   workspaces: WorkspaceDto[];
-  onOpenClick?: (workspaceId: string) => void;
+  onOpenClick?: (workspaceId: string) => void | Promise<void>;
   onEditClick?: (workspaceId: string) => void;
   onDeleteClick?: (workspaceId: string) => void;
 };
@@ -31,6 +25,14 @@ export function WorkspaceGrid({
   onEditClick,
   onDeleteClick,
 }: WorkspaceGridProps) {
+  const isSwitching = useBoolean();
+
+  const onClick = async (workspaceId: string) => {
+    isSwitching.setTrue();
+    await onOpenClick?.(workspaceId);
+    isSwitching.setFalse();
+  };
+
   return (
     <Box
       sx={{
@@ -40,24 +42,12 @@ export function WorkspaceGrid({
       }}
     >
       {workspaces.map((workspace) => (
-        <Card
-          key={workspace.id}
-          sx={{
-            '& .workspace-hover-button': {
-              opacity: 0,
-              transform: 'translateX(4px)',
-              transition: 'opacity 0.2s ease, transform 0.2s ease',
-            },
-            '&:hover .workspace-hover-button': {
-              opacity: 1,
-              transform: 'translateX(0)',
-            },
-          }}
-        >
+        <Card key={workspace.id}>
           <CardActionArea
             component={'div'}
-            onClick={() => onOpenClick?.(workspace.id)}
+            onClick={() => onClick(workspace.id)}
             sx={{ p: 3 }}
+            disabled={isSwitching.value}
           >
             <Stack spacing={1}>
               <Stack
@@ -105,39 +95,27 @@ export function WorkspaceGrid({
                       : workspace.role}
                   </Label>
 
-                  <Typography
-                    variant='subtitle2'
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    <UsersIcon />{' '}
-                    <span>
-                      {workspace.memberCount}{' '}
-                      {Number(workspace.memberCount) > 1 ? 'Members' : 'Member'}
-                    </span>
-                  </Typography>
+                  {!workspace.isPersonalWorkspace && (
+                    <Typography
+                      variant='subtitle2'
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      <UsersIcon />{' '}
+                      <span>
+                        {workspace.memberCount}{' '}
+                        {Number(workspace.memberCount) > 1
+                          ? 'Members'
+                          : 'Member'}
+                      </span>
+                    </Typography>
+                  )}
                 </Box>
               </Stack>
-
-              <Divider />
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 1,
-                  width: 1,
-                }}
-              >
-                <Typography variant='subtitle1'>Last Active</Typography>
-
-                <StyledIcon icon={ArrowRightIcon} />
-              </Box>
             </Stack>
           </CardActionArea>
         </Card>
