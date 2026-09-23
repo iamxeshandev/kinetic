@@ -136,6 +136,7 @@ export const zSectionRequest = z.object({
 export const zSubtaskDto = z.object({
     id: z.uuid(),
     name: z.string(),
+    position: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
     completedAt: z.iso.datetime().nullish()
 });
 
@@ -152,7 +153,8 @@ export const zResponseOfSubtaskDto = z.object({
 export const zSubtaskRequest = z.object({
     name: z.string().max(1000),
     previousSubtaskId: z.uuid().nullish(),
-    nextSubtaskId: z.uuid().nullish()
+    nextSubtaskId: z.uuid().nullish(),
+    isCompleted: z.boolean().optional()
 });
 
 export const zTaskAttachmentDto = z.object({

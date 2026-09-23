@@ -184,6 +184,7 @@ export type SectionRequest = {
 export type SubtaskDto = {
     id: string;
     name: string;
+    position: number;
     completedAt?: null | string;
 };
 
@@ -191,6 +192,7 @@ export type SubtaskRequest = {
     name: string;
     previousSubtaskId?: null | string;
     nextSubtaskId?: null | string;
+    isCompleted?: boolean;
 };
 
 export type TaskAttachmentDto = {

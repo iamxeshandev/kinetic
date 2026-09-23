@@ -6,7 +6,9 @@ import {
   LuChartNoAxesCombined,
   LuCheck,
   LuContrast,
+  LuDownload,
   LuEllipsisVertical,
+  LuFile,
   LuFiles,
   LuFileUp,
   LuFolderKanban,
@@ -56,6 +58,10 @@ export const CheckIcon = LuCheck;
 export const ContrastIcon = LuContrast;
 
 export const DashboardIcon = LuLayoutDashboard;
+
+export const DownloadIcon = LuDownload;
+
+export const FileIcon = LuFile;
 
 export const FilesIcon = LuFiles;
 
