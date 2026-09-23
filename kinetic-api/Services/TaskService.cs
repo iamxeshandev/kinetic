@@ -99,6 +99,7 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                     {
                         Id = st.Id,
                         Name = st.Name,
+                        Position = st.Position,
                         CompletedAt = st.CompletedAt
                     })
                     .ToList(),
@@ -164,6 +165,7 @@ public class TaskService(AppDbContext db, IHttpContextAccessor accessor)
                     {
                         Id = st.Id,
                         Name = st.Name,
+                        Position = st.Position,
                         CompletedAt = st.CompletedAt
                     })
                     .ToList(),

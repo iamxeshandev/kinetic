@@ -63,10 +63,12 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
                 o.Task.ProjectId == projectId &&
                 o.Task.Project.WorkspaceId == workspaceId
             )
+            .OrderBy(o => o.Position)
             .Select(o => new SubtaskDto
             {
                 Id = o.Id,
                 Name = o.Name,
+                Position = o.Position,
                 CompletedAt = o.CompletedAt
             })
             .ToListAsync();
@@ -88,6 +90,7 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
             {
                 Id = o.Id,
                 Name = o.Name,
+                Position = o.Position,
                 CompletedAt = o.CompletedAt
             })
             .SingleOrDefaultAsync() ?? throw new ApiException(HttpStatusCode.NotFound, "Subtask not found.");
@@ -126,6 +129,7 @@ public class SubtaskService(AppDbContext db, IHttpContextAccessor accessor)
                       throw new ApiException(HttpStatusCode.NotFound, "Subtask not found");
 
         subtask.Name = request.Name;
+        subtask.CompletedAt = request.IsCompleted ? subtask.CompletedAt ?? DateTimeOffset.UtcNow : null;
         subtask.UpdatedAt = DateTimeOffset.UtcNow;
         subtask.UpdatedBy = accessor.GetUserId();
 
