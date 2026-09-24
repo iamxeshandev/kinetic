@@ -103,7 +103,16 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
       .finally(() => cancelUpdateSubtask());
   };
 
-  const handleToggleSubtaskCompletion = async () => {};
+  const handleToggleSubtaskCompletion = async (subtask: SubtaskDto) => {
+    await updateSubtask({
+      subtaskId: subtask.id,
+      name: subtask.name,
+      isCompleted: !subtask.completedAt,
+    }).catch((err) => {
+      toast.error(err.message);
+      console.error(err);
+    });
+  };
 
   const handleDeleteSubtask = async () => {
     if (!deleteSubtaskId) return;
@@ -202,7 +211,9 @@ export function SubtasksSection({ task }: SubtaskSectionProps) {
                       <ListItemIcon>
                         <Checkbox
                           checked={!!subtask.completedAt}
-                          onChange={() => handleToggleSubtaskCompletion()}
+                          onChange={() =>
+                            handleToggleSubtaskCompletion(subtask)
+                          }
                           disabled={isUpdating}
                           size='small'
                           sx={{ p: 0 }}

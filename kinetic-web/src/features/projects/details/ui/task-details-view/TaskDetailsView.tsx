@@ -63,7 +63,7 @@ export function TaskDetailsView({ open, onClose, task }: TaskDetailsViewProps) {
         spacing={3}
         sx={{ flex: 1, p: 2, overflow: 'auto', position: 'relative' }}
       >
-        <OverviewSection open={open} task={task} />
+        <OverviewSection task={task} />
         <SubtasksSection task={task} />
         <AttachmentsSection task={task} />
       </Stack>
