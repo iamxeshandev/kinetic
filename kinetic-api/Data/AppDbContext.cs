@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Task> Tasks { get; set; }
     public DbSet<Subtask> Subtasks { get; set; }
     public DbSet<TaskAttachment> TaskAttachments { get; set; }
+    public DbSet<TaskType> TaskTypes { get; set; }
+    public DbSet<TaskLabel> TaskLabels { get; set; }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
@@ -88,5 +90,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
         builder.Entity<Task>()
             .HasIndex(t => new { t.ProjectId, t.RefId })
             .IsUnique();
+
+        // Task Type
+        builder.Entity<TaskType>().HasIndex(t => new { t.ProjectId, t.Name }).IsUnique();
+        builder.Entity<TaskType>().HasIndex(t => new { t.ProjectId, t.Code }).IsUnique();
+
+        // Task Label
+        builder.Entity<TaskLabel>().HasIndex(t => new { t.ProjectId, t.Name }).IsUnique();
     }
 }

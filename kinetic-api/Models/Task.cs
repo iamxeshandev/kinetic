@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using kinetic_api.Enums;
 using kinetic_api.Interfaces;
 
@@ -10,14 +11,17 @@ public class Task : ITrackable
     public required Guid ProjectId { get; init; }
     public virtual Project Project { get; set; } = null!;
 
-    public required int RefId { get; init; }
-    public required string Name { get; set; }
     public required Guid SectionId { get; set; }
-    public required long Position { get; set; }
+    public required int RefId { get; init; }
+    [MaxLength(1000)] public required string Name { get; set; }
     public JsonElement? Description { get; set; }
+    public required long Position { get; set; }
     public EPriority Priority { get; set; }
     public DateTimeOffset? DueDate { get; set; }
     public DateTimeOffset? CompletedAt { get; set; }
+    public Guid? TaskTypeId { get; set; }
+    public virtual TaskType? TaskType { get; set; }
+    public ICollection<TaskLabel> TaskLabels { get; set; } = [];
 
     public Guid? AssigneeId { get; set; }
     public virtual ApplicationUser? Assignee { get; set; }

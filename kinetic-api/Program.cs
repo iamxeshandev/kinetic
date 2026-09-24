@@ -57,6 +57,8 @@ builder.Services.AddScoped<SectionService>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<SubtaskService>();
 builder.Services.AddScoped<TaskAttachmentService>();
+builder.Services.AddScoped<TaskTypeService>();
+builder.Services.AddScoped<TaskLabelService>();
 
 
 // Controllers Config

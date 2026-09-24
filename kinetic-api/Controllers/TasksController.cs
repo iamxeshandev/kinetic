@@ -13,7 +13,7 @@ public class TasksController(TaskService service) : ControllerBase
 {
     [HttpGet]
     [EndpointName("GetTasks")]
-    public async Task<ActionResult<Response<List<TaskDto>>>> GetAllTasksAsync(Guid workspaceId, Guid projectId)
+    public async Task<ActionResult<Response<TaskDto[]>>> GetAllTasksAsync(Guid workspaceId, Guid projectId)
     {
         return await service.GetAllTasksAsync(workspaceId, projectId);
     }
