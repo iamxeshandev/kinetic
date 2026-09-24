@@ -16,7 +16,7 @@ export type FormAutocompleteProps<
   'renderInput' | 'value' | 'onChange'
 > & {
   name: string;
-  label: string;
+  label?: string;
 };
 
 export function FormAutocomplete<

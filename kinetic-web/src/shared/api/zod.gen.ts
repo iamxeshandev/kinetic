@@ -175,25 +175,70 @@ export const zResponseOfTaskAttachmentDto = z.object({
     message: z.string().optional()
 });
 
+export const zTaskLabelDto = z.object({
+    id: z.uuid(),
+    name: z.string()
+});
+
+export const zResponseOfTaskLabelDto = z.object({
+    data: zTaskLabelDto.optional(),
+    message: z.string().optional()
+});
+
+export const zResponseOfTaskLabelDto2 = z.object({
+    data: z.array(zTaskLabelDto).nullish(),
+    message: z.string().optional()
+});
+
+export const zTaskLabelRequest = z.object({
+    name: z.string().max(50)
+});
+
+export const zTaskRequest = z.object({
+    sectionId: z.uuid(),
+    name: z.string().max(100),
+    description: zJsonElement.nullish(),
+    priority: zEPriority,
+    dueDate: z.iso.datetime().nullish(),
+    taskTypeId: z.uuid().nullish(),
+    taskLabelIds: z.array(z.uuid()).optional(),
+    assigneeId: z.uuid().nullish(),
+    previousTaskId: z.uuid().nullish(),
+    nextTaskId: z.uuid().nullish()
+});
+
+export const zTaskTypeDto = z.object({
+    id: z.uuid(),
+    name: z.string(),
+    code: z.string()
+});
+
+export const zResponseOfTaskTypeDto = z.object({
+    data: zTaskTypeDto.optional(),
+    message: z.string().optional()
+});
+
+export const zResponseOfTaskTypeDto2 = z.object({
+    data: z.array(zTaskTypeDto).nullish(),
+    message: z.string().optional()
+});
+
 export const zTaskDto = z.object({
     id: z.uuid(),
+    sectionId: z.uuid(),
     refId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }),
     name: z.string(),
     description: zJsonElement.nullish(),
-    sectionId: z.uuid(),
     position: z.coerce.bigint().min(BigInt('-9223372036854775808'), { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(BigInt('9223372036854775807'), { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }),
     priority: zEPriority,
     dueDate: z.iso.datetime().nullish(),
     completedAt: z.iso.datetime().nullish(),
     assignee: zProjectMemberDto.nullish(),
     assignedAt: z.iso.datetime().nullish(),
+    taskType: zTaskTypeDto.nullish(),
+    taskLabels: z.array(zTaskLabelDto),
     attachments: z.array(zTaskAttachmentDto),
     subtasks: z.array(zSubtaskDto)
-});
-
-export const zResponseOfListOfTaskDto = z.object({
-    data: z.array(zTaskDto).nullish(),
-    message: z.string().optional()
 });
 
 export const zResponseOfTaskDto = z.object({
@@ -201,15 +246,14 @@ export const zResponseOfTaskDto = z.object({
     message: z.string().optional()
 });
 
-export const zTaskRequest = z.object({
-    name: z.string().max(100),
-    description: zJsonElement.nullish(),
-    sectionId: z.uuid(),
-    priority: zEPriority,
-    dueDate: z.iso.datetime().nullish(),
-    assigneeId: z.uuid().nullish(),
-    previousTaskId: z.uuid().nullish(),
-    nextTaskId: z.uuid().nullish()
+export const zResponseOfTaskDto2 = z.object({
+    data: z.array(zTaskDto).nullish(),
+    message: z.string().optional()
+});
+
+export const zTaskTypeRequest = z.object({
+    name: z.string().min(3).max(50),
+    code: z.string().min(3).max(5)
 });
 
 export const zUserDto = z.object({
@@ -603,6 +647,63 @@ export const zDownloadTaskAttachmentPath = z.object({
     attachmentId: z.uuid()
 });
 
+export const zGetTaskLabelsPath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zGetTaskLabelsResponse = zResponseOfTaskLabelDto2;
+
+export const zCreateTaskLabelBody = zTaskLabelRequest;
+
+export const zCreateTaskLabelPath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zCreateTaskLabelResponse = zResponseOfTaskLabelDto;
+
+export const zDeleteTaskLabelPath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid(),
+    taskTypeId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zDeleteTaskLabelResponse = zResponse;
+
+export const zGetTaskLabelPath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid(),
+    taskTypeId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zGetTaskLabelResponse = zResponseOfTaskLabelDto;
+
+export const zUpdateTaskLabelBody = zTaskLabelRequest;
+
+export const zUpdateTaskLabelPath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid(),
+    taskTypeId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zUpdateTaskLabelResponse = zResponseOfTaskLabelDto;
+
 export const zGetTasksPath = z.object({
     workspaceId: z.uuid(),
     projectId: z.uuid()
@@ -611,7 +712,7 @@ export const zGetTasksPath = z.object({
 /**
  * OK
  */
-export const zGetTasksResponse = zResponseOfListOfTaskDto;
+export const zGetTasksResponse = zResponseOfTaskDto2;
 
 export const zCreateTaskBody = zTaskRequest;
 
@@ -672,6 +773,63 @@ export const zMoveTaskPath = z.object({
  * OK
  */
 export const zMoveTaskResponse = zResponseOfTaskDto;
+
+export const zGetTaskTypesPath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zGetTaskTypesResponse = zResponseOfTaskTypeDto2;
+
+export const zCreateTaskTypeBody = zTaskTypeRequest;
+
+export const zCreateTaskTypePath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zCreateTaskTypeResponse = zResponseOfTaskTypeDto;
+
+export const zDeleteTaskTypePath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid(),
+    taskTypeId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zDeleteTaskTypeResponse = zResponse;
+
+export const zGetTaskTypePath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid(),
+    taskTypeId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zGetTaskTypeResponse = zResponseOfTaskTypeDto;
+
+export const zUpdateTaskTypeBody = zTaskTypeRequest;
+
+export const zUpdateTaskTypePath = z.object({
+    workspaceId: z.uuid(),
+    projectId: z.uuid(),
+    taskTypeId: z.uuid()
+});
+
+/**
+ * OK
+ */
+export const zUpdateTaskTypeResponse = zResponseOfTaskTypeDto;
 
 export const zGetUsersPath = z.object({
     workspaceId: z.uuid()

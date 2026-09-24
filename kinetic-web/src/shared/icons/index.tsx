@@ -11,6 +11,7 @@ import {
   LuFile,
   LuFiles,
   LuFileUp,
+  LuFlag,
   LuFolderKanban,
   LuGripVertical,
   LuLayoutDashboard,
@@ -68,6 +69,8 @@ export const FilesIcon = LuFiles;
 export const FileUpload = LuFileUp;
 
 export const FilterIcon = LuListFilter;
+
+export const FlagIcon = LuFlag;
 
 export const GripIcon = LuGripVertical;
 

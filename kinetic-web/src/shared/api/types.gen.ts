@@ -117,11 +117,6 @@ export type ResponseOfListOfTaskAttachmentDto = {
     message?: string;
 };
 
-export type ResponseOfListOfTaskDto = {
-    data?: null | Array<TaskDto>;
-    message?: string;
-};
-
 export type ResponseOfListOfUserDto = {
     data?: null | Array<UserDto>;
     message?: string;
@@ -159,6 +154,31 @@ export type ResponseOfTaskAttachmentDto = {
 
 export type ResponseOfTaskDto = {
     data?: TaskDto;
+    message?: string;
+};
+
+export type ResponseOfTaskDto2 = {
+    data?: null | Array<TaskDto>;
+    message?: string;
+};
+
+export type ResponseOfTaskLabelDto = {
+    data?: TaskLabelDto;
+    message?: string;
+};
+
+export type ResponseOfTaskLabelDto2 = {
+    data?: null | Array<TaskLabelDto>;
+    message?: string;
+};
+
+export type ResponseOfTaskTypeDto = {
+    data?: TaskTypeDto;
+    message?: string;
+};
+
+export type ResponseOfTaskTypeDto2 = {
+    data?: null | Array<TaskTypeDto>;
     message?: string;
 };
 
@@ -205,29 +225,53 @@ export type TaskAttachmentDto = {
 
 export type TaskDto = {
     id: string;
+    sectionId: string;
     refId: number;
     name: string;
     description?: null | JsonElement;
-    sectionId: string;
     position: number;
     priority: EPriority;
     dueDate?: null | string;
     completedAt?: null | string;
     assignee?: null | ProjectMemberDto;
     assignedAt?: null | string;
+    taskType?: null | TaskTypeDto;
+    taskLabels: Array<TaskLabelDto>;
     attachments: Array<TaskAttachmentDto>;
     subtasks: Array<SubtaskDto>;
 };
 
+export type TaskLabelDto = {
+    id: string;
+    name: string;
+};
+
+export type TaskLabelRequest = {
+    name: string;
+};
+
 export type TaskRequest = {
+    sectionId: string;
     name: string;
     description?: null | JsonElement;
-    sectionId: string;
     priority: EPriority;
     dueDate?: null | string;
+    taskTypeId?: null | string;
+    taskLabelIds?: Array<string>;
     assigneeId?: null | string;
     previousTaskId?: null | string;
     nextTaskId?: null | string;
+};
+
+export type TaskTypeDto = {
+    id: string;
+    name: string;
+    code: string;
+};
+
+export type TaskTypeRequest = {
+    name: string;
+    code: string;
 };
 
 export type UserDto = {
@@ -852,6 +896,104 @@ export type DownloadTaskAttachmentResponses = {
     200: unknown;
 };
 
+export type GetTaskLabelsData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        projectId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels';
+};
+
+export type GetTaskLabelsResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskLabelDto2;
+};
+
+export type GetTaskLabelsResponse = GetTaskLabelsResponses[keyof GetTaskLabelsResponses];
+
+export type CreateTaskLabelData = {
+    body: TaskLabelRequest;
+    path: {
+        workspaceId: string;
+        projectId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels';
+};
+
+export type CreateTaskLabelResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskLabelDto;
+};
+
+export type CreateTaskLabelResponse = CreateTaskLabelResponses[keyof CreateTaskLabelResponses];
+
+export type DeleteTaskLabelData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        projectId: string;
+        taskTypeId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels/{taskTypeId}';
+};
+
+export type DeleteTaskLabelResponses = {
+    /**
+     * OK
+     */
+    200: Response;
+};
+
+export type DeleteTaskLabelResponse = DeleteTaskLabelResponses[keyof DeleteTaskLabelResponses];
+
+export type GetTaskLabelData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        projectId: string;
+        taskTypeId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels/{taskTypeId}';
+};
+
+export type GetTaskLabelResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskLabelDto;
+};
+
+export type GetTaskLabelResponse = GetTaskLabelResponses[keyof GetTaskLabelResponses];
+
+export type UpdateTaskLabelData = {
+    body: TaskLabelRequest;
+    path: {
+        workspaceId: string;
+        projectId: string;
+        taskTypeId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels/{taskTypeId}';
+};
+
+export type UpdateTaskLabelResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskLabelDto;
+};
+
+export type UpdateTaskLabelResponse = UpdateTaskLabelResponses[keyof UpdateTaskLabelResponses];
+
 export type GetTasksData = {
     body?: never;
     path: {
@@ -866,7 +1008,7 @@ export type GetTasksResponses = {
     /**
      * OK
      */
-    200: ResponseOfListOfTaskDto;
+    200: ResponseOfTaskDto2;
 };
 
 export type GetTasksResponse = GetTasksResponses[keyof GetTasksResponses];
@@ -969,6 +1111,104 @@ export type MoveTaskResponses = {
 };
 
 export type MoveTaskResponse = MoveTaskResponses[keyof MoveTaskResponses];
+
+export type GetTaskTypesData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        projectId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types';
+};
+
+export type GetTaskTypesResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskTypeDto2;
+};
+
+export type GetTaskTypesResponse = GetTaskTypesResponses[keyof GetTaskTypesResponses];
+
+export type CreateTaskTypeData = {
+    body: TaskTypeRequest;
+    path: {
+        workspaceId: string;
+        projectId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types';
+};
+
+export type CreateTaskTypeResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskTypeDto;
+};
+
+export type CreateTaskTypeResponse = CreateTaskTypeResponses[keyof CreateTaskTypeResponses];
+
+export type DeleteTaskTypeData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        projectId: string;
+        taskTypeId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types/{taskTypeId}';
+};
+
+export type DeleteTaskTypeResponses = {
+    /**
+     * OK
+     */
+    200: Response;
+};
+
+export type DeleteTaskTypeResponse = DeleteTaskTypeResponses[keyof DeleteTaskTypeResponses];
+
+export type GetTaskTypeData = {
+    body?: never;
+    path: {
+        workspaceId: string;
+        projectId: string;
+        taskTypeId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types/{taskTypeId}';
+};
+
+export type GetTaskTypeResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskTypeDto;
+};
+
+export type GetTaskTypeResponse = GetTaskTypeResponses[keyof GetTaskTypeResponses];
+
+export type UpdateTaskTypeData = {
+    body: TaskTypeRequest;
+    path: {
+        workspaceId: string;
+        projectId: string;
+        taskTypeId: string;
+    };
+    query?: never;
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types/{taskTypeId}';
+};
+
+export type UpdateTaskTypeResponses = {
+    /**
+     * OK
+     */
+    200: ResponseOfTaskTypeDto;
+};
+
+export type UpdateTaskTypeResponse = UpdateTaskTypeResponses[keyof UpdateTaskTypeResponses];
 
 export type GetUsersData = {
     body?: never;

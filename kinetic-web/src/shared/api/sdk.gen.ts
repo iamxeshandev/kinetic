@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateFavoriteData, CreateFavoriteResponses, CreateProjectData, CreateProjectResponses, CreateSectionData, CreateSectionResponses, CreateSubtaskData, CreateSubtaskResponses, CreateTaskData, CreateTaskResponses, CreateUserData, CreateUserResponses, CreateWorkspaceData, CreateWorkspaceResponses, DeleteFavoriteData, DeleteFavoriteResponses, DeleteProjectData, DeleteProjectResponses, DeleteSectionData, DeleteSectionResponses, DeleteSubtaskData, DeleteSubtaskResponses, DeleteTaskAttachmentData, DeleteTaskAttachmentResponses, DeleteTaskData, DeleteTaskResponses, DeleteUserData, DeleteUserResponses, DeleteWorkspaceData, DeleteWorkspaceResponses, DownloadTaskAttachmentData, DownloadTaskAttachmentResponses, GetMeData, GetMeResponses, GetProjectData, GetProjectMembersData, GetProjectMembersResponses, GetProjectResponses, GetProjectsData, GetProjectsResponses, GetSectionData, GetSectionResponses, GetSectionsData, GetSectionsResponses, GetSubtaskData, GetSubtaskResponses, GetSubtasksData, GetSubtasksResponses, GetTaskAttachmentData, GetTaskAttachmentResponses, GetTaskAttachmentsData, GetTaskAttachmentsResponses, GetTaskData, GetTaskResponses, GetTasksData, GetTasksResponses, GetUserData, GetUserResponses, GetUsersData, GetUsersResponses, GetWorkspaceData, GetWorkspaceResponses, GetWorkspacesData, GetWorkspacesResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MoveSectionData, MoveSectionResponses, MoveTaskData, MoveTaskResponses, RegisterData, RegisterResponses, SwitchData, SwitchResponses, UpdateMeData, UpdateMeResponses, UpdateProjectData, UpdateProjectResponses, UpdateSectionData, UpdateSectionResponses, UpdateSubtaskData, UpdateSubtaskResponses, UpdateTaskData, UpdateTaskResponses, UpdateUserData, UpdateUserResponses, UpdateWorkspaceData, UpdateWorkspaceResponses, UploadAvatarData, UploadAvatarResponses, UploadTaskAttachmentData, UploadTaskAttachmentResponses } from './types.gen';
+import type { CreateFavoriteData, CreateFavoriteResponses, CreateProjectData, CreateProjectResponses, CreateSectionData, CreateSectionResponses, CreateSubtaskData, CreateSubtaskResponses, CreateTaskData, CreateTaskLabelData, CreateTaskLabelResponses, CreateTaskResponses, CreateTaskTypeData, CreateTaskTypeResponses, CreateUserData, CreateUserResponses, CreateWorkspaceData, CreateWorkspaceResponses, DeleteFavoriteData, DeleteFavoriteResponses, DeleteProjectData, DeleteProjectResponses, DeleteSectionData, DeleteSectionResponses, DeleteSubtaskData, DeleteSubtaskResponses, DeleteTaskAttachmentData, DeleteTaskAttachmentResponses, DeleteTaskData, DeleteTaskLabelData, DeleteTaskLabelResponses, DeleteTaskResponses, DeleteTaskTypeData, DeleteTaskTypeResponses, DeleteUserData, DeleteUserResponses, DeleteWorkspaceData, DeleteWorkspaceResponses, DownloadTaskAttachmentData, DownloadTaskAttachmentResponses, GetMeData, GetMeResponses, GetProjectData, GetProjectMembersData, GetProjectMembersResponses, GetProjectResponses, GetProjectsData, GetProjectsResponses, GetSectionData, GetSectionResponses, GetSectionsData, GetSectionsResponses, GetSubtaskData, GetSubtaskResponses, GetSubtasksData, GetSubtasksResponses, GetTaskAttachmentData, GetTaskAttachmentResponses, GetTaskAttachmentsData, GetTaskAttachmentsResponses, GetTaskData, GetTaskLabelData, GetTaskLabelResponses, GetTaskLabelsData, GetTaskLabelsResponses, GetTaskResponses, GetTasksData, GetTasksResponses, GetTaskTypeData, GetTaskTypeResponses, GetTaskTypesData, GetTaskTypesResponses, GetUserData, GetUserResponses, GetUsersData, GetUsersResponses, GetWorkspaceData, GetWorkspaceResponses, GetWorkspacesData, GetWorkspacesResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MoveSectionData, MoveSectionResponses, MoveTaskData, MoveTaskResponses, RegisterData, RegisterResponses, SwitchData, SwitchResponses, UpdateMeData, UpdateMeResponses, UpdateProjectData, UpdateProjectResponses, UpdateSectionData, UpdateSectionResponses, UpdateSubtaskData, UpdateSubtaskResponses, UpdateTaskData, UpdateTaskLabelData, UpdateTaskLabelResponses, UpdateTaskResponses, UpdateTaskTypeData, UpdateTaskTypeResponses, UpdateUserData, UpdateUserResponses, UpdateWorkspaceData, UpdateWorkspaceResponses, UploadAvatarData, UploadAvatarResponses, UploadTaskAttachmentData, UploadTaskAttachmentResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -166,6 +166,30 @@ export const getTaskAttachment = <ThrowOnError extends boolean = true>(options: 
 
 export const downloadTaskAttachment = <ThrowOnError extends boolean = true>(options: Options<DownloadTaskAttachmentData, ThrowOnError>): RequestResult<DownloadTaskAttachmentResponses, unknown, ThrowOnError> => (options.client ?? client).get<DownloadTaskAttachmentResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{taskId}/attachments/{attachmentId}/download', ...options });
 
+export const getTaskLabels = <ThrowOnError extends boolean = true>(options: Options<GetTaskLabelsData, ThrowOnError>): RequestResult<GetTaskLabelsResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetTaskLabelsResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels', ...options });
+
+export const createTaskLabel = <ThrowOnError extends boolean = true>(options: Options<CreateTaskLabelData, ThrowOnError>): RequestResult<CreateTaskLabelResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateTaskLabelResponses, unknown, ThrowOnError>({
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const deleteTaskLabel = <ThrowOnError extends boolean = true>(options: Options<DeleteTaskLabelData, ThrowOnError>): RequestResult<DeleteTaskLabelResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteTaskLabelResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels/{taskTypeId}', ...options });
+
+export const getTaskLabel = <ThrowOnError extends boolean = true>(options: Options<GetTaskLabelData, ThrowOnError>): RequestResult<GetTaskLabelResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetTaskLabelResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels/{taskTypeId}', ...options });
+
+export const updateTaskLabel = <ThrowOnError extends boolean = true>(options: Options<UpdateTaskLabelData, ThrowOnError>): RequestResult<UpdateTaskLabelResponses, unknown, ThrowOnError> => (options.client ?? client).put<UpdateTaskLabelResponses, unknown, ThrowOnError>({
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-labels/{taskTypeId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
 export const getTasks = <ThrowOnError extends boolean = true>(options: Options<GetTasksData, ThrowOnError>): RequestResult<GetTasksResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetTasksResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/tasks', ...options });
 
 export const createTask = <ThrowOnError extends boolean = true>(options: Options<CreateTaskData, ThrowOnError>): RequestResult<CreateTaskResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateTaskResponses, unknown, ThrowOnError>({
@@ -192,6 +216,30 @@ export const updateTask = <ThrowOnError extends boolean = true>(options: Options
 
 export const moveTask = <ThrowOnError extends boolean = true>(options: Options<MoveTaskData, ThrowOnError>): RequestResult<MoveTaskResponses, unknown, ThrowOnError> => (options.client ?? client).patch<MoveTaskResponses, unknown, ThrowOnError>({
     url: '/api/workspaces/{workspaceId}/projects/{projectId}/tasks/{taskId}/move',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getTaskTypes = <ThrowOnError extends boolean = true>(options: Options<GetTaskTypesData, ThrowOnError>): RequestResult<GetTaskTypesResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetTaskTypesResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types', ...options });
+
+export const createTaskType = <ThrowOnError extends boolean = true>(options: Options<CreateTaskTypeData, ThrowOnError>): RequestResult<CreateTaskTypeResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateTaskTypeResponses, unknown, ThrowOnError>({
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const deleteTaskType = <ThrowOnError extends boolean = true>(options: Options<DeleteTaskTypeData, ThrowOnError>): RequestResult<DeleteTaskTypeResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteTaskTypeResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types/{taskTypeId}', ...options });
+
+export const getTaskType = <ThrowOnError extends boolean = true>(options: Options<GetTaskTypeData, ThrowOnError>): RequestResult<GetTaskTypeResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetTaskTypeResponses, unknown, ThrowOnError>({ url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types/{taskTypeId}', ...options });
+
+export const updateTaskType = <ThrowOnError extends boolean = true>(options: Options<UpdateTaskTypeData, ThrowOnError>): RequestResult<UpdateTaskTypeResponses, unknown, ThrowOnError> => (options.client ?? client).put<UpdateTaskTypeResponses, unknown, ThrowOnError>({
+    url: '/api/workspaces/{workspaceId}/projects/{projectId}/task-types/{taskTypeId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
